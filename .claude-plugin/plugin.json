@@ -1,0 +1,21 @@
+{
+  "name": "causal-powers",
+  "description": "Superpowers for data analytics, causal inference, and econometrics: discipline skills that make the silent failures of data work loud — data contracts, join-cardinality checks, wrong-number debugging, result verification, pre-analysis plans, and causal identification. R, Julia, and Python.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Lance Gui",
+    "email": "lance.guixiaofan@gmail.com"
+  },
+  "keywords": [
+    "data-analysis",
+    "causal-inference",
+    "econometrics",
+    "validation",
+    "data-quality",
+    "statistics",
+    "R",
+    "julia",
+    "python"
+  ],
+  "license": "MIT"
+}

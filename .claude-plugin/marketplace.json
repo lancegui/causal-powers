@@ -1,0 +1,20 @@
+{
+  "name": "causal-powers-dev",
+  "description": "Local development marketplace for the Causal Powers skills library",
+  "owner": {
+    "name": "Lance Gui",
+    "email": "lance.guixiaofan@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "causal-powers",
+      "description": "Superpowers for data analytics, causal inference, and econometrics: data contracts, join-cardinality checks, wrong-number debugging, result verification, pre-analysis plans, and causal identification. R, Julia, and Python.",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "Lance Gui",
+        "email": "lance.guixiaofan@gmail.com"
+      }
+    }
+  ]
+}

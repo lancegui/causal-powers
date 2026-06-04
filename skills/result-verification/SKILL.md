@@ -1,0 +1,80 @@
+---
+name: result-verification
+description: Use BEFORE reporting a number, presenting a finding, sending an analysis to a stakeholder, putting a figure in a deck or paper, or claiming an analysis is "done" or "the result is X". Reconciles totals to source, reproduces the result from a clean session with a fixed seed, runs robustness and sensitivity checks, and confirms every figure and table matches the numbers in the prose — evidence before assertion. Use whenever the user says "the answer is", "let's report this", "put this in the slide", "I'm done with the analysis", "send this to", or is about to treat a computed result as final — in R, Julia, or Python.
+---
+
+# Result Verification
+
+## Overview
+
+The last mile is where good analyses die. The number is computed, it looks right, the deadline is close — and "looks right" becomes "is right" without anything in between. This skill is the something in between: the checks that stand between a computed number and a claimed result.
+
+This is the analytics counterpart of verification-before-completion. The rule is identical: **evidence before assertions, always.** You do not say "the result is X"; you say "the result is X, here is the reconciliation, here is the clean-room reproduction, here is the robustness."
+
+**Core principle:** A result is not done when it appears; it's done when it has been reconciled, reproduced from scratch, and survived being attacked.
+
+## The verification checklist
+
+Run these before any result leaves your hands. Each maps to a real way final numbers turn out wrong:
+
+1. **Reconcile to source.** Do the parts sum back to the known whole? Does the headline number tie out to a total you can compute a completely different way? A revenue figure should reconcile to the raw ledger; a user count to a distinct count of IDs. Reconciliation by an independent path is the single strongest check that the number is real. (Use float-aware comparison.)
+
+2. **Reproduce from a clean state.** Restart the kernel / session / R process — no cached objects, no leftover variables — set the seed, and run the analysis end to end from raw inputs. A result that only exists because of a variable still in memory from three hours ago is not a result. If it doesn't reproduce, you don't have a finding, you have an artifact.
+
+3. **Confirm determinism.** Same input + same seed → same output, twice. If the number wiggles between runs, there's uncontrolled randomness or ordering dependence, and the figure you're about to report is one sample from a distribution you didn't mean to draw from.
+
+4. **Attack it with robustness.** Re-run the result under the alternatives you'd expect to leave it roughly unchanged: drop the top/bottom percentile of outliers, restrict to a clean subsample, try the obvious alternative specification or definition. If the headline swings wildly under a reasonable perturbation, it is fragile and you must say so. (For confirmatory work, run the suite you pre-committed in `pre-analysis-plan` — all of it.)
+
+5. **Sanity-check against the outside world.** Does the magnitude make sense against a known benchmark, last quarter's figure, a back-of-envelope estimate, or simple common sense? A churn rate of 0.3% or 60% should both make you stop. External plausibility catches the errors that internal consistency can't.
+
+6. **Tie the artifacts to the prose.** Every number in the text, every figure axis, every table cell — does it match what the code actually produced *in this run*? Stale numbers from an earlier version, a figure that wasn't regenerated, a rounded value that contradicts the table: these are the embarrassing errors that survive everything else because nobody re-checked the copy against the output.
+
+## Evidence before assertion
+
+The failure mode is claiming completion you haven't verified — "the analysis is done," "the numbers check out," "it reproduces." Replace every such claim with the output that proves it. Don't write "totals reconcile"; show the reconciliation line where the two independently-computed numbers match. Don't write "it's robust"; show the table of the estimate under each perturbation. An unverified "done" is just hope with a deadline.
+
+## Freeze the verified result
+
+Once it passes, snapshot it as a golden output (see `data-contracts`). The verified number becomes the baseline that the next run is diffed against — so if a refactor or a data refresh silently changes it, you find out loudly instead of three weeks later in a meeting.
+
+## Language cheat-sheet
+
+| Need | Python | R | Julia |
+|---|---|---|---|
+| Clean reproduction | restart kernel; `python script.py` from scratch | `Rscript` in a fresh session; `callr::r()` | fresh `julia script.jl` |
+| Fix the seed | `np.random.seed(...)` / `random_state=` | `set.seed(...)` | `Random.seed!(...)` |
+| Reconcile (float-aware) | `assert np.isclose(a, b)` | `stopifnot(isTRUE(all.equal(a, b)))` | `@assert isapprox(a, b)` |
+| Outlier-sensitivity | refit on `df[df.x.between(q01, q99)]` | refit on winsorized data | refit on filtered frame |
+
+## Red flags — STOP
+
+- About to report a number you computed but never reconciled by a second path.
+- "It reproduces" — but you never actually restarted the kernel and re-ran from raw inputs.
+- A figure or table number that you haven't confirmed matches the current run's output.
+- Reporting a point estimate with no idea whether it survives dropping a few outliers.
+- A magnitude you haven't sanity-checked against anything external.
+- Writing "the numbers check out" instead of showing the output that checks them out.
+
+## Common rationalizations
+
+| Excuse | Reality |
+|---|---|
+| "It ran fine, it's done." | Running and being correct are different claims. Only one of them protects the stakeholder. |
+| "It reproduces — I just ran it." | Re-running in the same session with cached state isn't reproduction. Restart and run from raw. |
+| "Robustness is overkill for an internal number." | The internal number drives the decision. Fragile-but-unchecked is how a bad decision gets made confidently. |
+| "I already eyeballed the figures." | Eyeballing doesn't catch a stale number copied from last week's version. Tie each one to this run's output. |
+| "The deadline is now." | A wrong number presented on time is worse than a right one presented late, and far worse than a caveated one on time. |
+
+## Relationship to sibling skills
+
+- The invariants you reconcile against come from **`data-contracts`**; freezing the verified result uses the same golden-output mechanism.
+- If verification fails — a total won't reconcile, a number won't reproduce — switch to **`wrong-number-debugging`**.
+- For confirmatory studies, the robustness suite here is the one locked in **`pre-analysis-plan`**.
+- For causal results, **`causal-identification`** supplies the design-specific robustness (placebo, pre-trends, sensitivity) that verification must include.
+
+## The bottom line
+
+```
+Reported result  →  reconciled by an independent path, reproduced from a clean state, survived robustness, artifacts tied to prose
+Otherwise         →  not verified, just submitted
+```
