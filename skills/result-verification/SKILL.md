@@ -49,6 +49,10 @@ The failure mode is claiming completion you haven't verified — "the analysis i
 
 Once it passes, snapshot it as a golden output (see `data-contracts`). The verified number becomes the baseline that the next run is diffed against — so if a refactor or a data refresh silently changes it, you find out loudly instead of three weeks later in a meeting.
 
+## Capture what bit you
+
+Before you close out, do a 60-second retro: **what silent failure actually bit this project** — the fan-out join, the leaked feature, the bad control, the implausible magnitude you almost shipped? Write it down in a `docs/LESSONS.md` (one line: the symptom, the cause, the check that would have caught it). This is the manual, no-machinery version of learning: a lesson recorded is a bug that won't recur silently. And when a lesson is *general* — it would bite any analysis, not just this one — fold it into the relevant skill (a new red-flag, a sharper check) so the whole family gets better. Lessons that stay in your head decay; lessons in `LESSONS.md` and the skills compound.
+
 ## Language cheat-sheet
 
 | Need | Python | R | Julia |

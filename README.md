@@ -51,6 +51,26 @@ raise an error. These skills assert everything *around* the answer that must hol
 regardless of the answer — and, for causal work, force the identification
 assumptions to be stated and tested before estimating.
 
+## Beyond skills: always-on layer + agents
+
+Skills are *triggered*. Some discipline must hold *every* time, so (inspired by
+[ECC](https://github.com/affaan-m/ecc)'s layered model and superpowers' own hook)
+the plugin also ships:
+
+- **A SessionStart hook** (`hooks/`) that injects a compact always-on block — the
+  creed, the never-change-the-goal-behind-the-user's-back rule, the
+  frame→approve→execute→verify spine, and a silent-failure + economist red-lines
+  card — so the discipline is present by default, not contingent on a skill
+  triggering.
+- **Reusable subagents** (`agents/`): `robustness-runner` (executes one
+  pre-specified spec against the validated data, asserts contracts, returns a
+  structured result — the fan-out worker for `executing-analysis-plans`) and
+  `analysis-reviewer` (independent adversarial review for the silent-failure
+  classes).
+- **Lessons-capture** (`docs/LESSONS.md`): a manual, no-machinery `/evolve` —
+  record the silent failure that bit each project and fold general ones back into
+  the skills.
+
 ## Install (local)
 
 ```bash

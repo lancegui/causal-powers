@@ -34,6 +34,14 @@ Work down from the conclusion to the data. Each item is a class of silent error 
 - Does it **reproduce from a clean state** with a fixed seed, or only inside the author's live session?
 - Do the **numbers in the prose/figures match** what the code actually produces now?
 
+## Run it as an independent agent
+
+For a genuinely independent pass — especially before results ship, or in parallel
+with the work itself — dispatch the **`analysis-reviewer`** agent that Causal
+Powers ships. A reviewer with fresh context catches what the author (you)
+rationalized; it returns concrete findings with severity rather than a
+rubber stamp. Use it in addition to, not instead of, reviewing as you go.
+
 ## Review like an adversary, not a proofreader
 
 The useful question isn't "can I follow this?" — it's "how would this be wrong, and what would I check to find out?" For each headline number, form the specific failure hypothesis (this total looks high → maybe the join fanned out) and ask for the evidence that rules it out (show me the row counts). A review that only confirms the code is readable has reviewed the wrong thing. If you can't see the intermediate checks, the right response is "show me the reconciliation," not "looks good."

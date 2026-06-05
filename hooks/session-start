@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# SessionStart hook for the causal-powers plugin.
+# Injects a compact always-on Causal Powers context block so the discipline is
+# present by default, not contingent on a skill triggering.
+# Mirrors the mechanism used by the superpowers plugin.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+context_file="${SCRIPT_DIR}/session-context.md"
+
+content=$(cat "$context_file" 2>/dev/null || echo "Causal Powers is installed. Invoke causal-powers:using-causal-powers for the discipline map.")
+
+# Escape for safe JSON embedding (single-pass bash parameter substitution).
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+content_escaped=$(escape_for_json "$content")
+session_context="<EXTREMELY_IMPORTANT>\n${content_escaped}\n</EXTREMELY_IMPORTANT>"
+
+# Claude Code reads hookSpecificOutput.additionalContext; other harnesses read
+# top-level additionalContext. Emit the field the current platform consumes.
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+else
+  printf '{\n  "additionalContext": "%s"\n}\n' "$session_context"
+fi
+
+exit 0

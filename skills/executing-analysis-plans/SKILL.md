@@ -33,7 +33,7 @@ Once the validated dataset and primary spec exist, these typically don't depend 
 - each **secondary outcome**;
 - **sensitivity analyses** (Oster δ, e-values, bandwidth sweeps).
 
-They all read the *same* validated dataset and the *same* pre-specified recipe, so they're embarrassingly parallel. Use superpowers' **`dispatching-parallel-agents`** / **`subagent-driven-development`** for the mechanics; this skill tells you *what* in an analysis is safe to fan out and *what each subagent must carry*.
+They all read the *same* validated dataset and the *same* pre-specified recipe, so they're embarrassingly parallel. Dispatch each fan-out task to the **`robustness-runner`** agent that Causal Powers ships — it executes one pre-specified spec, asserts the data contracts, and returns a structured result, stopping if it hits a design decision. Use superpowers' **`dispatching-parallel-agents`** / **`subagent-driven-development`** for the dispatch mechanics; this skill tells you *what* in an analysis is safe to fan out and *what each subagent must carry*.
 
 ## What every dispatched subagent must carry
 
