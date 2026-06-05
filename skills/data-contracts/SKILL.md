@@ -133,12 +133,10 @@ Use floating-point-aware comparison (`np.isclose` / `all.equal` / `isapprox`) fo
 
 | Excuse | Reality |
 |---|---|
-| "It's just exploratory, I'll validate later." | Exploration is exactly where a bad input silently poisons every downstream conclusion. Validate the inputs first. |
 | "The data's clean, it came from the warehouse." | Warehouses fan out, change schemas, and re-key. Trust, then verify with a row count. |
-| "Adding checks slows me down." | A wrong number presented to a stakeholder costs far more than the 60 seconds the assertion took. |
 | "I can see it's right." | You can see *a* number. You can't see the rows the join dropped. |
-| "Writing a test for this transform is overkill." | If it runs more than once, an undefended rule is a rumor that will drift. |
 | "The totals are close enough." | "Close" on a reconciliation usually means rows are leaking. Find out why before you round it away. |
+| "Adding checks slows me down." | A wrong number in front of a stakeholder costs far more than the 60 seconds the assertion took. |
 
 ## Relationship to sibling skills
 

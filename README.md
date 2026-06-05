@@ -33,6 +33,14 @@ principles are adapted from
 [Andrej Karpathy's notes](https://github.com/multica-ai/andrej-karpathy-skills)
 on how LLMs over-assume and overcomplicate, translated to data work.
 
+The family also carries **economic judgment**, not just process hygiene: form a
+prior on sign, magnitude, and mechanism before the data (`question-framing`);
+read every estimate in interpretable units and judge economic — not just
+statistical — significance, plausibility, and fit with the literature
+(`result-verification`); and start every causal study from "what's your
+experiment?", watching for bad controls (`causal-identification`). The target is
+a senior reduced-form microeconomist's instincts, not a careful RA's checklist.
+
 ## Why a separate family
 
 In software the dangerous bug throws. In analysis it stays quiet: a join fans out

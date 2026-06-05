@@ -25,9 +25,21 @@ Run these before any result leaves your hands. Each maps to a real way final num
 
 4. **Attack it with robustness.** Re-run the result under the alternatives you'd expect to leave it roughly unchanged: drop the top/bottom percentile of outliers, restrict to a clean subsample, try the obvious alternative specification or definition. If the headline swings wildly under a reasonable perturbation, it is fragile and you must say so. (For confirmatory work, run the suite you pre-committed in `pre-analysis-plan` — all of it.)
 
-5. **Sanity-check against the outside world.** Does the magnitude make sense against a known benchmark, last quarter's figure, a back-of-envelope estimate, or simple common sense? A churn rate of 0.3% or 60% should both make you stop. External plausibility catches the errors that internal consistency can't.
+5. **Read it like an economist** — interpretable units, economic (not just statistical) significance, magnitude plausibility, mechanism, and a benchmark against known estimates. This is the heart of verification for any effect you'll interpret; the full discipline is below.
 
 6. **Tie the artifacts to the prose.** Every number in the text, every figure axis, every table cell — does it match what the code actually produced *in this run*? Stale numbers from an earlier version, a figure that wasn't regenerated, a rounded value that contradicts the table: these are the embarrassing errors that survive everything else because nobody re-checked the copy against the output.
+
+## Read the estimate like an economist
+
+A coefficient that reconciles and reproduces can still be economically meaningless or absurd. Reproducibility tells you the number is *real*; this tells you whether it's *believable* and whether it *matters*. A senior economist won't accept an estimate until it passes here:
+
+- **Convert to interpretable units.** A raw coefficient is not yet a finding. Turn it into an elasticity, a semi-elasticity, a percent of the mean, a fraction of an SD, a dollar figure — whatever lets a reader feel the size. "0.043" means nothing; "a 4% increase, or about a third of the control-group gap" means something.
+- **Economic significance, not just statistical.** The question is never only "is it distinguishable from zero" — it's "is it big enough to matter for the decision or for welfare." A precisely-estimated tiny effect and a precise zero are, economically, the same answer: *no*. Say so, rather than dressing a trivial effect in stars.
+- **Back-of-envelope the magnitude.** Does the size survive contact with how the world works? Translate it into an implied behavioral response, an implied total dollar amount, or an implied share of a known aggregate, and check that the implication isn't absurd (an effect larger than the outcome's possible range, a response no one would plausibly make, a dollar figure exceeding the whole market).
+- **Mechanism consistency.** Does the sign and size match the channel you posited in `question-framing`? If the mechanism has auxiliary predictions (it should bite harder for some subgroup, show up in an intermediate outcome), check those too — a real effect usually leaves more than one fingerprint.
+- **Benchmark against what's known.** How does it compare to existing estimates of the same or similar parameter? Being far off the literature isn't disqualifying, but it demands an explanation you can state. An estimate 10× the consensus is a claim that you've overturned the consensus — be sure that's what you mean.
+
+When the magnitude is implausible, that is a result to investigate (`wrong-number-debugging`) or a finding to defend with a mechanism — never a number to report with a shrug.
 
 ## Evidence before assertion
 

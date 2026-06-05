@@ -11,6 +11,10 @@ A regression coefficient is a correlation with good posture. It becomes a causal
 
 **Core principle:** State the identification assumptions before you estimate, and test the ones that are testable. The estimate is only as credible as the assumption you can't test — so make that assumption explicit and argue for it.
 
+## First, what's your experiment?
+
+Before any model, answer the Angrist–Pischke question: **if you could have run the ideal randomized experiment to answer this, what would it be — and what real-world variation are you using as a stand-in for that randomization?** Name the source of variation in one sentence and say why it's as good as random. If you can't, you don't have an identification strategy; you have a regression hoping to be one. Everything below — the design, the assumptions, the diagnostics — is just making that "as good as random" claim precise and testable.
+
 ## The discipline
 
 ```
@@ -59,6 +63,16 @@ Picking the identification strategy, and *changing* it once the analysis is unde
 ### Synthetic control
 - Good **pre-period fit** between the unit and its synthetic counterpart; assess with placebo/permutation across donor units, not a naïve p-value.
 
+## Bad controls — the quiet killer of reduced-form work
+
+Adding a control can *create* bias as easily as remove it. The rule: only condition on variables determined **before** treatment. A control that is itself an outcome of the treatment reopens the very confounding you're trying to close.
+
+- **Post-treatment controls / mediators.** Controlling for a channel the treatment works through (e.g. "effect of education on wages, controlling for occupation") nets out part of the effect and biases the estimate — usually toward zero, sometimes unpredictably. If it could plausibly have been *affected* by treatment, it is not a control.
+- **Colliders.** Conditioning on a variable that both treatment and outcome cause induces a spurious association where none existed. Selecting the sample on such a variable does the same thing silently.
+- **Selection on the outcome.** Filtering the sample on the dependent variable, or on anything downstream of it, manufactures correlation.
+
+"I added more controls and it got more robust" is not reassurance — more controls can mean more bias. Each control needs a reason it's pre-determined, not just a wish to be thorough.
+
 ## Robustness, placebo, sensitivity — not optional
 
 These are part of the estimate, not a courtesy:
@@ -88,6 +102,7 @@ When a stack lacks a mature implementation (much of staggered-DiD and RDD outsid
 - Matching that reports significance but never reports covariate balance or overlap.
 - No placebo, no pre-trends, no sensitivity analysis — the estimate stands entirely on faith in the untestable assumption, unexamined.
 - An "effect" that's nowhere in the raw descriptive data and appears only after the model.
+- Controlling for variables that could have been affected by treatment (post-treatment controls / mediators / colliders) — or "it got more robust when I added controls" treated as reassurance.
 - Switching or upgrading the identification strategy mid-analysis (e.g. DiD → triple-difference) without surfacing it to the user as their decision (`analysis-checkpoints`).
 
 ## Common rationalizations

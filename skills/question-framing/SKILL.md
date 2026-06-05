@@ -31,6 +31,16 @@ For a **causal** question, add three more and hand off to `causal-identification
 
 **Write it down, then confirm before proceeding.** Persist the brief as a short file in the project (e.g. `analysis-brief.md`, or wherever the project keeps docs) rather than holding it only in your head or the chat — a brief you can't point to later is one that will quietly drift. Then present it and get the user's confirmation that the question, metric, and population are right *before* you load data. This is a real stop, not a rhetorical one: the whole point of framing is undone if you frame and immediately barrel into the analysis on your own reading.
 
+## Form your economic prior — before the data
+
+An economist doesn't approach a result as a blank slate; they arrive with a prediction, and that prediction is what makes the eventual estimate *mean* something. Before computing, write down:
+
+- **Sign** — what does theory (or plain economic logic) predict the direction to be? If you have no prior on the sign, you don't yet understand the question.
+- **Rough magnitude** — what order of magnitude would you expect, in interpretable units (an elasticity, a few percent, a fraction of an SD)? You're not committing to a number; you're setting the scale against which the result will be judged plausible or suspicious.
+- **Mechanism** — the economic channel through which the treatment moves the outcome. An effect with no mechanism is a correlation you won't end up believing.
+
+Then name **what result would surprise you**. This matters because a surprising estimate is a fork: it's either a genuine finding or a bug, and you decide *in advance* which lens you'll reach for, instead of rationalizing whatever number appears. A prior set after seeing the estimate isn't a prior.
+
 ## Watch for the silent reframe
 
 The danger isn't refusing to define the question — it's defining it, then letting it drift. You write "30-day retention," discover the data only cleanly supports 28-day windows, and silently switch. Now you're answering a slightly different question and nobody agreed to it. When the data forces a change to the definition, **surface it and re-confirm**, don't absorb it.
