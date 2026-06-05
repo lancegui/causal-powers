@@ -37,6 +37,8 @@ The danger isn't refusing to define the question — it's defining it, then lett
 
 Stakeholders routinely use the same word for different things. "Active users," "revenue," "churn," and "conversion" each have several incompatible definitions in common use. The cheapest moment to discover that you and the requester mean different things is *before* the analysis, by stating your definition back and asking "is this what you mean?" — not in the meeting where you present a number that contradicts theirs because you each counted differently.
 
+When the request is genuinely ambiguous, **state your assumption explicitly and present the competing interpretations** rather than silently picking one and computing it. "Churn could mean cancelled-this-month or no-activity-in-30-days; these give different numbers — which do you want?" costs one sentence now and saves a re-run later. Don't hide the ambiguity by resolving it quietly in your head; an assumption the requester never saw is the one that turns out wrong.
+
 ## Red flags — STOP and frame
 
 - You're about to load data and you can't state the denominator of the metric in one sentence.

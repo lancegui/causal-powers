@@ -18,10 +18,18 @@ trace). Three-language throughout: **R, Julia, Python**.
 | `question-framing` | Pin the estimand/metric, population, unit, and the decision — before code | `brainstorming` |
 | `pre-analysis-plan` | Lock hypotheses, primary spec, and robustness suite before seeing outcomes | spec-driven dev / `writing-plans` |
 | `data-contracts` | Invariants, join-cardinality checks, totals reconciliation, frozen baselines | `test-driven-development` |
+| `analysis-craft` | Minimum analysis that answers the question; surgical edits to notebooks/pipelines | Karpathy: simplicity + surgical |
 | `wrong-number-debugging` | Bisect the pipeline to the step where the number went bad | `systematic-debugging` |
 | `result-verification` | Reconcile, reproduce from clean state, attack with robustness, before reporting | `verification-before-completion` |
 | `causal-identification` | State & test identification assumptions; mandatory robustness for DiD/IV/RDD/etc. | (none — domain core) |
 | `analysis-review` | Review an analysis for silent-failure classes; verify review feedback | `requesting`/`receiving-code-review` |
+
+Two cross-cutting **craft principles** — *goal-driven execution* (a data contract
+is a success criterion; loop until verified) and *think before coding* (surface
+tradeoffs, don't assume) — run through the gateway and every skill. The craft
+principles are adapted from
+[Andrej Karpathy's notes](https://github.com/multica-ai/andrej-karpathy-skills)
+on how LLMs over-assume and overcomplicate, translated to data work.
 
 ## Why a separate family
 

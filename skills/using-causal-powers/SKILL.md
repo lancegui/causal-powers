@@ -1,6 +1,6 @@
 ---
 name: using-causal-powers
-description: Use when starting any data analysis, statistics, econometrics, or causal-inference task in R, Julia, or Python — establishes the Causal Powers discipline and routes to the right skill (question-framing, pre-analysis-plan, data-contracts, wrong-number-debugging, result-verification, causal-identification, analysis-review). Invoke this whenever someone asks you to analyze data, compute a metric, clean or merge datasets, fit a model, estimate an effect, or check a number — even if they only say "analyze this", "what's the trend", or "did it work" — so the right discipline skill fires before you touch the data.
+description: Use when starting any data analysis, statistics, econometrics, or causal-inference task in R, Julia, or Python — establishes the Causal Powers discipline and routes to the right skill (question-framing, pre-analysis-plan, data-contracts, analysis-craft, wrong-number-debugging, result-verification, causal-identification, analysis-review). Invoke this whenever someone asks you to analyze data, compute a metric, clean or merge datasets, fit a model, estimate an effect, or check a number — even if they only say "analyze this", "what's the trend", or "did it work" — so the right discipline skill fires before you touch the data.
 ---
 
 # Using Causal Powers
@@ -24,6 +24,7 @@ For any analysis task, **invoke the relevant discipline skill before acting** �
 | **`result-verification`** | Before reporting, presenting, or calling it done — reconcile, reproduce from a clean state, attack with robustness, tie figures to prose. |
 | **`causal-identification`** | Any causal claim or design (DiD, event study, IV, RDD, matching, FE, synthetic control) — state and test the identification assumptions; run the mandatory robustness battery. |
 | **`analysis-review`** | Reviewing an analysis (yours or another's) for the silent-failure classes, or receiving review feedback and verifying it. |
+| **`analysis-craft`** | Whenever you write or edit analysis code — keep it the minimum that answers the question, edit existing notebooks surgically, surface approach tradeoffs instead of silently choosing. |
 
 ## The typical flow
 
@@ -33,7 +34,18 @@ question-framing  →  [pre-analysis-plan if confirmatory]  →  data-contracts 
    →  result-verification  →  [analysis-review before it ships]
 ```
 
+`analysis-craft` runs *alongside* this whole flow — every time you actually write or edit the code.
+
 Most work flows from **exploration** (hunt for the answer; validate every input and intermediate) into a **reusable, contracted rule** (lock it down with tests and a frozen baseline). The mistake is staying in exploration forever and shipping it as if it were production.
+
+## The craft principles (apply throughout)
+
+Rigor keeps you from being *wrong*; craft keeps the analysis *legible and cheap to change*. Two stances, adapted from Andrej Karpathy's observations on how LLMs over-assume and overcomplicate, run through every skill above:
+
+- **Goal-driven execution.** A data contract *is* a success criterion. State what must be true, then loop until it's reconciled and verified — don't stop at "the code ran." This is what the whole `CONTRACT → … → FREEZE` loop is.
+- **Think before coding.** Don't assume the metric or the method. Surface tradeoffs, state your assumptions, and name confusion instead of quietly guessing and building on the guess.
+
+The simplicity-first and surgical-edit halves of that lineage live in **`analysis-craft`**.
 
 ## Instruction priority
 
