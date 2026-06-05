@@ -70,6 +70,7 @@ Even with no conscious cheating, the sheer number of defensible choices — whic
 - Execute the identification strategy and run the committed robustness suite via **`causal-identification`**.
 - Confirm the pre-registered result before reporting with **`result-verification`**.
 - Any deviation from the plan during execution is a user decision — route it through **`analysis-checkpoints`**.
+- Once the plan is approved, hand off to **`executing-analysis-plans`** to carry it out (spine in order, robustness/designs fanned out to subagents).
 
 ## The bottom line
 

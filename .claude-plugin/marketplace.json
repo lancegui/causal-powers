@@ -8,8 +8,8 @@
   "plugins": [
     {
       "name": "causal-powers",
-      "description": "Superpowers for data analytics, causal inference, and econometrics: data contracts, join-cardinality checks, wrong-number debugging, result verification, pre-analysis plans, causal identification, analysis craft, and human-in-the-loop checkpoints. R, Julia, and Python.",
-      "version": "0.3.0",
+      "description": "Superpowers for data analytics, causal inference, and econometrics: data contracts, join-cardinality checks, wrong-number debugging, result verification, pre-analysis plans, causal identification, analysis craft, human-in-the-loop checkpoints, and plan execution with parallel subagents. R, Julia, and Python.",
+      "version": "0.4.0",
       "source": "./",
       "author": {
         "name": "Lance Gui",

@@ -1,6 +1,6 @@
 ---
 name: using-causal-powers
-description: Use when starting any data analysis, statistics, econometrics, or causal-inference task in R, Julia, or Python — establishes the Causal Powers discipline and routes to the right skill (question-framing, pre-analysis-plan, data-contracts, analysis-craft, analysis-checkpoints, wrong-number-debugging, result-verification, causal-identification, analysis-review). Invoke this whenever someone asks you to analyze data, compute a metric, clean or merge datasets, fit a model, estimate an effect, or check a number — even if they only say "analyze this", "what's the trend", or "did it work" — so the right discipline skill fires before you touch the data.
+description: Use when starting any data analysis, statistics, econometrics, or causal-inference task in R, Julia, or Python — establishes the Causal Powers discipline and routes to the right skill (question-framing, pre-analysis-plan, data-contracts, analysis-craft, analysis-checkpoints, executing-analysis-plans, wrong-number-debugging, result-verification, causal-identification, analysis-review). Invoke this whenever someone asks you to analyze data, compute a metric, clean or merge datasets, fit a model, estimate an effect, or check a number — even if they only say "analyze this", "what's the trend", or "did it work" — so the right discipline skill fires before you touch the data.
 ---
 
 # Using Causal Powers
@@ -28,14 +28,18 @@ And the rule that the rest of the family rests on: **you execute autonomously to
 | **`analysis-review`** | Reviewing an analysis (yours or another's) for the silent-failure classes, or receiving review feedback and verifying it. |
 | **`analysis-craft`** | Whenever you write or edit analysis code — keep it the minimum that answers the question, edit existing notebooks surgically, surface approach tradeoffs instead of silently choosing. |
 | **`analysis-checkpoints`** | Throughout execution — to decide which calls are yours and which must STOP for the user (design/sample/spec/estimand changes, PAP deviations, dropping data). The human-in-the-loop guardrail. |
+| **`executing-analysis-plans`** | Once the plan is approved — drive execution step by step, validate each step, and fan independent pieces (robustness specs, designs, cuts) out to parallel subagents. |
 
 ## The typical flow
 
 ```
-question-framing  →  [pre-analysis-plan if confirmatory]  →  data-contracts (load/clean/join/aggregate)
+question-framing  →  [pre-analysis-plan if confirmatory]  →  (approval gate)
+   →  executing-analysis-plans  →  data-contracts (load/clean/join/aggregate)
    →  [causal-identification if causal]  →  [wrong-number-debugging when something's off]
    →  result-verification  →  [analysis-review before it ships]
 ```
+
+After the plan is approved, **`executing-analysis-plans`** is what carries it out — running the dependent spine in order and fanning the independent robustness/design/cut work out to parallel subagents.
 
 `analysis-craft` and `analysis-checkpoints` run *alongside* this whole flow — `analysis-craft` every time you write or edit the code, `analysis-checkpoints` every time a decision would change the design, sample, spec, or estimand (STOP and ask).
 

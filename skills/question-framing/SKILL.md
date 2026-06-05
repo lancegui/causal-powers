@@ -63,6 +63,7 @@ When the request is genuinely ambiguous, **state your assumption explicitly and 
 - For a confirmatory study, turn the brief into a locked **`pre-analysis-plan`** before seeing outcomes.
 - Once the question is framed, enforce the metric definition with **`data-contracts`**.
 - For causal questions, hand the treatment/counterfactual/estimand to **`causal-identification`**.
+- Once the brief (and PAP, if confirmatory) is approved, **`executing-analysis-plans`** carries the analysis out.
 
 ## The bottom line
 
