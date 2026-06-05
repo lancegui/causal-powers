@@ -1,0 +1,22 @@
+[
+  {"query": "i'm about to merge a customers csv and an orders csv on customer_id and then sum revenue by region — set this up carefully in pandas so i don't fan out rows", "should_trigger": true},
+  {"query": "load this raw survey extract and clean it up before i start computing any summary stats", "should_trigger": true},
+  {"query": "joining claims to enrollment in R on member_id and month, want to make sure rows don't multiply", "should_trigger": true},
+  {"query": "build me a monthly-active-users metric from the events table, define it carefully", "should_trigger": true},
+  {"query": "i need to aggregate the transactions table to the customer-month grain before i feed it into a model", "should_trigger": true},
+  {"query": "before i join these two extracts, check that the keys are actually unique on the side i think they are", "should_trigger": true},
+  {"query": "reshape this wide panel to long and compute year-over-year growth per unit — what should i be checking along the way", "should_trigger": true},
+  {"query": "fit a churn model on this customer dataset, but first make sure none of the features are leaking the outcome", "should_trigger": true},
+  {"query": "concatenate 12 monthly csv exports into one dataframe and verify nothing got duplicated or dropped in the process", "should_trigger": true},
+  {"query": "add a profit-margin column to the 'Q4 sales final FINAL v2.xlsx' in my downloads, revenue's in column C and cost in column D", "should_trigger": false},
+  {"query": "format this spreadsheet with conditional formatting on the overdue rows and add a bar chart of monthly totals", "should_trigger": false},
+  {"query": "convert this csv to a proper xlsx with a header row and frozen panes", "should_trigger": false},
+  {"query": "write a small pandas helper that parses dates out of these messy string formats", "should_trigger": false},
+  {"query": "what's the dplyr syntax for a left join again, i always forget the by= argument", "should_trigger": false},
+  {"query": "make a pivot table in excel summarizing sales by month and salesperson", "should_trigger": false},
+  {"query": "this spreadsheet has the headers down in row 3 and junk above it, clean it into a tidy sheet i can hand off", "should_trigger": false},
+  {"query": "explain the difference between an inner join and a full outer join with a small example", "should_trigger": false},
+  {"query": "set up a fresh virtualenv and install pandas, polars, and pyarrow for me", "should_trigger": false},
+  {"query": "read the third sheet of this workbook and just print the first 20 rows so i can see what's in it", "should_trigger": false},
+  {"query": "split this 5GB csv into chunks of 1 million rows each on the command line", "should_trigger": false}
+]

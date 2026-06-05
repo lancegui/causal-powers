@@ -1,0 +1,9 @@
+################## causal-identification (Thu Jun  4 13:53:39 MST 2026) ##################
+Split: 12 train, 8 test (holdout=0.4)
+
+============================================================
+Iteration 1/4
+Description: Use whenever an analysis makes or implies a CAUSAL claim — "the effect of", "X caused Y", "the policy raised", "the treatment increased", "because we did X, Y changed" — or whenever you're running difference-in-differences, event studies, instrumental variables, regression discontinuity, matching, synthetic control, or panel fixed-effects models. Forces the identification strategy and its assumptions to be stated and tested BEFORE estimating, and treats the design-specific robustness suite (parallel trends, first-stage strength, manipulation tests, balance, placebo, sensitivity) as mandatory, not optional. Use in R, Julia, or Python even when the user just says "regress Y on X", "did it work", or "estimate the impact" — a regression coefficient is not a causal effect until the design earns it.
+============================================================
+/Users/lancegui/miniconda3/lib/python3.13/multiprocessing/resource_tracker.py:400: UserWarning: resource_tracker: There appear to be 5 leaked semaphore objects to clean up at shutdown: {'/mp-zhxd2cl3', '/mp-k8e3pn8r', '/mp-j7mx5qo7', '/mp-dgtn61ow', '/mp-u6nbeyrx'}
+  warnings.warn(
