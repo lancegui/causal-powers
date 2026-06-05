@@ -1,6 +1,6 @@
 ---
 name: using-causal-powers
-description: Use when starting any data analysis, statistics, econometrics, or causal-inference task in R, Julia, or Python — establishes the Causal Powers discipline and routes to the right skill (question-framing, pre-analysis-plan, data-contracts, analysis-craft, wrong-number-debugging, result-verification, causal-identification, analysis-review). Invoke this whenever someone asks you to analyze data, compute a metric, clean or merge datasets, fit a model, estimate an effect, or check a number — even if they only say "analyze this", "what's the trend", or "did it work" — so the right discipline skill fires before you touch the data.
+description: Use when starting any data analysis, statistics, econometrics, or causal-inference task in R, Julia, or Python — establishes the Causal Powers discipline and routes to the right skill (question-framing, pre-analysis-plan, data-contracts, analysis-craft, analysis-checkpoints, wrong-number-debugging, result-verification, causal-identification, analysis-review). Invoke this whenever someone asks you to analyze data, compute a metric, clean or merge datasets, fit a model, estimate an effect, or check a number — even if they only say "analyze this", "what's the trend", or "did it work" — so the right discipline skill fires before you touch the data.
 ---
 
 # Using Causal Powers
@@ -12,6 +12,8 @@ A number you computed but never validated is a guess wearing a lab coat. In soft
 ## The rule
 
 For any analysis task, **invoke the relevant discipline skill before acting** — before exploring the data, before writing the transform, before reporting the number. Process skills (framing the question, planning, debugging) come before implementation. Even a 1% chance a skill applies means you check it.
+
+And the rule that the rest of the family rests on: **you execute autonomously toward the agreed goal, but you never change the goal behind the user's back.** Changing the research design, the estimand, the sample, the spec, or a metric — or deviating from the framed question or pre-analysis plan — is the *user's* decision, not yours. When execution wants to do any of those (it most often does mid-debugging), **STOP and bring it to them** (`analysis-checkpoints`). This is the discipline that was missing when an analysis quietly became one nobody agreed to.
 
 ## The family — and when each fires
 
@@ -25,6 +27,7 @@ For any analysis task, **invoke the relevant discipline skill before acting** �
 | **`causal-identification`** | Any causal claim or design (DiD, event study, IV, RDD, matching, FE, synthetic control) — state and test the identification assumptions; run the mandatory robustness battery. |
 | **`analysis-review`** | Reviewing an analysis (yours or another's) for the silent-failure classes, or receiving review feedback and verifying it. |
 | **`analysis-craft`** | Whenever you write or edit analysis code — keep it the minimum that answers the question, edit existing notebooks surgically, surface approach tradeoffs instead of silently choosing. |
+| **`analysis-checkpoints`** | Throughout execution — to decide which calls are yours and which must STOP for the user (design/sample/spec/estimand changes, PAP deviations, dropping data). The human-in-the-loop guardrail. |
 
 ## The typical flow
 
@@ -34,7 +37,7 @@ question-framing  →  [pre-analysis-plan if confirmatory]  →  data-contracts 
    →  result-verification  →  [analysis-review before it ships]
 ```
 
-`analysis-craft` runs *alongside* this whole flow — every time you actually write or edit the code.
+`analysis-craft` and `analysis-checkpoints` run *alongside* this whole flow — `analysis-craft` every time you write or edit the code, `analysis-checkpoints` every time a decision would change the design, sample, spec, or estimand (STOP and ask).
 
 Most work flows from **exploration** (hunt for the answer; validate every input and intermediate) into a **reusable, contracted rule** (lock it down with tests and a frozen baseline). The mistake is staying in exploration forever and shipping it as if it were production.
 

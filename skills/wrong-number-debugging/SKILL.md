@@ -34,7 +34,11 @@ REPRODUCE  →  LOCATE (bisect)  →  EXPLAIN  →  FIX AT THE SOURCE  →  RE-C
 
 3. **EXPLAIN** — Once you've found the stage, explain *why* in one sentence before touching code. "The join fanned out because `customer_id` is not unique in the orders table." If you can't articulate the mechanism, you haven't found the bug yet — keep bisecting.
 
-4. **FIX AT THE SOURCE** — Fix the actual cause, not the symptom. If a join fanned out, fix the key (dedup the right table, or aggregate before joining) — don't slap a `distinct()` on the final output to paper over tripled rows. A downstream patch hides the bug for the next person and usually corrupts something else.
+4. **FIX AT THE SOURCE — but first, is it a fix or a redesign?** Two very different things hide under "fix the cause":
+   - **Data-bug fix** (restores the intended computation): the join fanned out, so dedup the right table or aggregate before joining; the units were wrong, so correct them; the date parse broke, so repair it. This returns the analysis to what was already agreed — **do it, then report what you found and fixed.** (Don't slap a `distinct()` on the final output to paper over tripled rows — fix the key, not the symptom.)
+   - **Analytical-design change** (changes what is being estimated): the bug is real, but the remedy would change the design, the spec, the sample, or the estimand. **This is not yours to do — STOP and route it through `analysis-checkpoints`.** Present the threat, the candidate remedies, and your recommendation, and let the user decide. Implementing the redesign and presenting it as "the fix" is exactly the behind-the-back decision to avoid.
+
+   The dividing question: *am I restoring the analysis we agreed on, or changing it?*
 
 5. **RE-CONTRACT** — Add a `data-contracts` check that would have caught this, and watch it bite on the broken version. A bug you found once should never silently return.
 
@@ -55,6 +59,14 @@ When you hit the bad stage, this is where the bodies are buried. Run down the li
 
 The strongest pull in debugging a wrong number is to fix it before you understand it — because a plausible patch is right there and it makes the number look sane. Resist. A number made to *look* right by an unexplained patch is more dangerous than the obviously-wrong number you started with, because now it's hidden. No fix until you can name the mechanism.
 
+## Debugging is the back door for silent redesigns
+
+The most dangerous moment in debugging is when the investigation surfaces a *design* problem and you "fix" it by changing the design — without telling the user. It feels like debugging; it's actually a unilateral redesign.
+
+> **Example.** Chasing a surprisingly large near-clinic effect, you find the 2016 citywide recording jump is geographically uneven (Beverly's 2 mi ring +66% in 2016 while its 0.5 mi ring is flat). A plain near-vs-far DiD would misread this as an acquisition effect. The *remedy* — upgrade to a triple-difference with band×month fixed effects — is sound. But it changes the pre-registered identification strategy.
+
+Your job here ends at **diagnose and explain**. You surface the threat and the candidate remedies; you do **not** write the triple-difference and present it as "the fix." Changing the design, sample, spec, or estimand is a `analysis-checkpoints` decision — stop and let the user choose.
+
 ## Language cheat-sheet
 
 | Need | Python | R | Julia |
@@ -72,6 +84,7 @@ The strongest pull in debugging a wrong number is to fix it before you understan
 - Debugging on the full dataset instead of shrinking to a minimal failing case.
 - Fixing the final output when the bug is three joins upstream.
 - Declaring it fixed without adding a check that bites on the old broken version.
+- **Changing the research design, spec, sample, or estimand to make a number behave — without surfacing it to the user as their decision (`analysis-checkpoints`).**
 
 ## Common rationalizations
 
@@ -87,6 +100,7 @@ The strongest pull in debugging a wrong number is to fix it before you understan
 - The bug usually means an invariant from **`data-contracts`** was missing — add it after you fix, and watch it bite.
 - Once the number reconciles, **`result-verification`** is what confirms the whole analysis before you report it.
 - A wrong *causal* estimate (right data, wrong sign or magnitude) is often an identification problem, not a data bug — escalate to **`causal-identification`**.
+- When the remedy would change the design, sample, or spec, it stops being a fix and becomes a user decision — route it through **`analysis-checkpoints`**.
 
 ## The bottom line
 

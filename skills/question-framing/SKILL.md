@@ -29,6 +29,8 @@ For a **causal** question, add three more and hand off to `causal-identification
 7. **Counterfactual** — compared to *what*? "Effect" is meaningless without the comparison condition.
 8. **Estimand type** — ATE, ATT, LATE, intent-to-treat? They answer different questions and a stakeholder usually has one in mind without knowing the name.
 
+**Write it down, then confirm before proceeding.** Persist the brief as a short file in the project (e.g. `analysis-brief.md`, or wherever the project keeps docs) rather than holding it only in your head or the chat — a brief you can't point to later is one that will quietly drift. Then present it and get the user's confirmation that the question, metric, and population are right *before* you load data. This is a real stop, not a rhetorical one: the whole point of framing is undone if you frame and immediately barrel into the analysis on your own reading.
+
 ## Watch for the silent reframe
 
 The danger isn't refusing to define the question — it's defining it, then letting it drift. You write "30-day retention," discover the data only cleanly supports 28-day windows, and silently switch. Now you're answering a slightly different question and nobody agreed to it. When the data forces a change to the definition, **surface it and re-confirm**, don't absorb it.

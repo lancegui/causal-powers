@@ -33,13 +33,17 @@ If none of those hold, you're exploring; label it exploratory and move on.
 5. **Robustness suite.** The alternative specs, placebo/falsification tests, and sensitivity analyses you commit to run *regardless of whether the primary result survives them*. Pre-committing this is what makes a robustness check honest — you can't quietly drop the ones that disagree.
 6. **Decision rule.** What result leads to what action, and what would count as the effect being absent. Define the null outcome too, so a null is a finding rather than a prompt to keep digging.
 
+## Write it down and get sign-off before estimating
+
+A pre-analysis plan that lives only in the chat isn't a commitment — it's a suggestion you can quietly edit later. **Persist the PAP to a file** in the project (e.g. `pre-analysis-plan.md`). Then **stop and get the user's explicit approval before running any estimation.** This is a hard gate: the design, the primary spec, the sample rules, and the robustness suite are exactly the things that lose their credibility if chosen (or changed) after the outcomes are visible, so the user has to sign off on them while everyone is still blind to the result. Don't write the PAP and proceed straight into the regression on your own reading of it.
+
 ## Confirmatory vs. exploratory — keep the line bright
 
 You will discover interesting things you didn't pre-register. That's good — it's where new hypotheses come from. The sin is *laundering* them as confirmatory. Report them, clearly flagged as exploratory and hypothesis-generating, with the understanding that they need fresh data to confirm. A finding that has been both used to form a hypothesis and to test it has been counted twice.
 
 ## The garden of forking paths
 
-Even with no conscious cheating, the sheer number of defensible choices — which controls, which window, which subgroup, how to handle outliers — means that *somewhere* in that garden is a significant result, and you will tend to wander toward it. The PAP prunes the garden to one path chosen in advance. When you depart from it (sometimes you must — the data surprises you), say so explicitly and report both the pre-registered and the revised analysis. Deviation disclosed is science; deviation hidden is fishing.
+Even with no conscious cheating, the sheer number of defensible choices — which controls, which window, which subgroup, how to handle outliers — means that *somewhere* in that garden is a significant result, and you will tend to wander toward it. The PAP prunes the garden to one path chosen in advance. When the data surprises you and a departure seems warranted, that is a **checkpoint, not a judgment call you make on your own**: stop, bring the proposed deviation and its rationale to the user, and report both the pre-registered and the revised analysis once they agree (see **`analysis-checkpoints`**). Deviation approved and disclosed is science; deviation taken silently — even with good intentions — is fishing.
 
 ## Red flags — STOP
 
@@ -65,6 +69,7 @@ Even with no conscious cheating, the sheer number of defensible choices — whic
 - Enforce the locked sample/exclusion rules mechanically with **`data-contracts`**.
 - Execute the identification strategy and run the committed robustness suite via **`causal-identification`**.
 - Confirm the pre-registered result before reporting with **`result-verification`**.
+- Any deviation from the plan during execution is a user decision — route it through **`analysis-checkpoints`**.
 
 ## The bottom line
 

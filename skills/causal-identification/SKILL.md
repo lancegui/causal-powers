@@ -24,6 +24,10 @@ NAME THE DESIGN  →  STATE THE ASSUMPTIONS  →  TEST THE TESTABLE ONES  →  E
 5. **Attack it** with the design's standard robustness, placebo, and falsification tests — run them whether or not they're convenient.
 6. **Reconcile** the causal estimate with the raw descriptive picture. An effect that's invisible in the raw data and only appears after heavy modeling deserves suspicion.
 
+## Choosing or changing the design is the user's decision
+
+Picking the identification strategy, and *changing* it once the analysis is underway, are among the most consequential calls in the whole study — they decide what is even being estimated. They are not yours to make silently. When a diagnostic fails (pre-trends violated, weak first stage, manipulation at the cutoff, imbalance that won't resolve) or you discover a threat that calls for a different design, present the **threat, the candidate remedies, and your recommendation** as a checkpoint and let the user decide — see **`analysis-checkpoints`**. Surfacing "the parallel-trends assumption is violated; we could switch to a triple-difference, restrict the sample, or report with a caveat" is the job. Quietly upgrading the design to make the estimate behave is not — especially when it deviates from the pre-analysis plan.
+
 ## Per-design assumptions and diagnostics
 
 ### Difference-in-differences / event study
@@ -84,6 +88,7 @@ When a stack lacks a mature implementation (much of staggered-DiD and RDD outsid
 - Matching that reports significance but never reports covariate balance or overlap.
 - No placebo, no pre-trends, no sensitivity analysis — the estimate stands entirely on faith in the untestable assumption, unexamined.
 - An "effect" that's nowhere in the raw descriptive data and appears only after the model.
+- Switching or upgrading the identification strategy mid-analysis (e.g. DiD → triple-difference) without surfacing it to the user as their decision (`analysis-checkpoints`).
 
 ## Common rationalizations
 
@@ -102,6 +107,7 @@ When a stack lacks a mature implementation (much of staggered-DiD and RDD outsid
 - The data feeding the model still needs **`data-contracts`** (a fanned-out join corrupts a causal estimate as surely as a descriptive one).
 - A causal estimate with the wrong sign or magnitude is often identification, not a data bug — but rule out the data bug with **`wrong-number-debugging`** first.
 - Before reporting, run the design's placebo/sensitivity battery as part of **`result-verification`**.
+- Any change to the design once work is underway is a user decision — route it through **`analysis-checkpoints`**.
 
 ## The bottom line
 
