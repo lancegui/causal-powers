@@ -24,16 +24,27 @@ The single biggest execution mistake is running everything in one slow serial lo
 2. Construct the treatment, outcome, and key covariates → validate ranges, missingness, leakage.
 3. Estimate the **primary specification** (the one pre-committed in the PAP) → this is *the* number.
 
-**Parallel fan-out (independent — dispatch to subagents, run concurrently):**
-Once the validated dataset and primary spec exist, these typically don't depend on each other and should run in parallel, one subagent per task:
-- each **robustness specification** (alternative controls, functional form, clustering level, window);
-- each **placebo / falsification test**;
-- each **alternative design** (e.g. run Design A and Design B side by side);
-- each **subsample / heterogeneity cut**;
-- each **secondary outcome**;
-- **sensitivity analyses** (Oster δ, e-values, bandwidth sweeps).
+**Parallel fan-out (independent — but chosen, not exhaustive):**
+Once the validated dataset and primary spec exist, the supporting analyses are independent and *can* run concurrently — but "can run in parallel" is not "should all run." First pick the shortlist that earns its place (next section), then fan out **only those**, one subagent per task. Candidates to choose *from*:
+- a **robustness specification** that probes the main threat (not every control permutation);
+- the **placebo / falsification test** that would catch the confound you actually worry about;
+- a genuinely **alternative design**, when one exists;
+- a **pre-specified** subsample / heterogeneity cut (not a fishing sweep);
+- the **secondary outcome** the mechanism predicts;
+- the one **sensitivity analysis** that matters (Oster δ, e-value, bandwidth).
 
-They all read the *same* validated dataset and the *same* pre-specified recipe, so they're embarrassingly parallel. Dispatch each fan-out task to the **`robustness-runner`** agent that Causal Powers ships — it executes one pre-specified spec, asserts the data contracts, and returns a structured result, stopping if it hits a design decision. Use superpowers' **`dispatching-parallel-agents`** / **`subagent-driven-development`** for the dispatch mechanics; this skill tells you *what* in an analysis is safe to fan out and *what each subagent must carry*.
+The approved shortlist reads the *same* validated dataset, so it parallelizes cleanly. Dispatch each chosen task to the **`robustness-runner`** agent that Causal Powers ships — it executes one pre-specified spec, asserts the data contracts, and returns a structured result, stopping if it hits a design decision. Use superpowers' **`dispatching-parallel-agents`** / **`subagent-driven-development`** for the dispatch mechanics.
+
+## Robustness is an argument, not an inventory
+
+The parallel machinery makes running checks cheap, and cheap is exactly the trap: it turns the robustness suite into a free buffet. Don't. **More robustness checks do not mean more credibility** — a wall of specifications usually buries the one check that matters, and a senior reader treats a 30-column robustness table as a *tell* of weak identification, not a show of strength. Before running anything beyond the primary spec:
+
+1. **Name the main threat** — the single most credible way this estimate could be confounding rather than effect.
+2. **Choose the ~3 checks that would actually break the result if it's fragile** — the ones that probe *that* threat. A good robustness check has a real chance of failing; a cosmetic "add one more control" that cannot fail proves nothing.
+3. **Propose the shortlist to the user** — each with a one-line rationale ("drop the cities with the 2016 recording jump — tests whether the recording change, not the policy, drives it") — and get approval *before* running.
+4. Run only the approved set. Run more **only if the user asks**.
+
+Default to roughly three. This is judgment, not a quota — occasionally a design genuinely needs a fourth, and you should say so — but the instinct is parsimony, because the job is to *convince*, not to *exhaust*. Choosing which checks to run is itself a consequential decision, so it goes through the user (`analysis-checkpoints`), never a silent fan-out of everything imaginable.
 
 ## What every dispatched subagent must carry
 
@@ -62,7 +73,7 @@ When the fan-out completes, assemble — don't just dump:
 ## Red flags — STOP
 
 - Starting execution with no approved plan to execute.
-- Running the whole robustness suite in a serial loop when each spec is independent (slow, and you'll cut it short).
+- **Fanning out an exhaustive *menu* of robustness checks instead of proposing the ~3 that probe the main threat and getting approval first.** More checks ≠ more credibility.
 - Parallelizing steps that actually depend on each other (e.g. estimating before the dataset is validated).
 - A subagent that resolved a design/sample/spec decision on its own instead of reporting it back.
 - Improvising new specifications mid-execution that weren't in the plan, without surfacing them.
@@ -72,7 +83,8 @@ When the fan-out completes, assemble — don't just dump:
 
 | Excuse | Reality |
 |---|---|
-| "I'll just run everything in one script, it's simpler." | One serial script over a dozen independent specs is slow enough that you'll truncate the suite. Fan them out and run the whole thing. |
+| "More robustness checks make it more convincing." | They make it less convincing — a wall of specs reads as theater and hides the one check that matters. Pick the few that could actually break the result. |
+| "Running them is cheap now, so why not run them all?" | Cheap-to-run is the trap. The cost isn't compute; it's the reader's trust and the buried signal. Propose ~3 and get approval. |
 | "The subagents can figure out the spec." | An under-specified subagent invents its own analysis — the parallel version of deciding behind the user's back. Hand each one the exact recipe. |
 | "A robustness check failed its data contract, but the coefficient looks fine." | A spec that ran on corrupted data isn't evidence of robustness; it's noise. The contract failing is the result. |
 | "The data suggested a better spec, so I added it." | Adding it silently is specification search. Surface it as a checkpoint; run it labeled as exploratory if approved. |

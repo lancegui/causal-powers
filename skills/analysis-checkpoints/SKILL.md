@@ -24,6 +24,7 @@ The test is simple — **does this change what is being estimated, on what data,
 - **The sample.** Dropping rows, filtering, winsorizing, trimming, excluding outliers, changing inclusion/exclusion rules, restricting to a subsample.
 - **Materially different specifications or models** where there's a real tradeoff (functional form, control set, clustering level, missing-data handling, imputation).
 - **Metric definition / units / grain.** Redefining the numerator or denominator, changing the unit of observation.
+- **The scope of the robustness suite.** Don't fan out an exhaustive menu of checks. Propose the ~3 that probe the main threat, with rationales, and get approval before running — robustness is an argument, not an inventory (`executing-analysis-plans`).
 - **Any number the user has already seen** that your change would move.
 
 ### Decisions you may make autonomously — note it, don't ask

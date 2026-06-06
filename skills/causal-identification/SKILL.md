@@ -75,7 +75,7 @@ Adding a control can *create* bias as easily as remove it. The rule: only condit
 
 ## Robustness, placebo, sensitivity — not optional
 
-These are part of the estimate, not a courtesy:
+These are part of the estimate, not a courtesy — but **robustness is an argument, not an inventory.** Run the few checks that would break the result if your identifying assumption fails, not every permutation you can think of. Three checks that each probe the real threat beat thirty that probe nothing; a senior reader treats a sprawling robustness table as a *tell* of weak identification. Pick the threat-relevant ones, and (during execution) propose the shortlist before running it (`executing-analysis-plans`).
 - **Placebo / falsification:** an effect on an outcome that shouldn't be affected, or in a period before treatment, signals that the design is picking up confounding.
 - **Sensitivity to unobserved confounding:** how strong would an omitted confounder have to be to overturn the result? Use **Oster's δ** (coefficient movement vs. R² movement), **Rosenbaum bounds**, or **e-values**. A result that flips under a mild plausible confounder is not robust.
 - **Specification stability:** the effect shouldn't hinge on one control or one functional form (run the pre-committed suite from `pre-analysis-plan`).

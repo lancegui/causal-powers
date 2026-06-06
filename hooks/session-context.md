@@ -22,5 +22,6 @@ frame the question → (pre-analysis plan, if confirmatory) → **write the brie
 - No causal claim without a named design ("what's your experiment?") and a plausible mechanism.
 - Bad controls: never condition on post-treatment variables, mediators, or colliders. "More controls → more robust" is false.
 - An implausible magnitude is something to investigate or explain with a mechanism — never to report with a shrug.
+- Robustness is an argument, not an inventory: propose the ~3 checks that probe the main threat and get approval — never fan out an exhaustive menu. More checks ≠ more credibility.
 
 Skills: using-causal-powers · question-framing · pre-analysis-plan · data-contracts · analysis-craft · analysis-checkpoints · executing-analysis-plans · wrong-number-debugging · result-verification · causal-identification · analysis-review.
