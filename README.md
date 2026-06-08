@@ -71,17 +71,73 @@ the plugin also ships:
   record the silent failure that bit each project and fold general ones back into
   the skills.
 
-## Install (local)
+## Requirements
 
-```bash
-claude plugin marketplace add ~/Developer/causal-powers
-claude plugin install causal-powers@causal-powers-dev
+- [Claude Code](https://docs.claude.com/en/docs/claude-code) with plugin support.
+- The SessionStart hook (the always-on layer) needs **Claude Code v2.1+**, which
+  auto-loads `hooks/hooks.json` from installed plugins. Everything else (skills,
+  agents) works on any plugin-capable version.
+- The skills are language-agnostic guidance for **R, Julia, and Python** — no
+  packages are installed; you use the idioms native to your stack.
+
+## Install
+
+From inside Claude Code:
+
+```text
+/plugin marketplace add lancegui/causal-powers
+/plugin install causal-powers@causal-powers
 ```
 
-## Design
+Then **restart Claude Code** so the SessionStart hook loads. That's it — for any
+data, analysis, or econometrics work the skills now trigger automatically, and
+the always-on discipline card is injected at the start of each session.
 
-See [`docs/specs/2026-06-04-causal-powers-design.md`](docs/specs/2026-06-04-causal-powers-design.md).
+### Update / uninstall
+
+```text
+/plugin update causal-powers@causal-powers
+/plugin uninstall causal-powers@causal-powers
+```
+
+### From source (local development)
+
+```bash
+git clone https://github.com/lancegui/causal-powers
+# then, inside Claude Code:
+#   /plugin marketplace add /absolute/path/to/causal-powers
+#   /plugin install causal-powers@causal-powers
+```
+
+## How it's organized
+
+```
+causal-powers/
+├── skills/        # the 11 disciplines (gateway + 10)
+├── agents/        # robustness-runner, analysis-reviewer
+├── hooks/         # SessionStart always-on injection
+├── docs/          # design specs + LESSONS.md
+└── .claude-plugin/  # plugin + marketplace manifests
+```
+
+## Design notes
+
+The full design history lives in [`docs/specs/`](docs/specs/) — each version's
+rationale, from the initial family through economic judgment, the always-on hook,
+and the "robustness is an argument" fix.
+
+## Contributing & feedback
+
+Issues and PRs welcome. This is opinionated by design — it encodes one senior
+reduced-form microeconomist's instincts — so if you disagree with a default,
+open an issue and make the case.
+
+## Credits
+
+Built on ideas from [superpowers](https://github.com/obra/superpowers),
+[Andrej Karpathy's notes](https://github.com/multica-ai/andrej-karpathy-skills),
+and [ECC](https://github.com/affaan-m/ecc).
 
 ## License
 
-MIT
+[MIT](LICENSE) © Lance Gui
