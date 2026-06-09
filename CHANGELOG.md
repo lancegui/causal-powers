@@ -2,6 +2,27 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.9.1 — The plan/spec/model-card discipline, made a rule
+- **Elevated "write it down before you build" to a first-class always-on rule**
+  (the SessionStart hook card and the `using-causal-powers` gateway), co-equal
+  with "never change the goal behind the user's back": before any substantial
+  work, commit the plan/spec to a file and confirm it — the framing brief, the
+  pre-analysis plan, or, for structural work, the model card.
+- **The structural spec is now a living "model card"** — written the moment you
+  understand the model, even rough, capturing the structure and, above all, what
+  would move each parameter and what variation/instrument identifies it (a blank
+  identification row is a parameter you can't yet identify). Every later change is
+  an edit to the same card; load-bearing changes still route through
+  `analysis-checkpoints`. Renamed "model spec" → "model card" across the live
+  skills, hook, and README for one vocabulary, tied to the `references/` cards.
+- **The discipline is entry-point-agnostic and recurring.** Wherever the user
+  drops you in ("just estimate / fix / run this"), back up and write or reconstruct
+  the card *first*, then do the named step. Each major component and every
+  mid-stream fix is an edit queued onto the card.
+- **The ~10-minute rule** (`analysis-craft` + hook): anything beyond a quick
+  surgical fix gets a short written plan/spec and a confirm before you code;
+  a sub-10-minute rename/typo/one-liner you just do.
+
 ## 0.9.0 — Trigger-eval coverage, agent generalization, and fixes
 - Updated the **trigger evals and reusable agents** for the reduced-form/structural
   boundary: added `evals/trigger/structural-estimation.json` (with reduced-form
