@@ -78,6 +78,8 @@ The spec is short and states:
 
 Get approval, *then* build and estimate. Everything below this line (recovery, gradients, estimation, counterfactuals) is executing an approved plan — and any change to the approved spec once you're underway routes back through `analysis-checkpoints`, not a silent edit.
 
+**The spec discipline is recurring, not a one-time gate — and this is where it's usually dropped.** Each major component of the build — the Monte-Carlo recovery harness, the gradient derivation, the estimation routine, each counterfactual scenario — is itself a small spec'd task, and so is every *mid-stream fix or change* to one of them. When you're asked mid-work to "fix the Monte-Carlo recovery", "speed up the gradient", or "the estimator won't converge, sort it out", do **not** dive into the code. First write down — a few lines is enough, in the project's plan/scratch file or at minimum in your reply *before* the edit — **what the component must do, what's currently wrong, exactly what the fix changes** (e.g. the true-θ grid, the recovery tolerance, the starting values, the sample size, the inner-loop/contraction tolerance), **and what "fixed" will look like** (it recovers θ within sampling error from a distant start; the analytical gradient matches finite differences). *Then* make the change. A bare "fix it" is **not** a licence to skip the plan — a fix to the recovery harness, the gradient, or the estimator is exactly where an un-specced change silently alters what's being estimated, or quietly redefines what "recovery" even counts as. Be aggressive about this: a written mini-spec costs three lines and a non-spec'd "fix" costs a wrong counterfactual. (A rename or a typo is a surgical edit — `analysis-craft`, not a spec; this is for anything non-trivial.)
+
 ## Prove the algorithm recovers truth — Monte Carlo, before real data
 
 You estimate by *optimizing an objective* — GMM / method of (simulated) moments, NLS, maximum (simulated) likelihood. Two things can be silently broken: the objective **as you coded it**, and whether the data **identifies** the parameters at all. Monte Carlo recovery catches both, and it is **not optional**:
@@ -136,6 +138,7 @@ The pipeline above is model-agnostic, and so is the way you should approach a ne
 ## Red flags — STOP
 
 - Estimation machinery built and compute spent before the model spec — primitives, per-parameter identification, the target counterfactual, the estimation plan — was written down and approved.
+- Asked mid-work to "fix the Monte-Carlo recovery / the gradient / the estimator" and you started editing code without first writing down what's wrong, what the fix changes, and what "fixed" looks like. A mid-stream fix gets a mini-spec too.
 - A structural model built where a clean quasi-experiment would have answered the question.
 - A counterfactual reported **without re-solving equilibrium** — prices or other endogenous objects held fixed while the policy moves them.
 - **No Monte Carlo recovery** — estimates from real data trusted before the algorithm was shown to recover known θ.
@@ -153,6 +156,7 @@ The pipeline above is model-agnostic, and so is the way you should approach a ne
 | "The estimation converged, so the model is identified." | A non-identified parameter converges too — to a number the data didn't pin down. Map the objective surface. |
 | "Numerical gradients are fine." | Until a loose tolerance biases them and the optimizer stops at the wrong point. Derive the gradient, or at least check it against finite differences. |
 | "We don't need Monte Carlo — the code is simple." | Then recovery costs almost nothing and proves it. If you won't run it, you're not actually sure the algorithm works. |
+| "It's just a mid-stream fix, let me dive in." | A "fix" to the recovery harness, the gradient, or the estimator changes what the numbers mean or what counts as success. Write the three-line spec first — what's wrong, what changes, what "fixed" looks like — then edit. |
 | "Structural is more rigorous than reduced form." | It's more *assumption-laden*. Rigor is proving recovery and disciplining the model with a fact, not adding equations. |
 | "We'll just hold prices fixed in the counterfactual." | Then it isn't a counterfactual — it's reduced form with extra steps. Re-solve the equilibrium. |
 | "More model detail = more realism." | More primitives you can't identify = more ways to be confidently wrong. Add only what a shifter or a moment identifies. |
