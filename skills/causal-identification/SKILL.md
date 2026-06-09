@@ -23,9 +23,9 @@ NAME THE DESIGN  →  STATE THE ASSUMPTIONS  →  TEST THE TESTABLE ONES  →  E
 
 1. **Name the design and the source of variation.** Where does the comparison come from? What is treated vs. control, and *why* is the control a valid counterfactual? If you can't name the design, you don't have identification — you have a regression.
 2. **State the assumptions out loud**, especially the untestable one. Every design has a load-bearing assumption you cannot verify from data (exclusion, parallel-trends-in-the-counterfactual, continuity, unconfoundedness). Name it and make the substantive argument for why it holds here.
-3. **Test the testable implications** (the diagnostics below).
+3. **Test the testable implications** (the diagnostics below). **Borderline diagnostics are a checkpoint, not a green light** — a first-stage F of 8, a mildly sloped pre-trend, balance that *almost* resolves: surface these to the user, don't proceed past them silently.
 4. **Estimate** with inference appropriate to the design (clustering, weak-IV-robust, etc.).
-5. **Attack it** with the design's standard robustness, placebo, and falsification tests — run them whether or not they're convenient.
+5. **Attack it** — propose the ~3 threat-relevant robustness/placebo/falsification checks to the user, get approval, then run them whether or not they're convenient (not the whole catalogue — see below).
 6. **Reconcile** the causal estimate with the raw descriptive picture. An effect that's invisible in the raw data and only appears after heavy modeling deserves suspicion.
 
 ## Choosing or changing the design is the user's decision
@@ -61,7 +61,8 @@ Picking the identification strategy, and *changing* it once the analysis is unde
 - Cluster SEs at the appropriate level.
 
 ### Synthetic control
-- Good **pre-period fit** between the unit and its synthetic counterpart; assess with placebo/permutation across donor units, not a naïve p-value.
+- **Load-bearing assumption:** no anticipation, and the treated unit's counterfactual lies in the convex hull of the donor pool (a donor pool of genuinely comparable, untreated units). Good pre-period fit is necessary but **does not guarantee** the post-period counterfactual.
+- **Inference:** placebo/permutation across donor units (the RMSPE ratio), not a naïve p-value; report how extreme the treated unit's gap is in the placebo distribution.
 
 ## Bad controls — the quiet killer of reduced-form work
 
@@ -75,7 +76,7 @@ Adding a control can *create* bias as easily as remove it. The rule: only condit
 
 ## Robustness, placebo, sensitivity — not optional
 
-These are part of the estimate, not a courtesy — but **robustness is an argument, not an inventory.** Run the few checks that would break the result if your identifying assumption fails, not every permutation you can think of. Three checks that each probe the real threat beat thirty that probe nothing; a senior reader treats a sprawling robustness table as a *tell* of weak identification. Pick the threat-relevant ones, and (during execution) propose the shortlist before running it (`executing-analysis-plans`).
+These are part of the estimate, not a courtesy — but **robustness is an argument, not an inventory.** "Mandatory" means the *threat-relevant* checks are not optional — **not** that you run the whole per-design catalogue. Run the few that would break the result if your identifying assumption fails, not every permutation you can think of: three checks that each probe the real threat beat thirty that probe nothing, and a senior reader treats a sprawling robustness table as a *tell* of weak identification. **Propose the shortlist (the ~3 threat-relevant checks, with rationales) to the user and get approval before running it** — this is a checkpoint, not an autonomous fan-out (`executing-analysis-plans`, `analysis-checkpoints`).
 - **Placebo / falsification:** an effect on an outcome that shouldn't be affected, or in a period before treatment, signals that the design is picking up confounding.
 - **Sensitivity to unobserved confounding:** how strong would an omitted confounder have to be to overturn the result? Use **Oster's δ** (coefficient movement vs. R² movement), **Rosenbaum bounds**, or **e-values**. A result that flips under a mild plausible confounder is not robust.
 - **Specification stability:** the effect shouldn't hinge on one control or one functional form (run the pre-committed suite from `pre-analysis-plan`).

@@ -11,11 +11,11 @@ A number you computed but never validated is a guess wearing a lab coat. In soft
 
 ## The rule
 
-For any analysis task, **invoke the relevant discipline skill before acting** — before exploring the data, before writing the transform, before reporting the number. Process skills (framing the question, planning, debugging) come before implementation. Even a 1% chance a skill applies means you check it.
+For any analysis task, **invoke the relevant discipline skill before acting** — before exploring the data, before writing the transform, before reporting the number. Process skills (framing the question, planning, debugging) come before implementation. Even a 1% chance a skill applies means you **invoke the Skill tool** to check (read it, then decide) — not just "consider it in your head."
 
 And the rule that the rest of the family rests on: **you execute autonomously toward the agreed goal, but you never change the goal behind the user's back.** Changing the research design, the estimand, the sample, the spec, or a metric — or deviating from the framed question or pre-analysis plan — is the *user's* decision, not yours. When execution wants to do any of those (it most often does mid-debugging), **STOP and bring it to them** (`analysis-checkpoints`). This is the discipline that was missing when an analysis quietly became one nobody agreed to.
 
-And the rule that keeps the work from drifting: **write the plan down before you build it — don't carry the plan, the spec, or the model in your head.** Before any substantial work (anything past a ~10-minute surgical fix), commit the plan/spec to a file and confirm it — the framing brief (`question-framing`), the pre-analysis plan (`pre-analysis-plan`), or, for structural work, the **model card** (`structural-estimation`) written the moment you understand the model, even rough, capturing the structure and what identifies each parameter. This holds *wherever you're dropped into the task*: being started mid-pipeline ("just estimate / fix / run this") is not a licence to dive in — back up, write or reconstruct the plan/card, confirm, then proceed. Keep it living and **actively updated** — and at a finished phase, write the decisions, the insight, and the concrete *post-compact* next steps into it and **offer to compact**, so a long, fix-heavy session resumes on a clean slate from the document alone (`executing-analysis-plans`). A plan you can't point to is one that drifts.
+And the rule that keeps the work from drifting: **always work from a written plan.** Before any non-trivial work, commit the plan to a file and confirm it — the framing brief (`question-framing`), the pre-analysis plan (`pre-analysis-plan`), or the structural **model card** (`structural-estimation`) — *wherever you're dropped in*; "just estimate / fix / run this" mid-stream is not a licence to dive in. Keep it actively updated, and at each finished phase write the decisions + post-compact next steps into it and offer to compact (`executing-analysis-plans`). A plan you can't point to is one that drifts.
 
 ## The family — and when each fires
 
@@ -46,13 +46,14 @@ Don't go structural for its own sake — if a quasi-experiment answers it, that 
 ## The typical flow
 
 ```
-question-framing  →  [pre-analysis-plan if confirmatory]  →  (approval gate)
+question-framing  →  [pre-analysis-plan if confirmatory / model card if structural]  →  (approval gate)
    →  executing-analysis-plans  →  data-contracts (load/clean/join/aggregate)
-   →  [causal-identification if causal]  →  [wrong-number-debugging when something's off]
-   →  result-verification  →  [analysis-review before it ships]
+   →  [ causal-identification  if reduced-form  |  structural-estimation  if structural ]
+   →  [wrong-number-debugging when something's off]
+   →  result-verification  →  [analysis-review + project-organization before it ships]
 ```
 
-After the plan is approved, **`executing-analysis-plans`** is what carries it out — running the dependent spine in order and fanning the independent robustness/design/cut work out to parallel subagents.
+After approval, **`executing-analysis-plans`** carries it out — running the dependent spine in order and fanning independent work (robustness specs, designs, cuts; or, structural, recovery reps and counterfactual scenarios) out to parallel subagents. Even when a task arrives as "just run the regression / estimate the model", route execution through it so the spine/fan-out and subagent dispatch actually happen.
 
 `analysis-craft` and `analysis-checkpoints` run *alongside* this whole flow — `analysis-craft` every time you write or edit the code, `analysis-checkpoints` every time a decision would change the design, sample, spec, or estimand (STOP and ask).
 
@@ -69,7 +70,7 @@ The simplicity-first and surgical-edit halves of that lineage live in **`analysi
 
 ## Instruction priority
 
-These skills override default behavior, but **user instructions always win**. If the user (or a project's CLAUDE.md) says to skip a step, follow the user — they're in control. The skills tell you *how* to do rigorous analysis when rigor is wanted.
+These skills override default behavior, but **user instructions always win**. If the user (or a project's CLAUDE.md) says to skip a step, follow the user — they're in control. The skills tell you *how* to do rigorous analysis when rigor is wanted. One caveat: a user can *waive* a step, but you may never *silently* skip a confirmation gate — if you bypass framing, a PAP/model-card sign-off, or a checkpoint, say so explicitly so the waiver is the user's choice, not your omission.
 
 ## The bottom line
 

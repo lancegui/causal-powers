@@ -1,23 +1,15 @@
 # Model-class cards — a template, not a catalog
 
-These cards are **worked examples of one template**, not a menu to pick from. The
-durable artifact is the template itself: for whatever structural model your
-project develops, fill in the same five rows —
+**Worked examples of one template, not a menu.** For whatever model your project
+develops, fill in the same five rows; the cards below show the pattern applied to
+common classes (illustrative, not exhaustive — sorting/matching, bargaining,
+selection, trade fit the same rows).
 
 1. **Primitives** — what you estimate (the policy-invariant parameters).
 2. **What reduced form can't recover** — why you're paying the structural price.
-3. **Identification** — what moves *each* parameter, including the load-bearing
-   untestable one and any required shifter/instrument.
+3. **Identification** — what moves *each* parameter, including the load-bearing untestable one and any required shifter/instrument.
 4. **Estimation** — the algorithm, and whether analytical gradients are achievable.
 5. **Canonical counterfactual(s)** — one per mechanism, equilibrium re-solved.
-
-Characterize your model **adaptively, as it develops** — the right five rows
-emerge from the modeling choices the project actually makes, not from matching to
-a pre-set class. The cards below apply the template to several common classes so
-you can see the pattern; they are illustrative, **not exhaustive**. Models not
-listed — sorting/matching, bargaining, insurance/selection, trade, and whatever
-your project invents — fit the same five rows. Read a card or two for the pattern,
-then write your own.
 
 ---
 

@@ -43,7 +43,7 @@ The parallel machinery makes running checks cheap, and cheap is exactly the trap
 1. **Name the main threat** — the single most credible way this estimate could be confounding rather than effect.
 2. **Choose the ~3 checks that would actually break the result if it's fragile** — the ones that probe *that* threat. A good robustness check has a real chance of failing; a cosmetic "add one more control" that cannot fail proves nothing.
 3. **Propose the shortlist to the user** — each with a one-line rationale ("drop the cities with the 2016 recording jump — tests whether the recording change, not the policy, drives it") — and get approval *before* running.
-4. Run only the approved set. Run more **only if the user asks**.
+4. Run only the approved set. Run more **only if the user asks**. (If the robustness suite was already locked in `pre-analysis-plan`, run *that* set as-is — the checkpoint is for **additions or deviations**, not a redundant re-ask of the pre-approved plan.)
 
 Default to roughly three. This is judgment, not a quota — occasionally a design genuinely needs a fourth, and you should say so — but the instinct is parsimony, because the job is to *convince*, not to *exhaust*. Choosing which checks to run is itself a consequential decision, so it goes through the user (`analysis-checkpoints`), never a silent fan-out of everything imaginable.
 
@@ -67,9 +67,9 @@ Execution is not "run to the end and show the user." After each spine step and a
 
 A long analysis with many mid-step fixes drags context until quality degrades and auto-compaction fires at a random, lossy moment — losing the gotchas and decisions you can't afford to lose. Don't wait for that. **Actively maintain the plan/brief/model card as you go** — mark steps done, record the gotcha you just hit, revise the next step — it's a living document you keep current, not something you wrote once at the start.
 
-When a coherent **phase finishes** — the dataset is built and validated, the primary spec is estimated, the recovery passes, a counterfactual is done, a result is verified — proactively, in order:
+Make the trigger **mechanical**, not a vibe: run the update-and-offer-compact routine **after each completed spine step and after the fan-out is assembled** (the checkpoints the skill already defines), not whenever a phase "feels" done. At each:
 
-1. **Update the durable plan document so it stands on its own**: the **decisions locked** (and why), the **state and key insight** discovered so far, and the **concrete next steps written as resume-from-clean-slate instructions** (e.g. "POST-COMPACT: build the PPML death moment on Option B, then FD-verify the jacobian, then MC-recover all params under the mixed objective"). Mirror it in your todos (done ✓ / queued). Persist it to a file in the repo — not the chat.
+1. **Update the durable plan document so it stands on its own** — the **same plan/brief file** produced by `question-framing`/`pre-analysis-plan` (or `docs/analysis-plan.md` if none exists), and **record its path in your todos** so a post-compact session knows what to open. Write the **decisions locked** (and why), the **state and key insight** so far, and the **concrete next steps as resume-from-clean-slate instructions** (e.g. "POST-COMPACT: build the PPML death moment on Option B, then FD-verify the jacobian, then MC-recover all params under the mixed objective"). Mirror it in your todos (done ✓ / queued). It lives in the repo, not the chat.
 2. **Offer to compact**: "this is a clean point to `/compact` — the plan doc carries the decisions, the insight, and the next steps, so we resume on a clean slate without losing anything." You can't compact yourself (the user runs `/compact`), so *suggest* it — at real phase boundaries only, never mid-step, and easy to wave off.
 3. On resume, **re-read the plan document** and continue from its next-steps list.
 

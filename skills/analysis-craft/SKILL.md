@@ -37,13 +37,13 @@ A notebook or analysis script usually belongs to someone, encodes decisions you 
 - **Clean up only your own mess.** Remove the imports/variables/intermediate frames that *your* change orphaned. Leave pre-existing dead code alone — **mention** it, don't delete it, unless asked.
 - **Keep diffs reproducible.** Don't reorder cells, re-run-and-commit unrelated output, or reshuffle a pipeline so the diff is unreadable. A reviewer should be able to see exactly what you changed and why.
 
-Test: **"Could the owner of this notebook review my diff in two minutes and agree every change is necessary?"**
+Test: **"Could the owner of this notebook review my diff in two minutes and agree every change is necessary?"** If not, the diff is too broad — revert the unrelated changes and propose them separately.
 
 ## Think Before Coding — at the approach level
 
 `question-framing` handles assumptions about the *metric*. This is the same discipline for the *method and the code*:
 
-- **Plan before anything beyond a quick fix — the ~10-minute rule.** If the change is more than roughly ten minutes of surgical work — a real new transform, a model, a non-trivial fix, anything with a *decision* in it — write a short plan/spec first (what you'll do, the approach and its key choices, what "done" looks like) and confirm it *before* you start coding. This holds **wherever you were dropped into the task**: being asked to "just estimate this", "fix that", or "add this analysis" mid-stream is not a licence to dive in — back up, write the few-line plan, confirm, then code. A genuine sub-10-minute edit (a rename, a column, a one-liner) you just do. The threshold isn't ceremony: anything bigger carries choices that are far cheaper to correct on three lines of plan than in written code.
+- **Always work from a written plan — plan before you code.** For anything **non-trivial** — *non-trivial* = a new transform or model, anything with an estimand/spec/sample/model *decision* in it, or more than a single-file, single-function edit — write a short plan/spec first (what you'll do, the key choices, what "done" looks like), confirm it, **and wait for that confirmation before coding.** This holds **wherever you were dropped into the task**: "just estimate this / fix that / add this analysis" mid-stream is not a licence to dive in — back up, write the few-line plan, confirm, then code. A genuinely trivial edit (a rename, a column, a one-liner with no decision in it) you just do. Three lines of plan are cheaper to correct than code built on the wrong approach.
 - **State your assumptions about the data and the approach** before you write the transform — the grain you're assuming, the join you're about to do, the model you're reaching for. Surface them so they can be corrected cheaply now rather than debugged later.
 - **Present competing approaches instead of silently picking one.** If there are two reasonable ways to compute or model this with a real tradeoff (a fast approximate aggregation vs. an exact slow one; FE vs. random effects), name the tradeoff and let the user choose rather than quietly deciding.
 - **Name confusion instead of coding through it.** If the request is ambiguous or the data doesn't look like you expected, stop and say so. Guessing and building on the guess is the expensive path.
@@ -56,7 +56,8 @@ Test: **"Could the owner of this notebook review my diff in two minutes and agre
 - Writing error handling for inputs the data cannot produce.
 - Deleting pre-existing dead code that wasn't part of your task.
 - Silently picking between two materially different analytical approaches without surfacing the tradeoff.
-- Diving into a change that's clearly more than ~10 minutes of work — or starting at the step the user pointed you to mid-task — without writing a short plan first.
+- Diving into a non-trivial change — or starting at the step the user pointed you to mid-task — without writing a short plan first.
+- Wrote the plan but started coding before the user responded — the plan needs *confirmation*, not just authorship.
 - A 200-line cell doing what 50 readable lines would.
 
 ## Common rationalizations

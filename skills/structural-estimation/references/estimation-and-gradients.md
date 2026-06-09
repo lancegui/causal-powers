@@ -76,14 +76,14 @@ many digits. This check is minutes of work and catches the single most common
 silent structural bug.
 
 ```python
-# gradient check (works for any objective; complex-step = exact)
+# gradient check (works for any objective)
 import numpy as np
-def grad_check(obj, obj_complex, theta, h=1e-6):
+def grad_check(obj, analytic_grad, theta, h=1e-6):
     g_analytic = analytic_grad(theta)
-    g_fd = np.array([(obj(theta + h*e) - obj(theta - h*e))/(2*h)
+    g_fd = np.array([(obj(theta + h*e) - obj(theta - h*e))/(2*h)   # central difference
                      for e in np.eye(len(theta))])
-    # complex-step if obj supports complex input: Im(obj(theta + i*h*e))/h
-    return np.max(np.abs(g_analytic - g_fd))   # want ~1e-7 or smaller (fd), ~machine eps (complex-step)
+    # if obj accepts complex input, complex-step is exact: g[i] = obj(theta + 1j*h*e_i).imag / h
+    return np.max(np.abs(g_analytic - g_fd))   # central diff: agree to ~6–8 digits; complex-step: ~machine eps
 ```
 
 **When a closed form genuinely isn't achievable:** use complex-step or central
@@ -122,10 +122,10 @@ non-identification (a flat objective). Run it first; keep it as a regression tes
    cross-seed variance.
 
 **Pass criteria** (assert these — `data-contracts` for the estimator):
-- θ̂ converges back to θ★ from distant starts, within sampling error, at each θ★.
+- θ̂ converges back to θ★ from distant starts at each θ★ — mean |θ̂ − θ★| within ~2 Monte-Carlo SEs (or bias < a few % of θ★ as a default tolerance).
 - θ̂ variance shrinks as N grows.
-- No parameter has a flat profile at θ★.
-- Analytical and finite-difference gradients agree.
+- No flat axis at θ★, **and** the smallest eigenvalue of the Hessian/Jacobian is bounded away from zero (no ridge).
+- Analytical and finite-difference gradients agree to ~6–8 digits.
 
 **Language-agnostic skeleton** (Python; the shape is the same in R/Julia):
 ```python
@@ -142,13 +142,18 @@ def monte_carlo_recovery(true_thetas, sample_sizes, n_seeds, starts):
             results.append(summarize(theta_star, N, ests))  # bias, sd, coverage
     return results
 
-# 6: identification surface — profile each parameter around the truth
+# 6a: identification surface — profile each parameter (catches AXIS flatness only)
 def profile(theta_star, data, k, grid):
     out = []
     for v in grid:
         theta = theta_star.copy(); theta[k] = v
         out.append((v, objective(theta, data)))   # flat in v ⇒ param k not identified
     return out
+
+# 6b: ridge check — catches flatness along a COMBINATION the profiles miss
+def ridge_check(H):                      # H = Hessian of the objective (or G'WG for GMM) at θ̂
+    w, V = np.linalg.eigh(H)             # ascending eigenvalues
+    return w[0], V[:, 0]                 # near-zero w[0] ⇒ ridge; V[:,0] names the unidentified combination
 ```
 
 The same harness doubles as the recovery regression test: freeze a `(θ★, seed) →
