@@ -1,0 +1,22 @@
+[
+  {"query": "boss wants me to 'look into why active users are flat' and dumped events.parquet on me. where do i even start?", "should_trigger": true},
+  {"query": "we need a north-star metric for the growth dashboard. something like engagement per user. can you help me define it before i build the pipeline in dbt?", "should_trigger": true},
+  {"query": "did the new onboarding flow work? i have a table of signups and whether each user hit the activation event", "should_trigger": true},
+  {"query": "is pricing driving churn? i've got subscriptions.csv with plan, mrr, and cancel_date", "should_trigger": true},
+  {"query": "how many monthly active users do we have? marketing keeps quoting a different number than the data team and i don't know which is right", "should_trigger": true},
+  {"query": "ceo asked for 'the trend in customer satisfaction' for the board deck. i have nps survey responses going back two years. what exactly should i compute?", "should_trigger": true},
+  {"query": "my PM said just measure conversion rate for the checkout experiment. but conversion of what over what? i want to nail this down before i write any sql", "should_trigger": true},
+  {"query": "they handed me a dataset of support tickets and said 'tell us something useful about resolution times'. feels too vague to start coding", "should_trigger": true},
+  {"query": "i want to know the revenue impact of the loyalty program but i'm realizing 'revenue' and 'impact' could each mean three different things to the stakeholders involved", "should_trigger": true},
+  {"query": "before i build the retention curve, can we agree on whether retained means logged in or made a purchase in the window? different teams seem to assume different things", "should_trigger": true},
+  {"query": "we're about to evaluate whether the Q3 price cut worked and i want to lock the primary outcome, the sample, and the robustness checks before i look at any results so nobody can accuse us of cherry picking", "should_trigger": false},
+  {"query": "register the analysis for our A/B test on the new ranking model — pre-commit the hypotheses and primary spec before unblinding the metrics", "should_trigger": false},
+  {"query": "the brief is approved, ok run it — build the dataset, estimate the main spec, and run all the robustness cuts", "should_trigger": false},
+  {"query": "this churn number looks way too high, 40% monthly? that can't be right, help me figure out where it went wrong", "should_trigger": false},
+  {"query": "revenue tripled right after i joined the orders table to customers — something's off, where did it break?", "should_trigger": false},
+  {"query": "can you sanity-check my notebook before i send it to the VP? mainly worried the joins and the denominator are right", "should_trigger": false},
+  {"query": "review this analysis a colleague handed me and tell me if the conclusion actually holds up", "should_trigger": false},
+  {"query": "i need an instrument for price and want the demand elasticity via 2SLS, the identification is the hard part here", "should_trigger": false},
+  {"query": "what price would the merged firm set? i have shares and characteristics and need the post-merger equilibrium, not a comparison in the data", "should_trigger": false},
+  {"query": "rewrite the executive summary of my analysis so it's punchier for a non-technical audience", "should_trigger": false}
+]

@@ -1,0 +1,22 @@
+[
+  {"query": "ok the near-clinic effect is way too big. i'll just upgrade the design B to a triple-difference real quick and that should fix the weird coefficient, rerunning now", "should_trigger": true},
+  {"query": "these 6 firms have insane leverage ratios and they're dragging the regression. gonna just drop them as outliers and re-estimate so the coefficient makes sense", "should_trigger": true},
+  {"query": "the parallel trends look bad so i'm thinking i switch from the simple did to matching on pre-period covariates first then doing the did. that ok or should we talk first", "should_trigger": true},
+  {"query": "ATT was noisy so while debugging i went ahead and changed the estimand to LATE using the eligibility cutoff as an instrument, getting cleaner numbers now", "should_trigger": true},
+  {"query": "active users keeps coming out lower than the dashboard. i'll just redefine it to anyone who opened the app in the last 28 days instead of 7 and the gap closes", "should_trigger": true},
+  {"query": "revenue lift you saw yesterday was 12%. after i winsorize the top 1% of orders it's actually 4%. should i swap in the winsorized version as the headline number?", "should_trigger": true},
+  {"query": "the coefficient flips sign when i add the industry fixed effects. i'm inclined to just keep the spec with the FE since it's more defensible, want me to make that the main spec?", "should_trigger": true},
+  {"query": "to make the first stage strong enough i was going to drop the two weakest instruments and only keep distance-to-college. that changes what we're identifying though right", "should_trigger": true},
+  {"query": "mid-cleaning i realized if i restrict the sample to just the post-2015 cohorts the treatment effect is much clearer. planning to do that, lmk", "should_trigger": true},
+  {"query": "our pre-analysis plan says primary outcome is 30-day readmission but 90-day gives a significant effect. thinking of leading with 90-day instead, is that fine to just do", "should_trigger": true},
+  {"query": "the join blew up the row count — looks like the customer table has dupes on customer_id which is supposed to be unique. deduping it and rerunning the aggregation", "should_trigger": false},
+  {"query": "my revenue total is 10x too high, i did a left join when it should've been an inner join on the orders-to-payments merge. fixing the join type", "should_trigger": false},
+  {"query": "the dates are parsing as MM/DD but the file is DD/MM so all the event timing is off. correcting the date parse and recomputing", "should_trigger": false},
+  {"query": "fresh task: i've got panel data on 200 hospitals 2008-2019 and want to estimate the effect of an EHR mandate on readmissions, how should i set this up in R", "should_trigger": false},
+  {"query": "the units column is in thousands but i multiplied by 1000 twice somewhere, so the totals are off by 1000x. tracking down the double-multiply and fixing it", "should_trigger": false},
+  {"query": "can you rename these variables to something readable and break this 200-line cell into smaller functions, the notebook is hard to follow", "should_trigger": false},
+  {"query": "estimate the employment impact of the 2014 minimum wage hike using bordering counties as the comparison, starting from scratch here", "should_trigger": false},
+  {"query": "i accidentally filtered out the control group with a stray where-clause and now n is half what it should be — putting the controls back in", "should_trigger": false},
+  {"query": "write a paragraph for the methods section explaining why we clustered standard errors at the state level", "should_trigger": false},
+  {"query": "the group-by is summing instead of averaging because i used sum() not mean() for the rate metric, switching it to mean so the metric matches its definition", "should_trigger": false}
+]

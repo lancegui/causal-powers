@@ -44,6 +44,13 @@ All notable changes to Causal Powers. Versions follow the plugin manifest.
   `analysis-reviewer` agent the structural silent failures, and generalized the
   `robustness-runner` agent to also run a Monte-Carlo recovery rep or a
   counterfactual scenario.
+- Backfilled **trigger evals** for the rest of the family (`question-framing`,
+  `pre-analysis-plan`, `analysis-craft`, `analysis-checkpoints`,
+  `executing-analysis-plans`, `result-verification`, `analysis-review`) — each a
+  20-query set whose negatives are deliberate sibling near-misses (e.g. a restore-
+  fix that must NOT trip `analysis-checkpoints`; reviewing someone else's notebook
+  vs. self-verifying before reporting), so the set tests the boundary, not just
+  keywords. Every skill now has a trigger eval.
 
 ## 0.7.0 — Robustness is an argument, not an inventory
 - `executing-analysis-plans` no longer fans out an exhaustive menu of robustness

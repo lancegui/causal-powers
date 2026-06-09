@@ -1,0 +1,22 @@
+[
+  {"query": "plan looks good, go ahead and run it", "should_trigger": true},
+  {"query": "ok the brief is approved — build the analysis dataset, estimate the primary did spec, then run the robustness suite we agreed on", "should_trigger": true},
+  {"query": "we signed off on the PAP this morning. execute it end to end", "should_trigger": true},
+  {"query": "now do the analysis. start by joining the claims file to the enrollment panel, fit the event study, and fan the placebo + the two subsample cuts out to parallel workers", "should_trigger": true},
+  {"query": "run all the specs in the plan — primary, the leave-one-out, and the bordering-counties version — in parallel and give me the robustness table", "should_trigger": true},
+  {"query": "green light from the PI. carry out analysis_plan.md: clean ipums_panel.dta, build the treatment indicator, estimate the 2sls, run the three checks", "should_trigger": true},
+  {"query": "go", "should_trigger": true},
+  {"query": "do the robustness checks we locked in — drop the 2016 recording-jump cities, the donut RD, and the Oster delta — and dispatch each to its own subagent", "should_trigger": true},
+  {"query": "everything's approved, just run it and assemble the results into one table I can drop in the appendix", "should_trigger": true},
+  {"query": "kick off the full pipeline from the approved brief: dataset build, primary estimate, then the placebo and the secondary outcome concurrently", "should_trigger": true},
+  {"query": "before we run anything, help me pin down what 'active customer' even means and which decision this number feeds", "should_trigger": false},
+  {"query": "i'm about to evaluate whether the onboarding change worked — let's write the pre-analysis plan and lock the primary spec before i see any outcomes", "should_trigger": false},
+  {"query": "mid-run the parallel trends pre-period looks off — should i switch from twfe to callaway-santanna or just drop the early cohorts?", "should_trigger": false},
+  {"query": "the dataset surprised us, a bunch of units have negative outcomes. do i winsorize them or change the sample? not sure if that's my call", "should_trigger": false},
+  {"query": "quick one — what was the median order value last month? just need the single number for a slack reply", "should_trigger": false},
+  {"query": "what's the actual question we're answering here — is it the effect of the price cut or just whether revenue went up? help me frame it", "should_trigger": false},
+  {"query": "tighten the methods paragraph where i describe the staggered rollout, the referee said it reads clunky", "should_trigger": false},
+  {"query": "my 2sls script throws 'system is computationally singular' in R, how do i fix the code", "should_trigger": false},
+  {"query": "explain intuitively why a robustness table with 30 columns can actually hurt credibility, i'm prepping a methods lecture", "should_trigger": false},
+  {"query": "draft the robustness section of the PAP — which checks should we pre-commit to for this RD before we ever touch the outcomes?", "should_trigger": false}
+]

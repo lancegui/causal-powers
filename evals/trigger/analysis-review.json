@@ -1,0 +1,22 @@
+[
+  {"query": "can you review my churn notebook before i send it to the VP? it's analysis/q3_churn.ipynb — i mostly want to know if the numbers are trustworthy, not whether the code is pretty", "should_trigger": true},
+  {"query": "my colleague dropped a pricing analysis in the PR and asked me to sanity-check it. there's a big join between transactions and accounts and the revenue total feels high. does this look right?", "should_trigger": true},
+  {"query": "before i ship this, can you look over the model results? our holdout AUC jumped to 0.97 and i want a second pair of eyes on whether something's off", "should_trigger": true},
+  {"query": "intern handed me a script that estimates the effect of our loyalty program. i'm supposed to check it before it goes in the board deck. where would this be silently wrong?", "should_trigger": true},
+  {"query": "review this R analysis pls — analysis/cohort_retention.R. it ran fine and the chart looks plausible but i don't fully trust it", "should_trigger": true},
+  {"query": "a referee says my DiD totals don't add up across the subgroup tables and that my robustness checks look cherry-picked. can you go through my replication folder and tell me if those critiques actually bite before i respond?", "should_trigger": true},
+  {"query": "got review feedback that my customer LTV join double-counts subscriptions. i kind of want to just agree and fix it but can we actually verify whether it does before i touch anything?", "should_trigger": true},
+  {"query": "sanity-check these numbers for me — finance gave me a spreadsheet and a python script that recomputes margins by region and the regional figures don't reconcile to the company total", "should_trigger": true},
+  {"query": "teammate's notebook fits a default-prediction model and reports 0.99 precision. before we deploy can you look for leakage or anything that would make that too good to be true?", "should_trigger": true},
+  {"query": "im about to merge this colleague's analysis PR that estimates the impact of the onboarding redesign. can you do an independent review pass — specs, joins, the causal claim, all of it", "should_trigger": true},
+  {"query": "i'm done with my revenue analysis and about to send it to the stakeholder — can you help me reconcile the totals to the source table and reproduce it from a clean session before i hit send?", "should_trigger": false},
+  {"query": "before i put this number in the slide i want to rerun my own script from scratch with a fixed seed and make sure the figure matches what i wrote in the prose", "should_trigger": false},
+  {"query": "my revenue number tripled right after i added a join and that can't be right — help me figure out which step blew it up", "should_trigger": false},
+  {"query": "these two counts don't match between my pipeline and the dashboard team's. walk back through my transforms and find where mine goes wrong", "should_trigger": false},
+  {"query": "i'm setting up a diff-in-diff for a staggered state rollout — what identification assumptions do i need to state and test before i estimate anything?", "should_trigger": false},
+  {"query": "is distance-to-college a valid instrument for years of schooling, and what would i need to argue for the exclusion restriction to hold?", "should_trigger": false},
+  {"query": "review this PR for our auth service — there's a new token-refresh middleware and i want eyes on the error handling and race conditions", "should_trigger": false},
+  {"query": "tighten the results section of my paper where i describe the event-study estimates, the prose is clunky and a referee called it unclear", "should_trigger": false},
+  {"query": "format my regression output into a latex table with significance stars and clustered SEs in parentheses", "should_trigger": false},
+  {"query": "explain to me intuitively why a fanned-out join inflates a sum — i'm trying to teach my junior analyst what to watch for", "should_trigger": false}
+]

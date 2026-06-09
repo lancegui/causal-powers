@@ -1,0 +1,22 @@
+[
+  {"query": "ok the lift is 4.2% and i'm putting it in the board deck tomorrow morning. anything i should do before that slide is final?", "should_trigger": true},
+  {"query": "think i'm done with the churn analysis. the headline is 11.3% monthly churn for the SMB segment. about to send the summary to the VP of sales", "should_trigger": true},
+  {"query": "before i drop these revenue-per-cohort numbers into the quarterly readout, can we make sure they actually tie out to the ledger?", "should_trigger": true},
+  {"query": "the answer is the price elasticity is -1.8. wrapping up the memo now", "should_trigger": true},
+  {"query": "i want to reproduce my whole pipeline from a clean kernel with the seed fixed before i report this, the notebook's been open for hours and i don't trust the cached state", "should_trigger": true},
+  {"query": "the figures in my draft and the table in section 4 should match but i pasted some numbers by hand a few revisions ago — reconcile the prose against what the code actually outputs before i submit", "should_trigger": true},
+  {"query": "final gut check on the treatment effect before it goes to the exec team — does 8% recidivism drop survive dropping outliers and a clean rerun?", "should_trigger": true},
+  {"query": "i'm about to tell finance our blended margin is 34.6%. that's the number, right? want to be sure before i hit send", "should_trigger": true},
+  {"query": "deck's basically done. last thing — i regenerated the data last week, can you confirm every chart in the pptx still matches the current run.py output", "should_trigger": true},
+  {"query": "presenting the A/B results at standup in 20 min, conversion went from 3.1 to 3.6. just want to validate this is solid before i claim it's a win", "should_trigger": true},
+  {"query": "can you check my colleague's notebook before we publish it? want a second pair of eyes on whether his join logic is right", "should_trigger": false},
+  {"query": "review this analysis a contractor handed us — does it look right, any silent failures in the way they computed retention?", "should_trigger": false},
+  {"query": "revenue is 3x what it should be after i merged the orders and refunds tables. why is it blowing up like that?", "should_trigger": false},
+  {"query": "these two totals don't match — my dashboard says 42k active users but the SQL export says 51k. where's the discrepancy coming from?", "should_trigger": false},
+  {"query": "before i start, what should 'active customer' even mean here — last 30 days of any event, or a paid transaction? need to pin the metric down", "should_trigger": false},
+  {"query": "the coefficient on price came out positive which makes no sense for a demand curve, something's off in my pipeline", "should_trigger": false},
+  {"query": "tighten the results paragraph in my paper where i describe the 8% effect, the writing is clunky", "should_trigger": false},
+  {"query": "explain to a non-technical exec what a confidence interval means, prepping talking points for the readout", "should_trigger": false},
+  {"query": "i need to define the estimand for this policy eval before we run anything — what population and what unit of observation", "should_trigger": false},
+  {"query": "help me set up the difference-in-differences for the store-closure effect, panel of 300 stores over 5 years", "should_trigger": false}
+]
