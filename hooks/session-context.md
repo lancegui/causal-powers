@@ -38,6 +38,6 @@ frame the question → (pre-analysis plan, if confirmatory) → **write the brie
 
 ## Keep the repo legible
 
-Place files in the right folder and name them by convention *as you create them*; before you commit, tidy intermediate/diagnostic artifacts and gitignore data, generated outputs, and secrets — so a collaborator sees deliverables and code, not scratch. Research repos are paper-centric and polyglot (pipeline stages × subject subfolders, `data/{raw,intermediate,output}`), not single-language product templates. Offer the cleanup, don't delete on your own; never touch raw data (`project-organization`).
+Place files in the right folder and name them by convention *as you create them*; before you commit, tidy intermediate/diagnostic artifacts so a collaborator sees deliverables and code, not scratch. Research repos are paper-centric and polyglot — pipeline stages × subject subfolders (data stage included), `data/{raw,intermediate,output}`. **Track the data a replicator needs**; gitignore only secrets, sensitive data, and files past GitHub's ~100 MB limit — and shrink an oversized-but-shareable file to parquet/tsv before excluding it. Offer the cleanup, don't delete on your own; never touch raw data (`project-organization`).
 
 Skills: using-causal-powers · question-framing · pre-analysis-plan · data-contracts · analysis-craft · analysis-checkpoints · executing-analysis-plans · wrong-number-debugging · result-verification · causal-identification · structural-estimation · analysis-review · project-organization.
