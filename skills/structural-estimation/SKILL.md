@@ -25,15 +25,14 @@ Don't go structural for its own sake. If a quasi-experiment answers the question
 ## The discipline
 
 ```
-WRITE THE MODEL (primitives + equilibrium)  →  ARGUE IDENTIFICATION (per parameter: what moves it)
-  →  WRITE THE SPEC & GET APPROVAL  ‖ ← the gate, before any estimation machinery is built
+WRITE THE MODEL CARD (primitives + equilibrium + per-parameter identification + estimand + plan)  →  GET APPROVAL  ‖ ← the gate, before any estimation machinery
   →  PROVE RECOVERY (Monte Carlo: converge back to known θ from a distant start, across the parameter space)
   →  GRADIENTS (derive analytically when the estimator admits them, group by group; check vs finite-difference)
-  →  ESTIMATE  →  VALIDATE FIT (in- and out-of-sample)
+  →  ESTIMATE  →  VALIDATE FIT (untargeted moments + held-out; reconcile vs a reduced-form elasticity)
   →  COUNTERFACTUALS (re-solve equilibrium; one scenario per mechanism)  →  DECOMPOSE & INTERPRET
 ```
 
-Each arrow is a gate, not a suggestion. Skipping "prove recovery" is how a coding bug or a non-identified parameter rides all the way into a published counterfactual.
+Each arrow is a gate, not a suggestion. The first deliverable is the **model card** (next section) — the model and its per-parameter identification are written *into the card*, not as separate informal steps. Skipping "prove recovery" is how a coding bug or a non-identified parameter rides all the way into a published counterfactual.
 
 ## Primitives — what you are actually estimating
 
@@ -65,22 +64,20 @@ The discipline that separates a credible structural estimate from a curve-fit: f
 
 ## Write the model card — immediately, and keep it living
 
-A structural model is the most expensive and least reversible commitment in the whole family: coding the data-generating process, deriving gradients, building the estimation machinery, and running it is days to weeks, and the modeling choices — utility/payoff form, the random-coefficient distribution, the conduct/equilibrium concept, what counts as a primitive versus what's held fixed — silently decide what *every* number downstream means. So the **moment you understand the model — even roughly — write it down as a model card**: the project's living spec, in a file. Capture the **structure** (primitives + equilibrium) and, above all, **what would move each parameter and what variation or instrument drives its identification.** Write it *before* it's right. A rough card now is not a guess you're committing to — it's the thing that makes the identification holes visible: a parameter with nothing under "what moves it" is a parameter you cannot yet identify, and you want to see that on day one, not after a week of coding. The card earns the same gate a confirmatory study gets from `pre-analysis-plan`: **get the user's sign-off on it before any estimation machinery is built** — the point where "choosing the model is the user's decision" actually bites, before the compute is spent, not after a result comes out wrong.
+A structural model is the most expensive, least-reversible commitment in the family — days to weeks of coding, and the modeling choices (utility form, the random-coefficient distribution, conduct, what's a primitive vs. held fixed) silently decide what *every* downstream number means. So **the moment you understand the model — even roughly — write it down as a model card** (the project's living spec, in a file): the structure, and above all **what would move each parameter and what variation/instrument identifies it.** Write it *before* it's right — a parameter with nothing under "what moves it" is one you can't yet identify, and you want to see that on day one. Like a confirmatory `pre-analysis-plan`, the card earns a gate: **get the user's sign-off before building estimation machinery** — where "choosing the model is the user's decision" actually bites, before the compute is spent.
 
-**Write the card wherever you enter the pipeline — and you usually enter in the middle.** Users rarely start you at "frame the question"; they start you at "estimate this demand model", "fix the Monte-Carlo recovery", "recover the marginal costs", or "run the merger counterfactual". Being dropped at a middle step does **not** mean a card exists or that the modeling is settled — it almost always means none was written. So the first move, *whatever the user asked for*, is to **write the card (or reconstruct it from what they already have), surface it, and confirm — before doing the step they named.** Don't silently start at the step the user pointed at; back up to the card, then come forward.
+**You usually enter mid-pipeline** — "estimate this model", "fix the recovery", "run the counterfactual" — with machinery seemingly already in place. That does **not** mean a card exists; it almost always means none was written, so the greenfield "sign-off before building machinery" gate can't fire as stated. The first move, whatever was asked, is to **write or reconstruct the card and get explicit sign-off on it before doing the named step.** "Reconstruct and confirm" is a real sign-off, not a mention you breeze past — do not proceed on an unconfirmed card.
 
-The card states:
+The card states (its filled-in instance of the five modeling rows in `references/model-classes.md`, plus the estimand/decision on top):
 
-- **The target counterfactual(s) and the decision they inform** — the estimand — and one line on why reduced form can't answer it.
-- **The primitives to be estimated, and what's held fixed or externally calibrated** (and why those are policy-invariant for this counterfactual).
-- **The model** — utility/payoff, the equilibrium concept, and the DGP mapping primitives → observables.
-- **The identification argument, per parameter** — what moves each one, the shifters/instruments it leans on, and the load-bearing untestable assumption. *This row is the heart of the card; a parameter left blank here is not yet identified.*
-- **The estimation plan** — estimator (GMM/MoM, NLS, MSL…), the moments or likelihood, the instruments, and the Monte-Carlo-recovery design that will validate it.
-- **The counterfactual design** — one scenario per mechanism, primitives changed vs. held fixed.
+- **Target counterfactual + the decision it informs** (the estimand) — and why reduced form can't answer it.
+- **Primitives estimated, and what's held fixed/calibrated** — and why those are policy-invariant here.
+- **Model** — utility/payoff, the equilibrium concept, the DGP mapping primitives → observables.
+- **Identification, per parameter** — what moves each, the shifter/instrument it leans on, the load-bearing untestable assumption. *The heart of the card; a blank here is a parameter not yet identified.*
+- **Estimation plan** — estimator (GMM/MoM, NLS, MSL…), moments/likelihood, instruments, and the Monte-Carlo-recovery design that validates it.
+- **Counterfactual design** — one scenario per mechanism, primitives changed vs. held fixed.
 
-(This is the project's filled-in instance of the five-row template in `references/model-classes.md` — write your own, don't pick from a menu.)
-
-**The card is living — queue every change onto it.** Once it's approved you build and estimate, and from then on **every change — a fix, a re-spec, a sharper identification argument, a new counterfactual, a parameter you discover you can't move — is an edit to this same card**, not a fresh note in your head. Refining the card as you learn is the whole point; you *expect* the early version to be wrong. But editability is **not** a backdoor around the gate: changing a **load-bearing choice** on the card — the conduct assumption, the random-coefficient distribution, what's a primitive vs. held fixed, the estimand — routes through `analysis-checkpoints` as the user's decision, surfaced rather than silently overwritten. And the everyday threshold holds: each major component (the recovery harness, the gradient, the estimator, each counterfactual) and **every mid-stream fix beyond a ~10-minute surgical edit** is written onto the card first — what it must do, what's wrong, exactly what changes (the true-θ grid, the recovery tolerance, the starts, the sample size, the inner-loop tolerance), and what "fixed" looks like (it recovers θ from a distant start; the gradient matches finite differences) — *then* you touch the code. A bare "fix it" is where an un-specced change silently alters what's being estimated; a sub-10-minute rename or typo just gets done (`analysis-craft`).
+**The card is living.** Every later change is an edit to it, not a note in your head — refining as you learn is the point. But editability is not a backdoor around the gate: a **load-bearing change** (conduct, the random-coefficient distribution, primitive-vs-fixed, the estimand) routes through `analysis-checkpoints` as the user's call. And every fix beyond a trivial edit gets a three-line mini-spec on the card first — *what's wrong, what changes, what "fixed" looks like* (recovers θ from a distant start; gradient matches finite differences) — before you touch code. Trivial = a rename/typo/one-liner with no estimand/spec/sample/model decision; that you just do (`analysis-craft`).
 
 ## Prove the algorithm recovers truth — Monte Carlo, before real data
 
@@ -89,7 +86,7 @@ You estimate by *optimizing an objective* — GMM / method of (simulated) moment
 1. **Simulate from the model at a known θ★, then estimate starting from a θ₀ deliberately *far* from θ★, and confirm it converges *back* to θ★.** The distant cold start is the real test: it checks that the objective is coded right, that the parameters are identified, and that the optimizer finds the truth rather than a comfortable local min next to where it started. To keep this loop affordable — structural estimators are slow — **shrink the parameter space and the sample size** so each fit is cheap and you can run many starts and many reps. *If you cannot recover parameters from data you generated yourself, you cannot believe estimates from real data* — full stop.
 2. **Do it across the parameter space**, not at one point — several true-θ draws — so you don't certify recovery only in a lucky region.
 3. **Vary the sample size** and watch the estimator concentrate on truth (a consistency check). If it doesn't tighten as N grows, suspect non-identification or a coding bug.
-4. **Map the objective surface** around the optimum — profile each parameter one at a time; a **flat axis means that parameter is not identified** (the optimizer still returns a number, but it's meaningless). Single-parameter profiles catch only *axis* flatness, though — non-identification along a *combination* of parameters (a ridge) is invisible to them and shows up instead as a near-singular Hessian (or GMM Jacobian), whose smallest-eigenvalue direction names the unidentified combination. Weak identification shows up as a near-flat valley and enormous variance across MC repetitions.
+4. **Map the objective surface** around the optimum — profile each parameter one at a time; a **flat axis means that parameter is not identified** (the optimizer still returns a number, but it's meaningless). Profiles catch only *axis* flatness, so **also compute the eigenvalues of the Hessian (or the GMM Jacobian) at the optimum**: a near-zero smallest eigenvalue flags non-identification along a *combination* of parameters (a ridge) that single-parameter profiles miss, and its eigenvector names the unidentified combination. Weak identification shows up as a near-flat valley and enormous variance across MC repetitions.
 
 Run this *before* touching real data, and keep it as a regression test — this is `data-contracts` discipline applied to the estimator: assert recovery, then freeze it. The recipe and a language-agnostic harness skeleton are in `references/estimation-and-gradients.md`.
 
@@ -102,6 +99,14 @@ The estimator is an optimizer, and its speed and stability hinge on the gradient
 - **Always check the analytical gradient against finite differences** at a few parameter points before trusting it. A sign error or a dropped term does not throw — it just steers the optimizer somewhere wrong and converges there. The check is cheap; skipping it is how an entire estimation goes quietly bad.
 - **When a closed form genuinely isn't achievable**, say so, use a high-quality numerical derivative (complex-step or central differences), keep the inner-loop tolerance *tight*, and prefer a constrained formulation (**MPEC**) that removes the nested-tolerance problem entirely.
 
+## Validate fit — before you trust any counterfactual
+
+Recovery proves the *algorithm* works; it says nothing about whether the *model fits reality*, and a model that misfits in-sample will fabricate out-of-sample. Between estimation and counterfactuals:
+
+- **Untargeted moments.** The model should match features it was *not* fit to (a held-out moment, second-choice patterns, a substitution the estimator didn't target). Matching only what you targeted proves only that the optimizer ran.
+- **Hold-out.** Re-fit on a subset of markets/periods; check it predicts the held-out ones (shares, choices, prices).
+- **Reconcile against a reduced-form fact.** The model-implied own-price elasticity *at observed prices* should sit near a credible reduced-form / IV demand elasticity on the same data (the cross-check in `causal-identification`); a large gap means the demand system is misspecified. A structural model that contradicts a clean reduced-form estimate is telling you something — listen before you extrapolate.
+
 ## Counterfactuals — one scenario per mechanism, equilibrium re-solved
 
 Counterfactuals are where misspecification does its damage, because here you leave the data. Three rules:
@@ -110,7 +115,7 @@ Counterfactuals are where misspecification does its damage, because here you lea
 - **Design exactly one scenario per mechanism — whatever your model's mechanisms are.** This rule is model-agnostic: read off the mechanisms *your* model added beyond reduced form, and for each one build the counterfactual that *isolates* it — change that primitive, hold the others fixed, re-solve, read the difference. The mechanisms come from the model the project actually developed, not from a fixed list. Each scenario must: name the mechanism, state which primitive changes and which are held fixed, re-solve equilibrium, report the result in **welfare / interpretable units**, and name the assumption it leans on hardest.
 
   A single clean scenario is often a single primitive knocked to a limit — e.g. *set the search cost to zero and read what happens to the purchase rate and to consumer surplus*; that one number is the search friction's bite, isolated. If a model layers **preference + consideration + search**, the three scenarios are the obvious set — turn off limited consideration (impose full awareness) to size the cost of not-knowing; zero out search cost to size the friction; perturb a characteristic to read taste and substitution — each holding the others fixed. But that trio is an *illustration of the rule*, not the rule: a dynamic-adoption model's mechanisms might be the discount/forward-looking channel vs. a state-transition channel; an entry model's might be the competitive-effect channel vs. the fixed-cost channel. Same discipline, different knobs.
-- **Bound the counterfactual by its weakest assumption** and report sensitivity. The number is only as good as the least-tested primitive feeding it — so report a range, not a point, when the binding assumption is shaky.
+- **Bound the counterfactual by its weakest assumption.** The number is only as good as the least-tested primitive — so **re-run the counterfactual across a plausible range of the binding primitive** (the conduct parameter, the discount factor, the consideration/search functional form — or θ drawn from its estimated distribution to also carry statistical uncertainty) and report the **envelope, not a single point**, when that assumption is shaky.
 
 ## Choosing or changing the model is the user's decision
 
@@ -118,9 +123,7 @@ Picking the utility functional form, the distribution of random coefficients, th
 
 ## Breadth — characterize *your* model, don't pick from a menu
 
-The pipeline above is model-agnostic, and so is the way you should approach a new model: as the project develops its specific structural model, **fill in the same five rows for it** — *primitives / what reduced form can't recover / what identifies each parameter / estimation algorithm (and whether analytical gradients are achievable) / the canonical counterfactual per mechanism*. That template is the durable artifact; the model classes are just worked examples to learn the pattern from, not a catalog to choose from.
-
-`references/model-classes.md` works those five rows for several common classes — differentiated-products demand (logit → random-coefficients/BLP) + supply, single-agent dynamic discrete choice, static/dynamic games, auctions, limited consideration, and search — precisely so you can *see the template applied* and then apply it to whatever your project builds, including classes not listed (sorting/matching, bargaining, insurance/selection, trade). Read a card or two for the pattern, then characterize your own model the same way. See **`references/estimation-and-gradients.md`** for the estimator / gradient / Monte-Carlo recipes and a recovery-harness skeleton.
+The pipeline is model-agnostic: fill the model card's rows in for whatever model the project develops, rather than matching to a pre-set class. **`references/model-classes.md`** applies the template to common classes (demand/BLP + supply, dynamic discrete choice, games, auctions, consideration, search) as *worked examples to learn the pattern from* — including how to handle classes not listed; **`references/estimation-and-gradients.md`** has the estimator / gradient / Monte-Carlo recipes and a recovery-harness skeleton.
 
 ## Tooling (R / Julia / Python)
 
