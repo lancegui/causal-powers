@@ -69,6 +69,7 @@ the plugin also ships:
 
 - **A SessionStart hook** (`hooks/`) that injects a compact always-on block — the
   creed, the never-change-the-goal-behind-the-user's-back rule, the
+  write-it-down-before-you-build rule (plan / spec / model card), the
   frame→approve→execute→verify spine, and a silent-failure + economist red-lines
   card — so the discipline is present by default, not contingent on a skill
   triggering.
