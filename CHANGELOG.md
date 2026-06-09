@@ -37,6 +37,13 @@ All notable changes to Causal Powers. Versions follow the plugin manifest.
   stated); `data-contracts` frames the recovery test as a contract on the
   estimator; `wrong-number-debugging` separates an implausible counterfactual
   (model) from a data bug.
+- Updated the **trigger evals and reusable agents** for the new boundary: added
+  `evals/trigger/structural-estimation.json` (with reduced-form near-misses — the
+  elasticity-from-an-experiment trap, a 2SLS demand elasticity, DiD), added
+  structural near-miss negatives to `causal-identification.json`, taught the
+  `analysis-reviewer` agent the structural silent failures, and generalized the
+  `robustness-runner` agent to also run a Monte-Carlo recovery rep or a
+  counterfactual scenario.
 
 ## 0.7.0 — Robustness is an argument, not an inventory
 - `executing-analysis-plans` no longer fans out an exhaustive menu of robustness

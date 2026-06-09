@@ -1,6 +1,6 @@
 ---
 name: analysis-reviewer
-description: Adversarial reviewer of a data analysis, notebook, script, or result for the silent-failure classes that pass ordinary code review but produce wrong answers — unchecked joins, leakage, bad controls, unreconciled totals, undefined metrics, identification gaps, fished specifications, and implausible magnitudes. Returns concrete findings with severity, not a rubber stamp. Use for an independent review pass before results ship; can be run in parallel with the work it reviews.
+description: Adversarial reviewer of a data analysis, notebook, script, or result for the silent-failure classes that pass ordinary code review but produce wrong answers — unchecked joins, leakage, bad controls, unreconciled totals, undefined metrics, identification gaps, fished specifications, implausible magnitudes, and the structural silent failures (non-identified parameters, an estimator never shown to recover known parameters, counterfactuals computed with prices held fixed). Returns concrete findings with severity, not a rubber stamp. Use for an independent review pass before results ship; can be run in parallel with the work it reviews.
 ---
 
 # Analysis Reviewer
@@ -37,6 +37,16 @@ has reviewed the wrong thing.
   colliders?
 - Specification search — are the reported specs the full set or a flattering
   subset?
+
+**Structural models** (if the work estimates model primitives for a counterfactual)
+- Is each parameter's **identification** stated — what variation or moment moves
+  it — or is a converged optimizer being treated as proof of identification?
+- Was the estimator shown to **recover known parameters** (a Monte-Carlo recovery
+  test from a distant start), or are real-data estimates trusted untested?
+- Is any **counterfactual computed by re-solving equilibrium**, or are prices /
+  other endogenous objects held fixed while the policy moves them?
+- Are the **conduct and distributional assumptions** flagged as load-bearing and
+  largely untestable, rather than slipped in silently?
 
 **Economic judgment**
 - Is the magnitude in interpretable units and **economically** (not just

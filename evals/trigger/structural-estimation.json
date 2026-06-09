@@ -1,0 +1,22 @@
+[
+  {"query": "i've got market-level data on ~40 regional markets for laundry detergent — prices, unit shares, pack size, brand dummies, and a cost shifter (wood-pulp price). two of the top brands are merging and legal wants me to predict the price effect and the consumer harm. how do i set this up?", "should_trigger": true},
+  {"query": "estimate a random coefficients logit demand on the car data (price, hp, mpg, size by model-year-region) and back out the markups and marginal costs", "should_trigger": true},
+  {"query": "i want the consumer welfare gain from introducing a new low-cost product into this market — i have the existing products' shares and characteristics but obviously not the new one's sales", "should_trigger": true},
+  {"query": "we have a panel of bus-engine replacement decisions by mileage, rust-style. i want to recover the maintenance cost function so i can simulate how a fuel subsidy would change replacement timing", "should_trigger": true},
+  {"query": "fit a sequential search model to our clickstream + purchase logs to recover the search-cost distribution, then tell me what the purchase rate would be if we cut search frictions to zero", "should_trigger": true},
+  {"query": "a lot of our non-buyers probably just never consider us. can i estimate a limited consideration model to separate 'didn't want it' from 'never saw it'? i have ad-exposure i can use as a shifter", "should_trigger": true},
+  {"query": "structural entry model for retail pharmacies — estimate the fixed cost of entry and the competitive effect of a rival store, then simulate how many would enter if zoning costs dropped 30%", "should_trigger": true},
+  {"query": "i have first-price sealed-bid auction data for timber tracts and want to recover the distribution of bidder valuations so i can evaluate setting a reserve price", "should_trigger": true},
+  {"query": "before i trust my BLP estimates i want to be sure the estimator actually works — how do i simulate data at known parameters and confirm the optimizer recovers them?", "should_trigger": true},
+  {"query": "the numerical gradient on my GMM demand estimator is painfully slow and the optimizer keeps stalling — can i derive the analytical gradient market by market to speed it up?", "should_trigger": true},
+  {"query": "we randomly offered 10% of subscribers a 15% discount last quarter and the rest nothing; estimate the price elasticity of demand from that experiment", "should_trigger": false},
+  {"query": "estimate the effect of the 2018 soda tax on soda sales using neighboring untaxed cities as the comparison group", "should_trigger": false},
+  {"query": "i have a cost-shifter instrument for price and just want the demand elasticity via 2SLS, nothing structural", "should_trigger": false},
+  {"query": "tighten the intro of my BLP demand paper, the referee says the contribution is buried under notation", "should_trigger": false},
+  {"query": "format my random-coefficients estimates into a LaTeX table with standard errors in parentheses below each coefficient", "should_trigger": false},
+  {"query": "write a related-work paragraph on the Berry-Levinsohn-Pakes random-coefficients demand literature for my lit review", "should_trigger": false},
+  {"query": "my pyblp install fails with a numpy/scipy version conflict on the cluster, how do i fix the environment", "should_trigger": false},
+  {"query": "explain intuitively what a random coefficient in a demand model actually means, i'm prepping a lecture for first-years", "should_trigger": false},
+  {"query": "just compute average price and total units sold per brand per quarter from the scanner data, no modeling", "should_trigger": false},
+  {"query": "build a model to forecast next month's units sold per SKU from price, promo flags, and seasonality", "should_trigger": false}
+]

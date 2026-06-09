@@ -18,5 +18,8 @@
   {"query": "rephrase my referee response where i defend the parallel trends assumption, i want it firmer but polite", "should_trigger": false},
   {"query": "i need to merge my treatment-assignment file with the outcomes panel on unit and year before i can do anything", "should_trigger": false},
   {"query": "make a slide that explains our RDD findings to non-technical execs without the jargon", "should_trigger": false},
-  {"query": "explain intuitively why fixed effects don't control for time-varying confounders, i'm prepping for a class", "should_trigger": false}
+  {"query": "explain intuitively why fixed effects don't control for time-varying confounders, i'm prepping for a class", "should_trigger": false},
+  {"query": "i have prices, unit shares, and product characteristics for breakfast cereals across 50 cities and want to estimate demand then simulate a merger between two of the manufacturers", "should_trigger": false},
+  {"query": "what would consumer surplus be if a new entrant added a product to this market? i have the current products' shares and attributes and want to predict the welfare gain", "should_trigger": false},
+  {"query": "recover the marginal costs behind these observed prices from a random-coefficients demand model so i can run a pass-through counterfactual", "should_trigger": false}
 ]
