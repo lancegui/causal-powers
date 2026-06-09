@@ -26,6 +26,7 @@ trace). Three-language throughout: **R, Julia, Python**.
 | `causal-identification` | State & test identification assumptions; mandatory robustness for DiD/IV/RDD/etc. — the reduced-form workflow | (none — domain core) |
 | `structural-estimation` | Estimate model primitives for counterfactuals the data can't contain: write the model card and get approval, prove recovery by Monte Carlo, derive analytical gradients group-by-group, re-solve equilibrium one scenario per mechanism — the structural workflow | (none — domain core) |
 | `analysis-review` | Review an analysis for silent-failure classes; verify review feedback | `requesting`/`receiving-code-review` |
+| `project-organization` | Paper-centric research-repo structure (pipeline stages × subject subfolders, `data/{raw,intermediate,output}`), standardized naming, gitignore the scratch; enforced throughout and tidied before git | (none — research-specific) |
 
 Two cross-cutting **craft principles** — *goal-driven execution* (a data contract
 is a success criterion; loop until verified) and *think before coding* (surface
@@ -124,7 +125,7 @@ git clone https://github.com/lancegui/causal-powers
 
 ```
 causal-powers/
-├── skills/        # the 12 disciplines (gateway + 11)
+├── skills/        # the 13 disciplines (gateway + 12)
 ├── agents/        # robustness-runner, analysis-reviewer
 ├── hooks/         # SessionStart always-on injection
 ├── docs/          # design specs + LESSONS.md
