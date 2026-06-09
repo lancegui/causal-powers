@@ -63,6 +63,18 @@ Execution is not "run to the end and show the user." After each spine step and a
 - **Validate** the result against its contract (`data-contracts`); reconcile totals; if a number looks wrong, switch to `wrong-number-debugging`.
 - **Checkpoint** any consequential decision that surfaced (`analysis-checkpoints`) — execution is exactly when "the data surprised us, let's change the design" arises, and that is the user's call, not a step you take to keep moving.
 
+## Keep the plan live, and compact at phase boundaries
+
+A long analysis with many mid-step fixes drags context until quality degrades and auto-compaction fires at a random, lossy moment — losing the gotchas and decisions you can't afford to lose. Don't wait for that. **Actively maintain the plan/brief/model card as you go** — mark steps done, record the gotcha you just hit, revise the next step — it's a living document you keep current, not something you wrote once at the start.
+
+When a coherent **phase finishes** — the dataset is built and validated, the primary spec is estimated, the recovery passes, a counterfactual is done, a result is verified — proactively, in order:
+
+1. **Update the durable plan document so it stands on its own**: the **decisions locked** (and why), the **state and key insight** discovered so far, and the **concrete next steps written as resume-from-clean-slate instructions** (e.g. "POST-COMPACT: build the PPML death moment on Option B, then FD-verify the jacobian, then MC-recover all params under the mixed objective"). Mirror it in your todos (done ✓ / queued). Persist it to a file in the repo — not the chat.
+2. **Offer to compact**: "this is a clean point to `/compact` — the plan doc carries the decisions, the insight, and the next steps, so we resume on a clean slate without losing anything." You can't compact yourself (the user runs `/compact`), so *suggest* it — at real phase boundaries only, never mid-step, and easy to wave off.
+3. On resume, **re-read the plan document** and continue from its next-steps list.
+
+The test: **if the conversation were compacted right now, could a clean session pick up from the plan document alone?** If not, the document isn't finished — write the missing state *before* you suggest the compact. This is what makes the whole "write it down before you build" rule pay off: durable state in the file is exactly what lets a long, fix-heavy session compact safely.
+
 ## Synthesis
 
 When the fan-out completes, assemble — don't just dump:
