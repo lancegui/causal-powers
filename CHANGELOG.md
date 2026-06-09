@@ -2,6 +2,45 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.10.0 — `project-organization`, the compaction discipline, and a full audit pass
+
+**New skill — `project-organization`.** A standalone discipline for organizing an
+empirical/structural research repo (not a single-language ML-product template):
+paper-centric pipeline stages × subject subfolders (data stage included),
+`data/{raw,intermediate,output}`, standardized naming, and a before-git cleanup
+pass. Track the data a replicator needs; gitignore only secrets, sensitive data,
+and files past GitHub's ~100 MB limit (shrink oversized-but-shareable files to
+parquet/tsv first). Enforced throughout, tidied before commit; offer-don't-delete.
+
+**Actively maintain the plan; compact at phase boundaries.** The plan/brief/model
+card is a living document you update as you go; at each finished phase (after a
+spine step / fan-out assembly) write the decisions + insight + concrete
+POST-COMPACT next steps into it and **offer to compact**, so a long, fix-heavy
+session resumes on a clean slate from the document alone.
+
+**Family audit pass (Tiers 1–3) — see `docs/2026-06-09-family-audit-and-map.md`.**
+A six-auditor review across fluff, LLM-workflow clarity, HITL triggering, and
+pipeline holes, with every finding fixed:
+- **HITL gates moved onto the always-on card** (the only reliably-loaded surface):
+  the robustness-shortlist STOP, sample drops (drop/winsorize/filter), and a
+  restoring fix that moves an already-seen number. Plus a **non-interactive
+  fallback** (batch/cron: stop at the last validated state, return
+  options+recommendation, never resolve silently).
+- **Closed the dangling handoffs:** `question-framing` now has an explicit "is this
+  confirmatory? → pre-analysis-plan" gate; `result-verification` makes "dispatch
+  `analysis-reviewer`" and "tidy with `project-organization`" real steps; the PAP
+  blinding gate moved to "before touching outcome data"; a verification check that
+  fails now stops rather than shipping behind a caveat.
+- **Always a plan**, with an observable trigger replacing the unmeasurable
+  ~10-minute one; "check it" = invoke the Skill tool; the `analysis-checkpoints`
+  contradiction resolved with a tiebreaker.
+- **structural-estimation:** pipeline collapsed to `MODEL CARD → APPROVAL`,
+  mid-pipeline gate hardened, the missing **VALIDATE FIT** section added, the
+  Hessian ridge-check made imperative, "report a range" given a method.
+- **De-fluff:** halved the model-card section, de-duplicated repeated rules to
+  one-liner-plus-pointer, fixed reference-code skeletons. Kept the load-bearing
+  repetition (the never-change-the-goal rule in every sibling list).
+
 ## 0.9.1 — The plan/spec/model-card discipline, made a rule
 - **Elevated "write it down before you build" to a first-class always-on rule**
   (the SessionStart hook card and the `using-causal-powers` gateway), co-equal
