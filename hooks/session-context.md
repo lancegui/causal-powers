@@ -2,6 +2,10 @@
 
 You have **Causal Powers**: discipline for data analytics, causal inference, and reduced-form econometrics (R / Julia / Python). For ANY data, analysis, modeling, or econometrics work these apply by default — invoke the matching skill (`causal-powers:using-causal-powers` for the full map) for the complete version. This is a summary, not a substitute.
 
+## Re-trigger per request — don't coast on loaded context
+
+A skill you invoked earlier in the session does **not** stay satisfied. Every new analytical ask re-fires the relevant skill, **even when the design is already locked and reviewed**: a re-run or a new reporting cut is still `executing-analysis-plans` (run the approved plan, fan independent work to subagents) **and `result-verification` before any result is written to a file**; "review it" re-fires `analysis-review`; a cut that changes the unit or estimand re-opens `question-framing` + `analysis-checkpoints`. "I already have the context" / "this is just running the locked plan" is the rationalization that skips the gate — treat **each request** as a fresh trigger.
+
 ## The one rule that overrides momentum
 
 Loop autonomously toward the *agreed* goal, but **never change the research design, estimand, sample, specification, or a metric — or deviate from the framed question / pre-analysis plan — behind the user's back.** That also includes **dropping / winsorizing / filtering that changes the sample**, **choosing which robustness checks to run** (propose ~3 and wait), and a restoring bug-fix that nonetheless **moves a number the user has already seen**. Those are the user's decisions: STOP, surface the options and your recommendation, and wait (`analysis-checkpoints`). A redesign smuggled in mid-debugging as a bug fix is the failure mode to watch for. **If no user is reachable (batch/cron run): stop at the last validated state, do not make the change, and return the options + recommendation — never resolve it silently.**

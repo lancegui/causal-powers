@@ -11,6 +11,8 @@ Code review asks "is this code correct?" Analysis review asks a harder question:
 
 **Core principle:** Review the path from data to claim, not just the code. The question is never "does it run?" — it's "would I bet the decision on this number?"
 
+**"Review it" re-fires this skill every time — including mid-session.** A design you reviewed last week, or earlier in this conversation, doesn't stay reviewed: a new cut, a re-run, or a fresh "does this look right?" is a new artifact to review from scratch. Don't answer from loaded context ("I already looked at this") — re-run the checklist against *this* result.
+
 ## Reviewing an analysis — the checklist
 
 Work down from the conclusion to the data. Each item is a class of silent error that survives ordinary code review:

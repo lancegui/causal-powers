@@ -2,6 +2,20 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.10.2 — Re-trigger per request (don't coast on a locked design)
+- Added the **re-trigger rule** to the always-on hook card and the
+  `using-causal-powers` gateway: a skill invoked earlier in the session does not
+  stay satisfied. Every new ask re-fires the relevant skill **even on an
+  already-locked, already-reviewed design** — a re-run or a finer reporting cut is
+  still `executing-analysis-plans` + `result-verification` *before any result is
+  written to a file*; "review it" re-fires `analysis-review`; a cut that changes
+  the unit/estimand re-opens `question-framing` + `analysis-checkpoints`. Closes
+  the real-world failure where "this is just running the locked plan" skipped the
+  execute/verify gates and shipped an unverified new cut.
+- Reinforced in `executing-analysis-plans` (a new cut on a locked plan re-fires
+  this skill, ends in verification) and `analysis-review` ("review it" re-fires
+  every time, including mid-session — don't answer from loaded context).
+
 ## 0.10.1 — archive folders + manifest listing
 - `project-organization`: added a per-category **`archive/`** for old runs that are
   no longer used but worth keeping (a superseded spec, last quarter's results, a
