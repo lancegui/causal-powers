@@ -43,6 +43,7 @@ Test: **"Could the owner of this notebook review my diff in two minutes and agre
 
 `question-framing` handles assumptions about the *metric*. This is the same discipline for the *method and the code*:
 
+- **Plan before anything beyond a quick fix — the ~10-minute rule.** If the change is more than roughly ten minutes of surgical work — a real new transform, a model, a non-trivial fix, anything with a *decision* in it — write a short plan/spec first (what you'll do, the approach and its key choices, what "done" looks like) and confirm it *before* you start coding. This holds **wherever you were dropped into the task**: being asked to "just estimate this", "fix that", or "add this analysis" mid-stream is not a licence to dive in — back up, write the few-line plan, confirm, then code. A genuine sub-10-minute edit (a rename, a column, a one-liner) you just do. The threshold isn't ceremony: anything bigger carries choices that are far cheaper to correct on three lines of plan than in written code.
 - **State your assumptions about the data and the approach** before you write the transform — the grain you're assuming, the join you're about to do, the model you're reaching for. Surface them so they can be corrected cheaply now rather than debugged later.
 - **Present competing approaches instead of silently picking one.** If there are two reasonable ways to compute or model this with a real tradeoff (a fast approximate aggregation vs. an exact slow one; FE vs. random effects), name the tradeoff and let the user choose rather than quietly deciding.
 - **Name confusion instead of coding through it.** If the request is ambiguous or the data doesn't look like you expected, stop and say so. Guessing and building on the guess is the expensive path.
@@ -55,6 +56,7 @@ Test: **"Could the owner of this notebook review my diff in two minutes and agre
 - Writing error handling for inputs the data cannot produce.
 - Deleting pre-existing dead code that wasn't part of your task.
 - Silently picking between two materially different analytical approaches without surfacing the tradeoff.
+- Diving into a change that's clearly more than ~10 minutes of work — or starting at the step the user pointed you to mid-task — without writing a short plan first.
 - A 200-line cell doing what 50 readable lines would.
 
 ## Common rationalizations
@@ -67,6 +69,7 @@ Test: **"Could the owner of this notebook review my diff in two minutes and agre
 | "I rewrote it in my preferred style." | The owner has to maintain it in theirs. Match the file, not your taste. |
 | "I picked the better method to save a round-trip." | If the tradeoff is real, the choice is the user's. Surfacing it costs one sentence; the wrong silent choice costs the analysis. |
 | "More error handling is safer." | Handling impossible inputs is noise that hides the checks that matter. Assert the real invariants (`data-contracts`); skip the rest. |
+| "It's faster to just start coding." | For anything past a quick fix, three lines of plan first is faster than rewriting code built on the wrong approach. Plan, confirm, then code. |
 
 ## Relationship to sibling skills
 

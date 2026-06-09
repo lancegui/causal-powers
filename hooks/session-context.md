@@ -10,6 +10,8 @@ Loop autonomously toward the *agreed* goal, but **never change the research desi
 
 frame the question → (pre-analysis plan, if confirmatory) → **write the brief/PAP to a file and get the user's approval** → execute (fan independent specs out to subagents) → verify → review. Do not barrel from framing straight into estimation on your own reading; the approval gate is real.
 
+**Plan before substance — the ~10-minute rule.** Anything beyond a quick (~10-minute) surgical fix gets a short written plan/spec and a confirm *before* you code — and this holds **wherever you're dropped into the task**: "just estimate this / fix that / run the counterfactual" mid-stream is not a licence to dive in; back up, write the few-line plan, confirm, then proceed. Sub-10-minute edits (a rename, a column, a one-liner) you just do.
+
 ## Silent-failure red-lines (the bugs that don't throw)
 
 - Declare and assert join cardinality (1:1 / 1:m / m:m) and row counts around **every** merge; reconcile totals to source.
