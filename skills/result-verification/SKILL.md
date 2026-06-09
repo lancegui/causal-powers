@@ -31,6 +31,14 @@ Run these before any result leaves your hands. Each maps to a real way final num
 
 7. **For a structural estimate, verification carries extra load-bearing checks** beyond reconcile-and-reproduce: the Monte-Carlo recovery passed (the estimator recovers known θ from a distant start); the model fits moments it wasn't targeted on and holds up out-of-sample; the counterfactual was computed by *re-solving equilibrium*, not holding endogenous objects fixed; and the implied object (e.g. the own-price elasticity at observed prices) reconciles with the raw descriptive picture. A counterfactual that only exists because prices were held fixed is not verified. See `structural-estimation`.
 
+8. **For a confirmatory result, reconcile against the pre-analysis plan.** Was the reported number the pre-committed primary spec, interpreted against the PAP's decision rule, with secondary tests corrected as pre-registered? **Report a pre-registered null as a finding** — don't bury it (`pre-analysis-plan`).
+
+9. **Get an independent pass, then tidy — before you report.** Dispatch the **`analysis-reviewer`** agent for a fresh-context review of your *own* work (it catches what you rationalized), and tidy the workspace so what ships is deliverables, not scratch (**`project-organization`**). These are steps of verification, not optional extras the user has to ask for.
+
+## A check failed — stop, don't ship behind a caveat
+
+If a check here fails and you cannot resolve it — a total won't reconcile, the estimate swings wildly under a reasonable perturbation, the magnitude is absurd — **stop and bring the failure to the user as a decision.** Do not report the result anyway with the problem buried in a caveat; "evidence before assertion" means a failed check blocks the claim, not footnotes it. (Where the fix is a data bug, route to `wrong-number-debugging`; where it's a design/sample/spec change, to `analysis-checkpoints`.)
+
 ## Read the estimate like an economist
 
 A coefficient that reconciles and reproduces can still be economically meaningless or absurd. Reproducibility tells you the number is *real*; this tells you whether it's *believable* and whether it *matters*. A senior economist won't accept an estimate until it passes here:
@@ -53,7 +61,7 @@ Once it passes, snapshot it as a golden output (see `data-contracts`). The verif
 
 ## Capture what bit you
 
-Before you close out, do a 60-second retro: **what silent failure actually bit this project** — the fan-out join, the leaked feature, the bad control, the implausible magnitude you almost shipped? Write it down in a `docs/LESSONS.md` (one line: the symptom, the cause, the check that would have caught it). This is the manual, no-machinery version of learning: a lesson recorded is a bug that won't recur silently. And when a lesson is *general* — it would bite any analysis, not just this one — fold it into the relevant skill (a new red-flag, a sharper check) so the whole family gets better. Lessons that stay in your head decay; lessons in `LESSONS.md` and the skills compound.
+Before you close out, do a 60-second retro: **what silent failure actually bit this project** — the fan-out join, the leaked feature, the bad control, the implausible magnitude you almost shipped? Write it down in a `docs/LESSONS.md` (one line: the symptom, the cause, the check that would have caught it). This is the manual, no-machinery version of learning: a lesson recorded is a bug that won't recur silently. And when a lesson is *general* — it would bite any analysis, not just this one — it's worth folding into the relevant skill (a new red-flag, a sharper check) so the whole family gets better — but **editing the skill files is itself a change that needs sign-off**: propose it to the user (or leave the note in `docs/LESSONS.md`), don't silently rewrite the skill family mid-analysis. Lessons that stay in your head decay; lessons in `LESSONS.md` and the skills compound.
 
 ## Language cheat-sheet
 
@@ -90,6 +98,7 @@ Before you close out, do a 60-second retro: **what silent failure actually bit t
 - For confirmatory studies, the robustness suite here is the one locked in **`pre-analysis-plan`**.
 - For causal results, **`causal-identification`** supplies the design-specific robustness (placebo, pre-trends, sensitivity) that verification must include.
 - For structural results, the recovery test, out-of-sample fit, and the equilibrium-re-solved counterfactual are part of verification — see **`structural-estimation`**.
+- Before reporting, get an independent pass from the **`analysis-reviewer`** agent and tidy the repo with **`project-organization`** — both are verification steps, not separately-triggered favors.
 
 ## The bottom line
 

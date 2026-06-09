@@ -34,13 +34,12 @@ REPRODUCE  →  LOCATE (bisect)  →  EXPLAIN  →  FIX AT THE SOURCE  →  RE-C
 
 3. **EXPLAIN** — Once you've found the stage, explain *why* in one sentence before touching code. "The join fanned out because `customer_id` is not unique in the orders table." If you can't articulate the mechanism, you haven't found the bug yet — keep bisecting.
 
-4. **FIX AT THE SOURCE — but first, is it a fix or a redesign?** Two very different things hide under "fix the cause":
+4. **FIX AT THE SOURCE — but first answer the dividing question:** *am I restoring the analysis we agreed on, or changing it?* Answer it before you touch anything; the two branches are very different:
    - **Data-bug fix** (restores the intended computation): the join fanned out, so dedup the right table or aggregate before joining; the units were wrong, so correct them; the date parse broke, so repair it. This returns the analysis to what was already agreed — **do it, then report what you found and fixed.** (Don't slap a `distinct()` on the final output to paper over tripled rows — fix the key, not the symptom.)
    - **Analytical-design change** (changes what is being estimated): the bug is real, but the remedy would change the design, the spec, the sample, or the estimand. **This is not yours to do — STOP and route it through `analysis-checkpoints`.** Present the threat, the candidate remedies, and your recommendation, and let the user decide. Implementing the redesign and presenting it as "the fix" is exactly the behind-the-back decision to avoid.
+   - **The trap:** *winsorizing, dropping outliers, adding a control, or restricting the sample* feels like cleaning but is a **sample/spec change** — it belongs on the design side (STOP), not the data-bug side. And a genuine data-bug fix that nonetheless *moves a number the user has already seen* still gets surfaced before you build on it.
 
-   The dividing question: *am I restoring the analysis we agreed on, or changing it?*
-
-5. **RE-CONTRACT** — Add a `data-contracts` check that would have caught this, and watch it bite on the broken version. A bug you found once should never silently return.
+5. **RE-CONTRACT** — Add a `data-contracts` check that would have caught this, and watch it bite on the broken version. A bug you found once should never silently return. (If the user approved a *redesign* in the branch above, the new spec re-enters at REPRODUCE — it's a new result to validate, not a closed bug.)
 
 ## Trace provenance backward — the usual culprits
 

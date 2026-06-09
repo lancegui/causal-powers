@@ -43,9 +43,9 @@ CONTRACT  →  CHECK IT BITES  →  COMPUTE  →  RECONCILE  →  FREEZE
 ```
 
 1. **CONTRACT** — Before computing, write down what must be true: row counts, key uniqueness, value ranges, totals that must reconcile, allowed categories, types and units. (See the invariant catalog below.)
-2. **CHECK IT BITES** — Confirm the check actually *fails* on bad data. Feed it a deliberately broken row, or recall a real past incident, and watch the assertion trip. **A check that cannot fail proves nothing** — this is the analytics form of TDD's "watch the test fail." If you've never seen it red, you don't know it's testing anything.
+2. **CHECK IT BITES** — Confirm the check actually *fails* on bad data: **feed it one deliberately broken row and watch the assertion trip.** (Recalling a past incident motivates *writing* the check; it is not a substitute for seeing it go red.) **A check that cannot fail proves nothing** — the analytics form of TDD's "watch the test fail." If you've never seen it red, you don't know it's testing anything.
 3. **COMPUTE** — Do the transform / aggregation / model.
-4. **RECONCILE** — Run the contract against the result. Reconcile totals back to the source ("do my segment revenues sum to the grand total I started with?"). Mismatch = stop and investigate, do not proceed.
+4. **RECONCILE** — Run the contract against the result. Reconcile totals back to the source ("do my segment revenues sum to the grand total I started with?"). Mismatch = **stop; route to `wrong-number-debugging`** to bisect to the bad step — don't patch and proceed. And if the "fix" would drop/winsorize/filter rows or move a number the user has already seen, that's a *sample/spec change*, not an autonomous fix → **`analysis-checkpoints`**.
 5. **FREEZE** — Once a result is validated, snapshot it as a **golden / reference output** (a small committed CSV/parquet, or stored summary stats). Future re-runs and refactors compare against it, so a silent drift becomes a loud failure instead of a number nobody noticed changed.
 
 ## Join cardinality — the single highest-yield contract
@@ -142,6 +142,7 @@ Use floating-point-aware comparison (`np.isclose` / `all.equal` / `isapprox`) fo
 
 - Frame the question and the metric definitions first with **`question-framing`**; lock confirmatory specs with **`pre-analysis-plan`**.
 - When a validated number still comes out **wrong or surprising**, switch to **`wrong-number-debugging`** — bisect the pipeline to find where the data went bad.
+- When a failed contract tempts you to drop rows, change a join's grain, winsorize, or alter a number the user has seen, that "fix" may be a redesign — route it through **`analysis-checkpoints`** before applying it, don't smuggle it in.
 - Before **claiming an analysis is done or reporting a finding**, use **`result-verification`**.
 - For any **causal** claim, the contracts here are necessary but not sufficient — see **`causal-identification`**.
 - For **structural** work, the same discipline applies to the estimator: the Monte-Carlo recovery test is a data contract on the algorithm — assert that it recovers known θ, then freeze that as a golden baseline (**`structural-estimation`**).
