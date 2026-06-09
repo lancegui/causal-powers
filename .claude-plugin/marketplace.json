@@ -1,6 +1,6 @@
 {
   "name": "causal-powers",
-  "description": "Causal Powers — a skills library for data analytics, causal inference, and reduced-form econometrics.",
+  "description": "Causal Powers — a skills library for data analytics, causal inference, and reduced-form and structural econometrics.",
   "owner": {
     "name": "Lance Gui",
     "email": "lance.guixiaofan@gmail.com"
@@ -8,8 +8,8 @@
   "plugins": [
     {
       "name": "causal-powers",
-      "description": "Superpowers for data analytics, causal inference, and econometrics: data contracts, join-cardinality checks, wrong-number debugging, result verification, pre-analysis plans, causal identification, analysis craft, human-in-the-loop checkpoints, and plan execution with parallel subagents. R, Julia, and Python.",
-      "version": "0.7.0",
+      "description": "Superpowers for data analytics, causal inference, and econometrics: data contracts, join-cardinality checks, wrong-number debugging, result verification, pre-analysis plans, causal identification, structural estimation (demand/BLP, dynamic discrete choice, games, auctions, consideration, search), analysis craft, human-in-the-loop checkpoints, and plan execution with parallel subagents. R, Julia, and Python.",
+      "version": "0.8.0",
       "source": "./",
       "author": {
         "name": "Lance Gui",

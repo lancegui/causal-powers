@@ -2,6 +2,29 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.8.0 — Structural estimation (the structural workflow)
+- Added `structural-estimation`: the structural counterpart to
+  `causal-identification`. A model-agnostic discipline across IO structural
+  models — differentiated-products demand (logit/random-coefficients/BLP) +
+  supply, single-agent dynamic discrete choice, entry/dynamic games, auctions,
+  limited consideration, and search.
+- Core moves: justify going structural over reduced form (the Lucas-critique
+  fork); **write the model spec — primitives, identification, estimand,
+  estimation plan — to a file and get approval before estimation** (the
+  structural pre-analysis-plan); name what identifies **each** parameter;
+  **prove the estimator recovers known θ by Monte Carlo before trusting real
+  data** (converge back from a distant start; map the objective surface — a flat
+  direction is non-identification); derive **analytical gradients group-by-group**
+  when the estimator (GMM/MoM, NLS, MSL) admits them, and check them against
+  finite differences; and **re-solve equilibrium** for counterfactuals with one
+  scenario per mechanism.
+- Reference cards: `references/model-classes.md` (per-class primitives /
+  identification / counterfactual) and `references/estimation-and-gradients.md`
+  (estimators, the group-by-group gradient structure, a Monte-Carlo-recovery
+  harness skeleton, inference, reproducibility).
+- Wired the **reduced-form vs. structural fork** into `using-causal-powers` and
+  the always-on SessionStart hook card.
+
 ## 0.7.0 — Robustness is an argument, not an inventory
 - `executing-analysis-plans` no longer fans out an exhaustive menu of robustness
   checks. It names the main identifying threat, proposes the ~3 checks that would

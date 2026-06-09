@@ -24,4 +24,10 @@ frame the question → (pre-analysis plan, if confirmatory) → **write the brie
 - An implausible magnitude is something to investigate or explain with a mechanism — never to report with a shrug.
 - Robustness is an argument, not an inventory: propose the ~3 checks that probe the main threat and get approval — never fan out an exhaustive menu. More checks ≠ more credibility.
 
-Skills: using-causal-powers · question-framing · pre-analysis-plan · data-contracts · analysis-craft · analysis-checkpoints · executing-analysis-plans · wrong-number-debugging · result-verification · causal-identification · analysis-review.
+## Reduced-form vs. structural (pick the workflow)
+
+- If the decision lives **inside** the data ("did it work?", effect of what we ran) → reduced form (`causal-identification`); fewer assumptions, more credible.
+- If it needs a world you haven't observed, welfare, or a mechanism the data can't separate (merger, new product, taste-vs-awareness) → structural (`structural-estimation`). Don't go structural for its own sake.
+- Structural red-lines: **write the model spec (primitives, per-parameter identification, target counterfactual, estimation plan) to a file and get approval before building the estimation machinery** — it's the structural pre-analysis-plan. A converged optimizer is **not** an identified model — name what identifies each primitive, and **prove the estimator recovers known θ by Monte Carlo before trusting real data** (map the objective surface; a flat direction = not identified). Derive analytical gradients group-by-group when the estimator admits them, and check them against finite differences. Counterfactuals **re-solve equilibrium** (never hold prices fixed) — one scenario per mechanism. Re-specifying the model mid-estimation to fix a magnitude is a user decision, not a silent fix.
+
+Skills: using-causal-powers · question-framing · pre-analysis-plan · data-contracts · analysis-craft · analysis-checkpoints · executing-analysis-plans · wrong-number-debugging · result-verification · causal-identification · structural-estimation · analysis-review.

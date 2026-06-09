@@ -23,7 +23,8 @@ trace). Three-language throughout: **R, Julia, Python**.
 | `executing-analysis-plans` | Drive an approved plan: sequential spine validated in order, independent specs/designs fanned out to parallel subagents | `executing-plans` / `subagent-driven-development` |
 | `wrong-number-debugging` | Bisect the pipeline to the step where the number went bad | `systematic-debugging` |
 | `result-verification` | Reconcile, reproduce from clean state, attack with robustness, before reporting | `verification-before-completion` |
-| `causal-identification` | State & test identification assumptions; mandatory robustness for DiD/IV/RDD/etc. | (none — domain core) |
+| `causal-identification` | State & test identification assumptions; mandatory robustness for DiD/IV/RDD/etc. — the reduced-form workflow | (none — domain core) |
+| `structural-estimation` | Estimate model primitives for counterfactuals the data can't contain: write the model spec and get approval, prove recovery by Monte Carlo, derive analytical gradients group-by-group, re-solve equilibrium one scenario per mechanism — the structural workflow | (none — domain core) |
 | `analysis-review` | Review an analysis for silent-failure classes; verify review feedback | `requesting`/`receiving-code-review` |
 
 Two cross-cutting **craft principles** — *goal-driven execution* (a data contract
@@ -38,8 +39,12 @@ prior on sign, magnitude, and mechanism before the data (`question-framing`);
 read every estimate in interpretable units and judge economic — not just
 statistical — significance, plausibility, and fit with the literature
 (`result-verification`); and start every causal study from "what's your
-experiment?", watching for bad controls (`causal-identification`). The target is
-a senior reduced-form microeconomist's instincts, not a careful RA's checklist.
+experiment?", watching for bad controls (`causal-identification`); and, when the
+question lives outside the data, go structural deliberately — justify it over
+reduced form, name what identifies each primitive, prove the estimator recovers
+truth before trusting it, and re-solve equilibrium for every counterfactual
+(`structural-estimation`). The target is a senior microeconomist's instincts —
+reduced-form *and* structural — not a careful RA's checklist.
 
 ## Why a separate family
 
@@ -49,7 +54,12 @@ shifts every event into the wrong day; train/test overlap makes a metric a fanta
 an identification assumption fails and confounding masquerades as an effect. None
 raise an error. These skills assert everything *around* the answer that must hold
 regardless of the answer — and, for causal work, force the identification
-assumptions to be stated and tested before estimating.
+assumptions to be stated and tested before estimating. Structural work has its own
+silent failure: a misspecified model fits in-sample and lies confidently
+out-of-sample, or a non-identified parameter still gets a number from the
+optimizer — so `structural-estimation` fixes the model and its identification in
+an approved spec, and proves the estimator recovers known parameters before any
+counterfactual is trusted.
 
 ## Beyond skills: always-on layer + agents
 
@@ -113,7 +123,7 @@ git clone https://github.com/lancegui/causal-powers
 
 ```
 causal-powers/
-├── skills/        # the 11 disciplines (gateway + 10)
+├── skills/        # the 12 disciplines (gateway + 11)
 ├── agents/        # robustness-runner, analysis-reviewer
 ├── hooks/         # SessionStart always-on injection
 ├── docs/          # design specs + LESSONS.md
@@ -129,8 +139,8 @@ and the "robustness is an argument" fix.
 ## Contributing & feedback
 
 Issues and PRs welcome. This is opinionated by design — it encodes one senior
-reduced-form microeconomist's instincts — so if you disagree with a default,
-open an issue and make the case.
+microeconomist's instincts, reduced-form and structural — so if you disagree with
+a default, open an issue and make the case.
 
 ## Credits
 
