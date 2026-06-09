@@ -29,6 +29,7 @@ Work down from the conclusion to the data. Each item is a class of silent error 
 - **Leakage:** any feature that encodes the target, any train/test overlap, any future information in a predictor? Leakage is the most common reason a model metric is "too good."
 - **Identification:** for any causal claim, is the design named and are its assumptions stated and tested? (Hand off to `causal-identification` — parallel trends, first-stage F, manipulation test, balance.)
 - **Specification search:** were the reported specs chosen before or after seeing results? Are the robustness checks the complete set, or a flattering subset? (See `pre-analysis-plan`.)
+- **Structural models:** is each parameter's identification stated — what variation or moment moves it? Was the estimator shown to recover known parameters (a Monte-Carlo recovery test), or is a converged optimizer being taken as proof of identification? Is any counterfactual computed by *re-solving equilibrium* rather than holding prices fixed? Is the conduct/distribution assumption flagged as load-bearing and untestable? (Hand off to `structural-estimation`.)
 
 **Reproducibility**
 - Does it **reproduce from a clean state** with a fixed seed, or only inside the author's live session?
@@ -86,6 +87,7 @@ When someone critiques your analysis, the failure mode is reflexive agreement: "
 
 - The integrity checks you look for are defined in **`data-contracts`**; the reproduction check in **`result-verification`**.
 - Identification review hands off to **`causal-identification`**; specification-search review to **`pre-analysis-plan`**.
+- Structural-model review — identification stated per parameter, recovery shown, equilibrium re-solved in counterfactuals — hands off to **`structural-estimation`**.
 - When the review surfaces a wrong number, fixing it is **`wrong-number-debugging`**.
 
 ## The bottom line

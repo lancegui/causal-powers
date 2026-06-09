@@ -24,6 +24,19 @@ All notable changes to Causal Powers. Versions follow the plugin manifest.
   harness skeleton, inference, reproducibility).
 - Wired the **reduced-form vs. structural fork** into `using-causal-powers` and
   the always-on SessionStart hook card.
+- **Wove `structural-estimation` into the whole family** with bidirectional
+  cross-links so it isn't a bolt-on: `question-framing` now treats the
+  reduced-form-vs-structural choice as a *framing* decision (the estimand is a
+  structural counterfactual when the decision needs a world outside the data);
+  `causal-identification` names structural as the other half of the fork;
+  `pre-analysis-plan` notes the model spec as its structural analog;
+  `analysis-checkpoints` adds the structural model/conduct/distribution to the
+  STOP list; `executing-analysis-plans` fans out recovery reps, starts, and
+  per-mechanism counterfactuals; `result-verification` and `analysis-review` add
+  the structural checks (recovery passed, equilibrium re-solved, identification
+  stated); `data-contracts` frames the recovery test as a contract on the
+  estimator; `wrong-number-debugging` separates an implausible counterfactual
+  (model) from a data bug.
 
 ## 0.7.0 — Robustness is an argument, not an inventory
 - `executing-analysis-plans` no longer fans out an exhaustive menu of robustness

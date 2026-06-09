@@ -29,6 +29,8 @@ Run these before any result leaves your hands. Each maps to a real way final num
 
 6. **Tie the artifacts to the prose.** Every number in the text, every figure axis, every table cell — does it match what the code actually produced *in this run*? Stale numbers from an earlier version, a figure that wasn't regenerated, a rounded value that contradicts the table: these are the embarrassing errors that survive everything else because nobody re-checked the copy against the output.
 
+7. **For a structural estimate, verification carries extra load-bearing checks** beyond reconcile-and-reproduce: the Monte-Carlo recovery passed (the estimator recovers known θ from a distant start); the model fits moments it wasn't targeted on and holds up out-of-sample; the counterfactual was computed by *re-solving equilibrium*, not holding endogenous objects fixed; and the implied object (e.g. the own-price elasticity at observed prices) reconciles with the raw descriptive picture. A counterfactual that only exists because prices were held fixed is not verified. See `structural-estimation`.
+
 ## Read the estimate like an economist
 
 A coefficient that reconciles and reproduces can still be economically meaningless or absurd. Reproducibility tells you the number is *real*; this tells you whether it's *believable* and whether it *matters*. A senior economist won't accept an estimate until it passes here:
@@ -87,6 +89,7 @@ Before you close out, do a 60-second retro: **what silent failure actually bit t
 - If verification fails — a total won't reconcile, a number won't reproduce — switch to **`wrong-number-debugging`**.
 - For confirmatory studies, the robustness suite here is the one locked in **`pre-analysis-plan`**.
 - For causal results, **`causal-identification`** supplies the design-specific robustness (placebo, pre-trends, sensitivity) that verification must include.
+- For structural results, the recovery test, out-of-sample fit, and the equilibrium-re-solved counterfactual are part of verification — see **`structural-estimation`**.
 
 ## The bottom line
 

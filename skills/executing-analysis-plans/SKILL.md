@@ -31,7 +31,8 @@ Once the validated dataset and primary spec exist, the supporting analyses are i
 - a genuinely **alternative design**, when one exists;
 - a **pre-specified** subsample / heterogeneity cut (not a fishing sweep);
 - the **secondary outcome** the mechanism predicts;
-- the one **sensitivity analysis** that matters (Oster δ, e-value, bandwidth).
+- the one **sensitivity analysis** that matters (Oster δ, e-value, bandwidth);
+- for **structural** work, the independent pieces are the **Monte-Carlo recovery reps** (across true-θ points and sample sizes), the **multiple starting values** on the non-convex objective, and the **counterfactual scenarios** (one per mechanism) — they fan out the same way (`structural-estimation`).
 
 The approved shortlist reads the *same* validated dataset, so it parallelizes cleanly. Dispatch each chosen task to the **`robustness-runner`** agent that Causal Powers ships — it executes one pre-specified spec, asserts the data contracts, and returns a structured result, stopping if it hits a design decision. Use superpowers' **`dispatching-parallel-agents`** / **`subagent-driven-development`** for the dispatch mechanics.
 
@@ -97,6 +98,7 @@ When the fan-out completes, assemble — don't just dump:
 - Consequential decisions that surface during execution stop at **`analysis-checkpoints`**; wrong numbers go to **`wrong-number-debugging`**; design changes to **`causal-identification`**.
 - Keep the per-step code minimal and surgical with **`analysis-craft`**.
 - Synthesized results go to **`result-verification`** before reporting, and to **`analysis-review`** before they ship.
+- For structural work, this skill carries out the approved **model spec** from **`structural-estimation`** — recovery reps, starts, and per-mechanism counterfactuals fan out like any independent specs.
 
 ## The bottom line
 

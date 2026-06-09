@@ -29,6 +29,8 @@ For a **causal** question, add three more and hand off to `causal-identification
 7. **Counterfactual** — compared to *what*? "Effect" is meaningless without the comparison condition.
 8. **Estimand type** — ATE, ATT, LATE, intent-to-treat? They answer different questions and a stakeholder usually has one in mind without knowing the name.
 
+**If the decision needs a world the data doesn't contain** — a counterfactual you never observe (a merger, a new product, a tax, a removed friction), a welfare or consumer-surplus figure, or an equilibrium response where prices and behavior re-optimize — then the estimand is **not** an effect you can read off a comparison in the data; it's a *structural counterfactual*. Framing it means naming that counterfactual, the primitive that must stay invariant for it to be valid, and the mechanism it runs through — then handing off to `structural-estimation`. This reduced-form-vs-structural choice is a **framing decision, made here by what the decision needs**, not a modeling preference discovered later: if a comparison inside the data answers the question, frame a reduced-form estimand and stop; reach for structural only when the question genuinely lives outside the data.
+
 **Write it down, then confirm before proceeding.** Persist the brief as a short file in the project (e.g. `analysis-brief.md`, or wherever the project keeps docs) rather than holding it only in your head or the chat — a brief you can't point to later is one that will quietly drift. Then present it and get the user's confirmation that the question, metric, and population are right *before* you load data. This is a real stop, not a rhetorical one: the whole point of framing is undone if you frame and immediately barrel into the analysis on your own reading.
 
 ## Form your economic prior — before the data
@@ -56,6 +58,7 @@ When the request is genuinely ambiguous, **state your assumption explicitly and 
 - You're about to load data and you can't state the denominator of the metric in one sentence.
 - The request is a noun, not a question: "user engagement", "the sales data", "churn." Turn it into a decision.
 - "Effect of X" with no stated comparison group or counterfactual.
+- The decision needs a number from a world you never observe (a counterfactual price, a welfare figure, a post-merger equilibrium) but you're framing it as if a comparison already in the data could deliver it — that's a structural estimand (`structural-estimation`), not a reduced-form one.
 - Two stakeholders in the thread who would each define the key metric differently, and nobody has noticed.
 - You're choosing the metric definition based on what's easy to compute rather than what the decision needs.
 
@@ -73,6 +76,7 @@ When the request is genuinely ambiguous, **state your assumption explicitly and 
 - For a confirmatory study, turn the brief into a locked **`pre-analysis-plan`** before seeing outcomes.
 - Once the question is framed, enforce the metric definition with **`data-contracts`**.
 - For causal questions, hand the treatment/counterfactual/estimand to **`causal-identification`**.
+- When the decision needs a counterfactual *outside* the data (welfare, a merger price, an equilibrium response), the estimand is a structural counterfactual — hand off to **`structural-estimation`** (whose model spec is the structural analog of the PAP). The reduced-form-vs-structural fork is decided here, at framing.
 - Once the brief (and PAP, if confirmatory) is approved, **`executing-analysis-plans`** carries the analysis out.
 
 ## The bottom line

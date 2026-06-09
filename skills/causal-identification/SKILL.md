@@ -123,6 +123,7 @@ When a stack lacks a mature implementation (much of staggered-DiD and RDD outsid
 - A causal estimate with the wrong sign or magnitude is often identification, not a data bug — but rule out the data bug with **`wrong-number-debugging`** first.
 - Before reporting, run the design's placebo/sensitivity battery as part of **`result-verification`**.
 - Any change to the design once work is underway is a user decision — route it through **`analysis-checkpoints`**.
+- This is the **reduced-form** half of the fork: when the decision needs a counterfactual *outside* the data (a merger price, consumer welfare, an equilibrium response), a reduced-form design can't reach it — that's the structural workflow, **`structural-estimation`**. The two are partners: a structural model's own elasticity at observed prices should sit in the neighborhood of a credible reduced-form/IV elasticity.
 
 ## The bottom line
 

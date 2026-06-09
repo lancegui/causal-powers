@@ -19,6 +19,7 @@ The test is simple — **does this change what is being estimated, on what data,
 
 ### Decisions that REQUIRE a checkpoint — STOP and ask
 - **Design / identification strategy.** Switching estimators or designs (near-vs-far DiD → triple-difference, OLS → IV, adding/removing a fixed effect that changes identification, changing the comparison group). This is the most commonly smuggled-in change.
+- **The structural model itself.** For structural work: the utility/payoff form, the random-coefficient distribution, the conduct/equilibrium assumption, what's treated as a primitive vs. held fixed or calibrated, and the counterfactual design. These decide what is even being estimated and what the counterfactual means; they belong in the approved model spec, so changing one mid-estimation — switching Nash–Bertrand to collusion, adding a random coefficient to make estimates behave — is a deviation, not a fix (`structural-estimation`).
 - **Any deviation from the framed question or the pre-analysis plan.** The PAP exists precisely so these stops happen. A deviation is allowed — but disclosed and approved, never hidden.
 - **The estimand.** ATE vs. ATT vs. LATE, the population, the time window.
 - **The sample.** Dropping rows, filtering, winsorizing, trimming, excluding outliers, changing inclusion/exclusion rules, restricting to a subsample.
@@ -78,6 +79,7 @@ Goal-driven autonomy (from `analysis-craft` / the gateway) means: iterate freely
 - The agreed goal you're protecting is set by **`question-framing`** and locked by **`pre-analysis-plan`** — a checkpoint is often "this deviates from the PAP."
 - **`wrong-number-debugging`** is where design changes most often get smuggled in as fixes; it routes those here.
 - **`causal-identification`** decides *whether* a design change is warranted; this skill decides *who* gets to authorize it (the user).
+- For structural work, the approved model spec locks the choices this skill protects; re-specifying the model, conduct, or distribution mid-estimation routes here (`structural-estimation`).
 - Restoring vs. redesigning parallels `analysis-craft`'s surgical-change discipline applied to the analysis itself, not just the code.
 
 ## The bottom line

@@ -167,7 +167,8 @@ The pipeline above is model-agnostic, and so is the way you should approach a ne
 - The data feeding the model still needs **`data-contracts`**; the Monte-Carlo recovery harness *is* `data-contracts` discipline applied to the estimator (assert recovery, freeze it as a regression test).
 - A counterfactual that comes out implausible is often the *model*, not a data bug — but rule out the data bug with **`wrong-number-debugging`** first.
 - Any change to the model once estimation is underway is a user decision — route it through **`analysis-checkpoints`**.
-- Before reporting, validate fit out-of-sample as part of **`result-verification`**.
+- Once the spec is approved, **`executing-analysis-plans`** carries it out — the recovery reps, starting values, and per-mechanism counterfactual scenarios fan out to parallel subagents.
+- Before reporting, validate fit out-of-sample as part of **`result-verification`**; have the estimates reviewed for the structural silent failures (non-identification, no recovery test, prices held fixed) with **`analysis-review`**.
 
 ## The bottom line
 

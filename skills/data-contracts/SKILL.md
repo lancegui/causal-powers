@@ -144,6 +144,7 @@ Use floating-point-aware comparison (`np.isclose` / `all.equal` / `isapprox`) fo
 - When a validated number still comes out **wrong or surprising**, switch to **`wrong-number-debugging`** — bisect the pipeline to find where the data went bad.
 - Before **claiming an analysis is done or reporting a finding**, use **`result-verification`**.
 - For any **causal** claim, the contracts here are necessary but not sufficient — see **`causal-identification`**.
+- For **structural** work, the same discipline applies to the estimator: the Monte-Carlo recovery test is a data contract on the algorithm — assert that it recovers known θ, then freeze that as a golden baseline (**`structural-estimation`**).
 
 ## The bottom line
 

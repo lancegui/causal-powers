@@ -100,6 +100,7 @@ Your job here ends at **diagnose and explain**. You surface the threat and the c
 - The bug usually means an invariant from **`data-contracts`** was missing — add it after you fix, and watch it bite.
 - Once the number reconciles, **`result-verification`** is what confirms the whole analysis before you report it.
 - A wrong *causal* estimate (right data, wrong sign or magnitude) is often an identification problem, not a data bug — escalate to **`causal-identification`**.
+- An implausible *structural* counterfactual is often the model, not a data bug — but bisect the pipeline here first to rule out the data bug, then escalate model/identification questions to **`structural-estimation`**.
 - When the remedy would change the design, sample, or spec, it stops being a fix and becomes a user decision — route it through **`analysis-checkpoints`**.
 
 ## The bottom line
