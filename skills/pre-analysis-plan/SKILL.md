@@ -71,7 +71,7 @@ Even with no conscious cheating, the sheer number of defensible choices — whic
 - Confirm the pre-registered result before reporting with **`result-verification`**.
 - Any deviation from the plan during execution is a user decision — route it through **`analysis-checkpoints`**.
 - Once the plan is approved, hand off to **`executing-analysis-plans`** to carry it out (spine in order, robustness/designs fanned out to subagents).
-- For structural work, the analog of this plan is the **model spec** — primitives, per-parameter identification, estimand/counterfactual, and estimation plan — locked and approved before estimation begins; see **`structural-estimation`**.
+- For structural work, the analog of this plan is the **model card** — primitives, per-parameter identification, estimand/counterfactual, and estimation plan — locked and approved before estimation begins; see **`structural-estimation`**.
 
 ## The bottom line
 

@@ -24,7 +24,7 @@ trace). Three-language throughout: **R, Julia, Python**.
 | `wrong-number-debugging` | Bisect the pipeline to the step where the number went bad | `systematic-debugging` |
 | `result-verification` | Reconcile, reproduce from clean state, attack with robustness, before reporting | `verification-before-completion` |
 | `causal-identification` | State & test identification assumptions; mandatory robustness for DiD/IV/RDD/etc. — the reduced-form workflow | (none — domain core) |
-| `structural-estimation` | Estimate model primitives for counterfactuals the data can't contain: write the model spec and get approval, prove recovery by Monte Carlo, derive analytical gradients group-by-group, re-solve equilibrium one scenario per mechanism — the structural workflow | (none — domain core) |
+| `structural-estimation` | Estimate model primitives for counterfactuals the data can't contain: write the model card and get approval, prove recovery by Monte Carlo, derive analytical gradients group-by-group, re-solve equilibrium one scenario per mechanism — the structural workflow | (none — domain core) |
 | `analysis-review` | Review an analysis for silent-failure classes; verify review feedback | `requesting`/`receiving-code-review` |
 
 Two cross-cutting **craft principles** — *goal-driven execution* (a data contract

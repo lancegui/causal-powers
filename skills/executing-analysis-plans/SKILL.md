@@ -98,7 +98,7 @@ When the fan-out completes, assemble — don't just dump:
 - Consequential decisions that surface during execution stop at **`analysis-checkpoints`**; wrong numbers go to **`wrong-number-debugging`**; design changes to **`causal-identification`**.
 - Keep the per-step code minimal and surgical with **`analysis-craft`**.
 - Synthesized results go to **`result-verification`** before reporting, and to **`analysis-review`** before they ship.
-- For structural work, this skill carries out the approved **model spec** from **`structural-estimation`** — recovery reps, starts, and per-mechanism counterfactuals fan out like any independent specs.
+- For structural work, this skill carries out the approved **model card** from **`structural-estimation`** — recovery reps, starts, and per-mechanism counterfactuals fan out like any independent specs.
 
 ## The bottom line
 
