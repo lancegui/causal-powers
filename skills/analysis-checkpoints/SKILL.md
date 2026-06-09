@@ -15,7 +15,7 @@ This is the execution-time form of "Think Before Coding": don't decide silently,
 
 ## The line: your call vs. the user's call
 
-The test is simple — **does this change what is being estimated, on what data, or a number the user has already seen?** If yes, it's the user's call.
+The test is simple — **does this change what is being estimated, on what data, or a number the user has already seen?** If yes, it's the user's call. Run this one question on *every* decision you're about to make; the two lists below are just worked examples of "yes" (STOP) and "no" (proceed and report).
 
 ### Decisions that REQUIRE a checkpoint — STOP and ask
 - **Design / identification strategy.** Switching estimators or designs (near-vs-far DiD → triple-difference, OLS → IV, adding/removing a fixed effect that changes identification, changing the comparison group). This is the most commonly smuggled-in change.
@@ -29,7 +29,7 @@ The test is simple — **does this change what is being estimated, on what data,
 - **Any number the user has already seen** that your change would move.
 
 ### Decisions you may make autonomously — note it, don't ask
-- **Mechanical data-bug fixes that *restore* the intended computation** — dedup a key that was always meant to be unique, correct a wrong join type, fix a units error, repair a broken date parse. These return the analysis to what was already agreed; they don't change the design. Always **report** what you fixed.
+- **Mechanical data-bug fixes that *restore* the intended computation** — dedup a key that was always meant to be unique, correct a wrong join type, fix a units error, repair a broken date parse. These return the analysis to what was already agreed; they don't change the design. Always **report** what you fixed. **Tiebreaker:** a restoring fix that nonetheless *moves a number the user has already seen* is still a checkpoint — apply it, but surface the moved number (old → new, and why) before building anything further on it.
 - **Code-craft choices** — variable names, how a transform is written, plot styling. (See `analysis-craft`.)
 
 The dividing question between a fix and a redesign: *"Am I restoring the analysis we agreed on, or changing it?"* Restoring → proceed and report. Changing → checkpoint.
@@ -43,6 +43,8 @@ When you hit one, stop and present — don't implement past it:
 3. **Lay out the options** — at least two — each with its tradeoff and what it would change about the result.
 4. **Give your recommendation and why** — you're not abdicating judgment, you're surfacing it for approval.
 5. **WAIT.** Do not write the redesign, drop the rows, or re-estimate until the user chooses. Implementing "so it's ready for them to see" is the exact failure mode.
+
+**If you cannot reach the user** (a batch, cron, or otherwise non-interactive run), a deadlock is wrong but so is deciding for them: **stop at the last validated state, do NOT implement the checkpoint-class change, and return the options + your recommendation as the deliverable** for a human to resolve. Surfacing the decision unresolved is the correct output, not a failure.
 
 **Worked example (the kind that should always stop):**
 > While debugging the high near-clinic effect I found the 2016 citywide recording jump is geographically uneven — Beverly's 2 mi ring is +66% in 2016 while its 0.5 mi ring is flat. A plain near-vs-far DiD would misread this as an acquisition effect.
