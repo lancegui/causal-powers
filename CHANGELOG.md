@@ -2,6 +2,27 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.9.0 — Trigger-eval coverage, agent generalization, and fixes
+- Updated the **trigger evals and reusable agents** for the reduced-form/structural
+  boundary: added `evals/trigger/structural-estimation.json` (with reduced-form
+  near-misses — the elasticity-from-an-experiment trap, a 2SLS demand elasticity,
+  a DiD), added structural near-miss negatives to `causal-identification.json`,
+  taught the `analysis-reviewer` agent the structural silent failures, and
+  generalized the `robustness-runner` agent to also run a Monte-Carlo recovery
+  rep or a counterfactual scenario.
+- Backfilled **trigger evals** for the rest of the family (`question-framing`,
+  `pre-analysis-plan`, `analysis-craft`, `analysis-checkpoints`,
+  `executing-analysis-plans`, `result-verification`, `analysis-review`) — each a
+  20-query set whose negatives are deliberate sibling near-misses (e.g. a restore-
+  fix that must NOT trip `analysis-checkpoints`; reviewing someone else's notebook
+  vs. self-verifying before reporting), so the set tests the boundary, not just
+  keywords. Every skill now has a trigger eval.
+- Fixed **YAML frontmatter**: an unquoted `description:` value containing `: `
+  (colon-space) parses as a nested mapping ("mapping values are not allowed in
+  this context"). Replaced the offending colon with the house-style em-dash in
+  `structural-estimation`, `analysis-checkpoints`, and `analysis-review`; all
+  skill and agent frontmatter now parses cleanly with pyyaml.
+
 ## 0.8.0 — Structural estimation (the structural workflow)
 - Added `structural-estimation`: the structural counterpart to
   `causal-identification`. A model-agnostic discipline across IO structural
@@ -37,20 +58,6 @@ All notable changes to Causal Powers. Versions follow the plugin manifest.
   stated); `data-contracts` frames the recovery test as a contract on the
   estimator; `wrong-number-debugging` separates an implausible counterfactual
   (model) from a data bug.
-- Updated the **trigger evals and reusable agents** for the new boundary: added
-  `evals/trigger/structural-estimation.json` (with reduced-form near-misses — the
-  elasticity-from-an-experiment trap, a 2SLS demand elasticity, DiD), added
-  structural near-miss negatives to `causal-identification.json`, taught the
-  `analysis-reviewer` agent the structural silent failures, and generalized the
-  `robustness-runner` agent to also run a Monte-Carlo recovery rep or a
-  counterfactual scenario.
-- Backfilled **trigger evals** for the rest of the family (`question-framing`,
-  `pre-analysis-plan`, `analysis-craft`, `analysis-checkpoints`,
-  `executing-analysis-plans`, `result-verification`, `analysis-review`) — each a
-  20-query set whose negatives are deliberate sibling near-misses (e.g. a restore-
-  fix that must NOT trip `analysis-checkpoints`; reviewing someone else's notebook
-  vs. self-verifying before reporting), so the set tests the boundary, not just
-  keywords. Every skill now has a trigger eval.
 
 ## 0.7.0 — Robustness is an argument, not an inventory
 - `executing-analysis-plans` no longer fans out an exhaustive menu of robustness
