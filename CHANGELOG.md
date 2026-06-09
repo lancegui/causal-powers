@@ -2,6 +2,17 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.10.1 — archive folders + manifest listing
+- `project-organization`: added a per-category **`archive/`** for old runs that are
+  no longer used but worth keeping (a superseded spec, last quarter's results, a
+  retired model version). It's distinct from `sandbox/` (throwaway) and
+  `results/diagnostics/` (regenerable scratch): archive is deliberately retained,
+  inactive provenance, and **tracked**. Retiring a run now means **move to
+  `archive/`, not delete** — reinforced in the cleanup pass, the git rules, and the
+  always-on hook.
+- Manifests: `project-organization` (research-project organization) now listed in
+  the plugin/marketplace descriptions.
+
 ## 0.10.0 — `project-organization`, the compaction discipline, and a full audit pass
 
 **New skill — `project-organization`.** A standalone discipline for organizing an

@@ -26,15 +26,18 @@ project-root/
 │   ├── 00_data/          # raw → intermediate → output    ── subjects: mortality/ crime/ …
 │   ├── 01_stylized_facts/
 │   ├── 02_main/          #                                 ── subjects: did_mortality/ did_crime/ …
+│   │   └── archive/      # superseded runs for this category — kept, not deleted, out of the active path
 │   ├── 03_estimation/ 04_montecarlo/ 05_robustness/ 06_counterfactual/   # (structural)
 │   └── lib/              # shared functions
-├── results/              # generated artifacts — tables/ figures/ (canonical) · diagnostics/ (scratch)
+├── results/              # generated artifacts — tables/ figures/ (canonical) · diagnostics/ (scratch) · archive/ (old runs, kept)
 ├── docs/                 # MODEL_CARD.md · pre-analysis-plan.md · LESSONS.md
 ├── sandbox/              # exploratory throwaway, clearly not a deliverable
 └── .gitignore
 ```
 
-Adapt it: reduced-form projects drop the structural stages; single-subject projects drop the subject subfolders; the pipeline folder may be `code/`, `scripts/`, or `analysis/`. **Read the repo's `README.md` first and follow the conventions it already has** — impose this only where there are none. The point is the separation (**code ≠ data ≠ outputs ≠ scratch**) and the paper-centric staging, organized **stage-first with subject subfolders throughout — the data stage included.**
+Adapt it: reduced-form projects drop the structural stages; single-subject projects drop the subject subfolders; the pipeline folder may be `code/`, `scripts/`, or `analysis/`. **Read the repo's `README.md` first and follow the conventions it already has** — impose this only where there are none. The point is the separation (**code ≠ data ≠ outputs ≠ scratch ≠ archive**) and the paper-centric staging, organized **stage-first with subject subfolders throughout — the data stage included.**
+
+**Each category keeps an `archive/`.** Old runs that are no longer used but worth keeping — a superseded specification, last quarter's results, a model version you moved off of — go into an `archive/` inside their category (`code/02_main/archive/`, `results/archive/`, …), not into the active tree and **not into the trash**. Archive is distinct from `sandbox/` (exploratory throwaway, disposable) and from `results/diagnostics/` (regenerable scratch): archive is **deliberately retained, inactive provenance.** It's the default destination when you retire a run — moving to `archive/` beats deleting, and keeps the active folders showing only what's current.
 
 ## Naming — standardize it
 
@@ -56,15 +59,15 @@ One direction. `raw/` is **immutable**: code reads it and never writes it; a fix
 
 The repo a collaborator sees should be code + manuscript + results + the shareable data.
 
-- **Track:** `code/`, `paper/` (incl. final tables/figures), `docs/`, `README`, and the `data/` and `results/` that are shareable and under the size limit.
+- **Track:** `code/`, `paper/` (incl. final tables/figures), `docs/`, `README`, the `archive/` folders (old runs are kept, so they're tracked — subject to the same shareable/size rule), and the `data/` and `results/` that are shareable and under the size limit.
 - **Gitignore:** secrets (`.env`, keys) **always**; sensitive data; oversized files (after trying to shrink them); `results/diagnostics/`, `sandbox/`, caches, logs.
 - **One-command reproduction:** a master script / `Makefile` that runs the pipeline in order (data → … → paper). It's the replication standard and the proof the structure is real.
 
 ## Enforce throughout, tidy before git
 
 - **Throughout:** when you create a script, dataset, table, or figure, put it in its folder and name it by convention *then* — not "in the root for now."
-- **Before you commit (the trigger):** read the README's conventions; inventory what the workflow produced; classify each file — deliverable → its folder; intermediate/reproducible → keep or gitignore; scratch/diagnostic → `sandbox/` or `results/diagnostics/` or delete; sensitive/oversized → shrink-or-gitignore; secret → gitignore now. Propose the moves/renames/gitignore/deletes; update `.gitignore`.
-- **Safety:** offer, don't delete on your own — deleting files the user may want is a checkpoint (`analysis-checkpoints`). **Never touch `raw/`.** Prefer gitignore/move over delete; move a doubtful file to `sandbox/` rather than removing it.
+- **Before you commit (the trigger):** read the README's conventions; inventory what the workflow produced; classify each file — deliverable → its folder; **superseded-but-keep (an old run no longer used) → the category's `archive/`** (move, never delete); intermediate/reproducible → keep or gitignore; scratch/diagnostic → `sandbox/` or `results/diagnostics/`; sensitive/oversized → shrink-or-gitignore; secret → gitignore now. Propose the moves/renames/gitignore/deletes; update `.gitignore`.
+- **Safety:** offer, don't delete on your own — deleting files the user may want is a checkpoint (`analysis-checkpoints`). **Never touch `raw/`.** The default for a retired run is **move to `archive/`, not delete**; prefer gitignore/move over delete throughout, and move a doubtful file to `sandbox/` rather than removing it.
 
 ## Red flags — STOP
 
