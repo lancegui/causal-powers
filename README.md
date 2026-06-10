@@ -17,7 +17,8 @@ trace). Three-language throughout: **R, Julia, Python**.
 | `using-causal-powers` | Gateway: the creed, the map, and routing to the right skill | `using-superpowers` |
 | `question-framing` | Pin the estimand/metric, population, unit, and the decision — before code | `brainstorming` |
 | `pre-analysis-plan` | Lock hypotheses, primary spec, and robustness suite before seeing outcomes | spec-driven dev / `writing-plans` |
-| `data-contracts` | Invariants, join-cardinality checks, totals reconciliation, frozen baselines | `test-driven-development` |
+| `data-contracts` | Invariants, join-cardinality checks, totals reconciliation, frozen baselines — the **checker** | `test-driven-development` |
+| `data-preparation` | Owns the data ingest & cleaning **phase** (the heaviest one): ingest→clean→join→dedup→recode→reconcile as a phased, checkboxed plan with a decisions log; the **doer** that *calls* `data-contracts` per step and routes consequential cleaning choices to `analysis-checkpoints` | `writing-plans` (for the cleaning phase) |
 | `analysis-craft` | Minimum analysis that answers the question; surgical edits to notebooks/pipelines | Karpathy: simplicity + surgical |
 | `analysis-checkpoints` | Stop and ask before changing design/sample/spec/estimand; loop toward the agreed goal, never redefine it | superpowers review gates |
 | `executing-analysis-plans` | Drive an approved plan: sequential spine validated in order, independent specs/designs fanned out to parallel subagents | `executing-plans` / `subagent-driven-development` |
@@ -64,16 +65,30 @@ counterfactual is trusted.
 
 ## Beyond skills: always-on layer + agents
 
-Skills are *triggered*. Some discipline must hold *every* time, so (inspired by
-[ECC](https://github.com/affaan-m/ecc)'s layered model and superpowers' own hook)
-the plugin also ships:
+Skills are *triggered* — but triggering is fallible, and some discipline must hold
+*every* time. So (inspired by [ECC](https://github.com/affaan-m/ecc)'s layered
+model and superpowers' own hook) the plugin ships a **hook layer** that keeps the
+discipline present, makes the chain *fire* reliably, and makes long work resumable:
 
-- **A SessionStart hook** (`hooks/`) that injects a compact always-on block — the
-  creed, the never-change-the-goal-behind-the-user's-back rule, the
+- **A SessionStart always-on block** (`hooks/session-start`) — the creed, the
+  never-change-the-goal-behind-the-user's-back rule, the
   write-it-down-before-you-build rule (plan / spec / model card), the
   frame→approve→execute→verify spine, and a silent-failure + economist red-lines
   card — so the discipline is present by default, not contingent on a skill
   triggering.
+- **Trigger + chain-enforcement hooks** that turn the family from a *map* into a
+  *flow that propels*. Every skill ends with an imperative `When to Use` decision
+  graph + `The Process` that invokes the next skill; the hooks back that up — a
+  `UserPromptSubmit` keyword router (`hooks/prompt-router`, a high-precision
+  backstop) that re-surfaces the right skill on each prompt, and a `PostToolUse`
+  skill-chain (`hooks/skill-chain`) that, the moment a skill is invoked, names its
+  next obligation in the spine (framing → written plan → approval gate; execution →
+  *ask* inline-vs-subagent fan-out, bounded ~3 checks; verify → review).
+- **A resumability hook** (`hooks/plan-resume`, `SessionStart` + `PreCompact`):
+  reads the living, phased **`analysis-plan.md`** and resumes you at the next open
+  phase/step, so a long cleaning or estimation effort survives `/clear` and
+  auto-compaction instead of restarting — disk-as-RAM, after
+  [planning-with-files](https://github.com/othmanadi/planning-with-files).
 - **Reusable subagents** (`agents/`): `robustness-runner` (executes one
   pre-specified spec against the validated data, asserts contracts, returns a
   structured result — the fan-out worker for `executing-analysis-plans`) and
@@ -86,9 +101,10 @@ the plugin also ships:
 ## Requirements
 
 - [Claude Code](https://docs.claude.com/en/docs/claude-code) with plugin support.
-- The SessionStart hook (the always-on layer) needs **Claude Code v2.1+**, which
-  auto-loads `hooks/hooks.json` from installed plugins. Everything else (skills,
-  agents) works on any plugin-capable version.
+- The hooks (the always-on block, the trigger router / skill-chain, and the
+  `analysis-plan.md` resumability hook) need **Claude Code v2.1+**, which auto-loads
+  `hooks/hooks.json` from installed plugins. Everything else (skills, agents) works
+  on any plugin-capable version.
 - The skills are language-agnostic guidance for **R, Julia, and Python** — no
   packages are installed; you use the idioms native to your stack.
 
@@ -101,9 +117,10 @@ From inside Claude Code:
 /plugin install causal-powers@causal-powers
 ```
 
-Then **restart Claude Code** so the SessionStart hook loads. That's it — for any
-data, analysis, or econometrics work the skills now trigger automatically, and
-the always-on discipline card is injected at the start of each session.
+Then **restart Claude Code** so the hooks load. That's it — for any data,
+analysis, or econometrics work the skills now trigger automatically, the always-on
+discipline card is injected at the start of each session, and the chain propels
+itself from framing through verification.
 
 ### Update / uninstall
 
@@ -125,9 +142,10 @@ git clone https://github.com/lancegui/causal-powers
 
 ```
 causal-powers/
-├── skills/        # the 13 disciplines (gateway + 12)
+├── skills/        # the 14 disciplines (gateway + 13)
 ├── agents/        # robustness-runner, analysis-reviewer
-├── hooks/         # SessionStart always-on injection
+├── hooks/         # always-on block + trigger router + skill-chain + plan resumability
+├── evals/trigger/ # per-skill trigger tests (the router's precision/recall regression set)
 ├── docs/          # design specs + LESSONS.md
 └── .claude-plugin/  # plugin + marketplace manifests
 ```
@@ -136,7 +154,9 @@ causal-powers/
 
 The full design history lives in [`docs/specs/`](docs/specs/) — each version's
 rationale, from the initial family through economic judgment, the always-on hook,
-and the "robustness is an argument" fix.
+the "robustness is an argument" fix, the chain-enforcement layer (imperative
+handoffs + trigger router + skill-chain), and the phased, resumable execution plan
+with `data-preparation`.
 
 ## Contributing & feedback
 
