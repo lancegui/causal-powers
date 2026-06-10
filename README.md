@@ -149,23 +149,32 @@ repo: a Codex manifest (`.codex-plugin/plugin.json`), an `AGENTS.md` that carrie
 the always-on discipline (Codex has no SessionStart hook), and a tool-mapping
 reference ([`skills/using-causal-powers/references/codex-tools.md`](skills/using-causal-powers/references/codex-tools.md)).
 
-Install the skills into a directory Codex scans (per the
-[Codex skills docs](https://developers.openai.com/codex/skills) — a project
-`.agents/skills/` or your user `~/.agents/skills/`), then restart Codex:
+### Built-in installer (copy-paste)
+
+One command installs the skills into a directory Codex scans (`~/.agents/skills`
+for user scope, per the [Codex skills docs](https://developers.openai.com/codex/skills))
+**and** installs the always-on discipline as a managed block in your
+`~/.codex/AGENTS.md` — then restart Codex:
 
 ```bash
-git clone https://github.com/lancegui/causal-powers
-# user scope (all projects):
-mkdir -p ~/.agents/skills && ln -s "$PWD/causal-powers/skills"/* ~/.agents/skills/
-# or project scope: copy/symlink the skills into <your-repo>/.agents/skills/
-# and copy AGENTS.md to your repo root so the always-on discipline loads.
+curl -fsSL https://raw.githubusercontent.com/lancegui/causal-powers/main/scripts/install-codex.sh | bash
 ```
 
-Or use Codex's built-in installer (`$skill-installer`) / the `/plugins` directory
-if you prefer in-app install — see the
-[Codex plugins docs](https://developers.openai.com/codex/plugins). Either way,
-**copy `AGENTS.md` to your project root** (or merge it into an existing one) so the
-discipline is always on, since the Claude Code hooks don't run on Codex.
+Project scope instead (checked into one repo, for your team — installs to
+`<repo>/.agents/skills` and the repo-root `AGENTS.md`):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/lancegui/causal-powers/main/scripts/install-codex.sh | bash -s -- --project .
+```
+
+The installer is **idempotent** — re-run any time to update (it pulls a cached
+clone and re-copies), and `--uninstall` cleanly removes the skills and the managed
+block, leaving the rest of your `AGENTS.md` untouched. From a local clone:
+`./scripts/install-codex.sh` (add `--project DIR` or `--uninstall`). Requires
+`bash`, `git`, `python3`. (Prefer in-app install? Codex's own `$skill-installer`
+and `/plugins` directory also work — see the
+[Codex plugins docs](https://developers.openai.com/codex/plugins) — but you'd then
+add `AGENTS.md` to your project root yourself for the always-on discipline.)
 
 **What changes on Codex:** the `hooks/` (always-on injection, trigger router,
 skill-chain, `analysis-plan.md` resumability) are Claude-Code-only. On Codex the
