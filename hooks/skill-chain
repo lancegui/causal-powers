@@ -54,6 +54,9 @@ Then STOP and get the user's sign-off. Do NOT barrel from framing into estimatio
   data-contracts)
     msg="A clean run is not a correct number. If a reconciliation / total / join-cardinality assertion FAILS → STOP and invoke causal-powers:wrong-number-debugging to bisect to the exact bad step — don't patch and proceed. If the tempting 'fix' would drop/filter/winsorize rows, change a join's grain, or move a number the user has already seen → that's a sample/spec redesign: STOP and invoke causal-powers:analysis-checkpoints, don't smuggle it in. Otherwise freeze the validated result as a baseline and continue. See this skill's 'When to Use' graph."
     ;;
+  data-preparation)
+    msg="Cleaning is the analysis, not pre-analysis — plan it, don't barrel. You own the data-ingest-and-cleaning PHASE (Phase 1 of analysis-plan.md): decompose ingest → clean → join → dedup → recode → reconcile into a checkboxed sub-plan with a DECISIONS LOG, and write to disk after every couple of actions (it survives /clear + compaction and is the audit trail). You are the DOER; CALL causal-powers:data-contracts to validate every step (assert join cardinality before each merge, reconcile totals after) — don't hand-roll validation. HARD STOP: any drop / filter / winsorize / non-trivial dedup / recode-of-a-reported-grouping — or anything that moves a number the user has seen — is a sample/spec change → invoke causal-powers:analysis-checkpoints, the user's call, don't smuggle it in as tidying. A failed reconciliation → causal-powers:wrong-number-debugging. When Phase 1 is ticked and the clean dataset reconciles → return to causal-powers:executing-analysis-plans for construction/estimation. Trivial single clean file → state the waiver, skip the plan. See this skill's 'When to Use' graph."
+    ;;
   *)
     exit 0
     ;;

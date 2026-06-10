@@ -1,0 +1,90 @@
+[
+  {
+    "query": "clean up this raw survey extract and build the analysis dataset before i compute anything",
+    "should_trigger": true
+  },
+  {
+    "query": "i need to assemble the modeling dataset from these 12 monthly csv exports \u2014 ingest, clean, join, dedup",
+    "should_trigger": true
+  },
+  {
+    "query": "dedupe the customer records and recode the messy industry categories before i merge",
+    "should_trigger": true
+  },
+  {
+    "query": "help me prepare the analysis-ready panel: clean the raw data, reconcile the totals, then it's ready",
+    "should_trigger": true
+  },
+  {
+    "query": "this claims extract is messy \u2014 standardize the values, impute the missing fields, and get the dataset ready",
+    "should_trigger": true
+  },
+  {
+    "query": "walk me through the data cleaning phase for this survey before any modeling",
+    "should_trigger": true
+  },
+  {
+    "query": "construct the master dataset from these dirty exports, plan it out in phases",
+    "should_trigger": true
+  },
+  {
+    "query": "harmonize the category codes across these three raw datasets and dedupe the rows",
+    "should_trigger": true
+  },
+  {
+    "query": "clean up the repo and delete the dead code",
+    "should_trigger": false
+  },
+  {
+    "query": "tidy my desk reminders for tomorrow",
+    "should_trigger": false
+  },
+  {
+    "query": "dedupe my email list before the newsletter blast",
+    "should_trigger": false
+  },
+  {
+    "query": "refactor this 200-line function into smaller pieces",
+    "should_trigger": false
+  },
+  {
+    "query": "organize my downloads folder by file type",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the dplyr syntax for a left join again",
+    "should_trigger": false
+  },
+  {
+    "query": "explain the difference between an inner join and a full outer join",
+    "should_trigger": false
+  },
+  {
+    "query": "format this spreadsheet with conditional formatting and a bar chart",
+    "should_trigger": false
+  },
+  {
+    "query": "merge these two csvs on customer_id and sum revenue by region",
+    "should_trigger": false
+  },
+  {
+    "query": "clean up my git branches that are already merged",
+    "should_trigger": false
+  },
+  {
+    "query": "normalize the urls in this config file",
+    "should_trigger": false
+  },
+  {
+    "query": "standardize the formatting of my markdown files",
+    "should_trigger": false
+  },
+  {
+    "query": "recode this switch statement to use a lookup table",
+    "should_trigger": false
+  },
+  {
+    "query": "reconcile my bank statement against my receipts",
+    "should_trigger": false
+  }
+]

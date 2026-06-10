@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+# SessionStart + PreCompact hook for the causal-powers plugin — RESUMABILITY.
+#
+# WHY THIS EXISTS: long analyses get compacted or resumed in a fresh session,
+# and the model's default is to RESTART — re-frame the question, re-run Phase 1,
+# re-derive decisions already made — instead of picking up where the prior
+# session left off. The living analysis-plan.md (see plan_template) is the
+# durable state; this hook makes the harness surface it at the two moments that
+# matter:
+#   * SessionStart — read the plan and inject a compact "here's where the work
+#     stands" block (current phase, checked vs unchecked boxes, next step) so a
+#     fresh/compacted session RESUMES instead of starting over.
+#   * PreCompact — the plan may be stale in working memory and about to be
+#     summarized away; remind the model to FLUSH the plan to disk now so the
+#     post-compaction session has accurate state to resume from.
+#
+# Conventions mirror the other hooks: bash, set -uo pipefail, no jq, always
+# exit 0, hookSpecificOutput.additionalContext on Claude Code / top-level
+# additionalContext elsewhere. Defensive throughout: no plan file -> exit 0
+# silently, never block the session.
+
+set -uo pipefail
+
+payload="$(cat 2>/dev/null || true)"
+
+# Which hook event fired? Claude Code puts it in hook_event_name; if absent
+# (other harness / direct invocation) default to SessionStart, the common case.
+event="$(printf '%s' "$payload" \
+  | grep -oE '"hook_event_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 \
+  | sed -E 's/.*:[[:space:]]*"([^"]*)"$/\1/')"
+event="${event:-SessionStart}"
+
+# Locate the plan. Prefer cwd, then the project root the harness exposes.
+# CLAUDE_PROJECT_DIR is set by Claude Code; fall back to PWD.
+plan=""
+for dir in "${PWD:-.}" "${CLAUDE_PROJECT_DIR:-}"; do
+  [ -n "$dir" ] || continue
+  if [ -f "${dir}/analysis-plan.md" ]; then
+    plan="${dir}/analysis-plan.md"
+    break
+  fi
+done
+
+# No plan -> nothing to resume from. Exit silently (defensive, never block).
+[ -n "$plan" ] || exit 0
+[ -r "$plan" ] || exit 0
+
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+emit() {
+  # $1 = hookEventName, $2 = already-escaped context string
+  if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+    printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "%s",\n    "additionalContext": "%s"\n  }\n}\n' "$1" "$2"
+  else
+    printf '{\n  "additionalContext": "%s"\n}\n' "$2"
+  fi
+  exit 0
+}
+
+# ---- PreCompact: remind to flush, don't summarize state ----------------------
+if [ "$event" = "PreCompact" ]; then
+  msg="<system-reminder>
+RESUMABILITY — analysis-plan.md exists at ${plan}. Compaction is about to discard working memory. BEFORE you let it: flush the living plan to disk now — tick the boxes you actually completed this session, update the per-phase Status lines, append any Decisions-log entries you made but only held in chat, and set the 'Next step' to the single action a fresh session should take. The post-compaction session resumes from this file, not from the summary, so anything not written down is lost.
+</system-reminder>"
+  emit "PreCompact" "$(escape_for_json "$msg")"
+fi
+
+# ---- SessionStart: summarize where the work stands, so we resume -------------
+# Count checkbox progress (jq-free, grep-based). Markdown task list syntax:
+#   - [ ] open    - [x]/[X] done
+done_n="$(grep -cE '^[[:space:]]*[-*][[:space:]]+\[[xX]\]' "$plan" 2>/dev/null || echo 0)"
+open_n="$(grep -cE '^[[:space:]]*[-*][[:space:]]+\[[[:space:]]\]' "$plan" 2>/dev/null || echo 0)"
+done_n="${done_n//[!0-9]/}"; done_n="${done_n:-0}"
+open_n="${open_n//[!0-9]/}"; open_n="${open_n:-0}"
+
+# Current phase = the first phase heading that still has an open box under it.
+# Cheap heuristic: the heading line immediately preceding/owning the first
+# "- [ ]". We surface the nearest preceding "## Phase" / "Phase N" heading.
+current_phase="$(awk '
+  /^#{1,6}[[:space:]]/                 { last_h = $0 }
+  /^[[:space:]]*[-*][[:space:]]+\[[[:space:]]\]/ {
+    if (last_h != "") { print last_h; exit }
+  }
+' "$plan" 2>/dev/null)"
+current_phase="${current_phase##*([#[:space:]])}"
+[ -n "$current_phase" ] || current_phase="(all boxes checked — see Phase 5 / assembly)"
+
+# Next step = first open checkbox's text.
+next_step="$(grep -m1 -E '^[[:space:]]*[-*][[:space:]]+\[[[:space:]]\]' "$plan" 2>/dev/null \
+  | sed -E 's/^[[:space:]]*[-*][[:space:]]+\[[[:space:]]\][[:space:]]*//')"
+[ -n "$next_step" ] || next_step="No open checkboxes — verify Phase 5 assembly and report, then finish."
+
+# Pull the most recent Decisions-log line if present, so locked choices survive.
+last_decision="$(grep -E '^[[:space:]]*[-*][[:space:]]' "$plan" 2>/dev/null \
+  | grep -iE 'decision|locked|chose|dropped|winsoriz|excluded' | tail -1 \
+  | sed -E 's/^[[:space:]]*[-*][[:space:]]*//')"
+
+decision_line=""
+[ -n "$last_decision" ] && decision_line="
+- Most recent logged decision (do NOT silently revisit): ${last_decision}"
+
+msg="<system-reminder>
+RESUMABILITY — an analysis-plan.md exists at ${plan}. This is a RESUMED or freshly-started session for work already in progress. Do NOT restart: do not re-frame the question, do not re-run completed phases, do not re-derive locked decisions. Read the plan and continue from where it stands.
+Snapshot from the plan:
+- Progress: ${done_n} checked / ${open_n} still open.
+- Current phase: ${current_phase}
+- Next step (first open box): ${next_step}${decision_line}
+Open analysis-plan.md now, confirm this snapshot against the full file, and resume at the next step. Keep the plan living — tick boxes and append to the Decisions log as you go.
+</system-reminder>"
+
+emit "SessionStart" "$(escape_for_json "$msg")"

@@ -22,7 +22,7 @@ Don't start here from a cold "analyze this." If there's no approved brief/PAP ye
 The single biggest execution mistake is running everything in one slow serial loop — or, worse, parallelizing things that actually depend on each other. Split the plan into its dependent spine and its independent leaves.
 
 **Sequential spine (must run in order — each depends on the last):**
-1. Build / clean / join the analysis dataset → **validate with `data-contracts`** (row counts, join cardinality, reconciliation). Nothing downstream is trustworthy until this passes.
+1. Build / clean / join the analysis dataset. Unless it's a trivial load of one already-clean file, this is a phase, not a line: **delegate it to `data-preparation`**, which runs the ingest→clean→join→dedup→recode→reconcile checklist (calling `data-contracts` to validate each step, routing consequential cleaning decisions to `analysis-checkpoints`) and returns the clean, validated dataset. Nothing downstream is trustworthy until that phase's reconciliation passes.
 2. Construct the treatment, outcome, and key covariates → validate ranges, missingness, leakage.
 3. Estimate the **primary specification** (the one pre-committed in the PAP) → this is *the* number.
 
