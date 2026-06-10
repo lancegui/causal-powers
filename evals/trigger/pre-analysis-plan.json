@@ -18,5 +18,8 @@
   {"query": "before i write any code, what decision is this metric actually informing and how should i define 'engaged user' for it?", "should_trigger": false},
   {"query": "my 2SLS first stage is super weak, F-stat around 3. how do i diagnose and fix the instrument in my python code", "should_trigger": false},
   {"query": "format these pre-registered regression results into a latex table with clustered SEs and significance stars for the appendix", "should_trigger": false},
-  {"query": "explain to my intern the difference between confirmatory and exploratory analysis, i'm prepping a short talk", "should_trigger": false}
+  {"query": "explain to my intern the difference between confirmatory and exploratory analysis, i'm prepping a short talk", "should_trigger": false},
+  {"query": "let's pre-commit to the test design before we look at the CI run results", "should_trigger": false},
+  {"query": "register for the conference before the deadline", "should_trigger": false},
+  {"query": "did the marketing campaign for the launch party go well", "should_trigger": false}
 ]

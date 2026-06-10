@@ -169,17 +169,37 @@ The pipeline is model-agnostic: fill the model card's rows in for whatever model
 | "More model detail = more realism." | More primitives you can't identify = more ways to be confidently wrong. Add only what a shifter or a moment identifies. |
 | "The optimizer found the global min." | On a non-convex objective, from one start, it found *a* min. Use multiple starts and good instruments. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- Decide reduced-form vs. structural at the top with **`using-causal-powers`**; if the question lives inside the data, you want **`causal-identification`**, not this.
-- Frame the counterfactual and the decision it informs with **`question-framing`** before building anything.
-- The model card *is* the structural **`pre-analysis-plan`** — write it to a file and get approval before estimation; it locks the model, identification, estimand, and estimation plan the way a PAP locks a confirmatory design.
-- The price-endogeneity instrument and the consideration/search shifter are IV arguments — **`causal-identification`** on exclusion/relevance applies directly.
-- The data feeding the model still needs **`data-contracts`**; the Monte-Carlo recovery harness *is* `data-contracts` discipline applied to the estimator (assert recovery, freeze it as a regression test).
-- A counterfactual that comes out implausible is often the *model*, not a data bug — but rule out the data bug with **`wrong-number-debugging`** first.
-- Any change to the model once estimation is underway is a user decision — route it through **`analysis-checkpoints`**.
-- Once the spec is approved, **`executing-analysis-plans`** carries it out — the recovery reps, starting values, and per-mechanism counterfactual scenarios fan out to parallel subagents.
-- Before reporting, validate fit out-of-sample as part of **`result-verification`**; have the estimates reviewed for the structural silent failures (non-identification, no recovery test, prices held fixed) with **`analysis-review`**.
+Structural estimation is **not** terminal: an approved model card *propels* into execution, and a finished estimation *propels* into verification. Route imperatively — don't just note the relationship:
+
+```dot
+digraph structural_estimation_next {
+    "Model card written + approved?" [shape=diamond];
+    "invoke executing-analysis-plans — run recovery + estimation" [shape=box style=filled fillcolor=lightgreen];
+    "Estimation + counterfactuals complete?" [shape=diamond];
+    "invoke result-verification — verify fit + equilibrium re-solved, before reporting" [shape=box style=filled fillcolor=lightgreen];
+    "Model misfits / parameter won't identify / counterfactual implausible / assumption needs changing?" [shape=diamond];
+    "invoke analysis-checkpoints — it's the user's call, not a silent re-spec" [shape=box style=filled fillcolor=lightgreen];
+    "Counterfactual implausible?" [shape=diamond];
+    "invoke wrong-number-debugging — rule out a data bug first" [shape=box style=filled fillcolor=lightgreen];
+    "Model card written + approved?" -> "invoke executing-analysis-plans — run recovery + estimation" [label="yes"];
+    "Model card written + approved?" -> "Model misfits / parameter won't identify / counterfactual implausible / assumption needs changing?" [label="no — threat to the spec"];
+    "Model misfits / parameter won't identify / counterfactual implausible / assumption needs changing?" -> "invoke analysis-checkpoints — it's the user's call, not a silent re-spec" [label="yes"];
+    "Estimation + counterfactuals complete?" -> "Counterfactual implausible?" [label="check first"];
+    "Counterfactual implausible?" -> "invoke wrong-number-debugging — rule out a data bug first" [label="yes"];
+    "Counterfactual implausible?" -> "invoke result-verification — verify fit + equilibrium re-solved, before reporting" [label="no — plausible"];
+    "Estimation + counterfactuals complete?" -> "invoke result-verification — verify fit + equilibrium re-solved, before reporting" [label="yes"];
+}
+```
+
+## The Process
+
+1. **Get the model card written and approved** — primitives, per-parameter identification, estimand, estimation plan, counterfactual design. This gate is mandatory before any machinery.
+2. **Card approved → invoke `executing-analysis-plans`** to carry it out — fan the recovery reps, starting values, and per-mechanism counterfactual scenarios out to parallel subagents. Don't run them as one slow serial loop.
+3. **Estimation + counterfactuals complete → invoke `result-verification`** before reporting — confirm fit out-of-sample and that equilibrium was *re-solved* (prices not held fixed). Never report a structural number unverified.
+4. **If a counterfactual comes out implausible → first invoke `wrong-number-debugging`** to rule out a data bug, *before* blaming the model.
+5. **If the model misfits, a parameter won't identify, the counterfactual stays implausible, or an assumption needs changing → STOP and invoke `analysis-checkpoints`.** Changing conduct, the random-coefficient distribution, primitive-vs-fixed, or the estimand is the user's decision — never a silent re-spec to fix a magnitude.
 
 ## The bottom line
 

@@ -76,15 +76,32 @@ Goal-driven autonomy (from `analysis-craft` / the gateway) means: iterate freely
 | "Stopping breaks my flow." | Your flow is not the goal. An analysis the user didn't authorize is rework at best and a wrong decision at worst. |
 | "Looping until verified means I keep going." | Toward the agreed goal — yes. By changing the goal — no. That's the line. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- The agreed goal you're protecting is set by **`question-framing`** and locked by **`pre-analysis-plan`** — a checkpoint is often "this deviates from the PAP."
-- **`wrong-number-debugging`** is where design changes most often get smuggled in as fixes; it routes those here.
-- **`causal-identification`** decides *whether* a design change is warranted; this skill decides *who* gets to authorize it (the user).
-- For structural work, the approved model card locks the choices this skill protects; re-specifying the model, conduct, or distribution mid-estimation routes here (`structural-estimation`).
-- Restoring vs. redesigning parallels `analysis-craft`'s surgical-change discipline applied to the analysis itself, not just the code.
+A checkpoint is a STOP-and-ask gate, **not** a place to keep working. It is the gate the whole discipline routes INTO — so its job is to return the decision to the user, then *propel* into exactly one skill to absorb that decision before you resume what you interrupted:
 
-## The bottom line
+```dot
+digraph analysis_checkpoints_next {
+    "User decided?" [shape=diamond];
+    "Change is to the framed question / estimand?" [shape=diamond];
+    "invoke question-framing — re-frame, then re-derive the plan" [shape=box style=filled fillcolor=lightgreen];
+    "invoke pre-analysis-plan — record the deviation, re-lock" [shape=box style=filled fillcolor=lightgreen];
+    "WAIT — present options + recommendation, do not implement" [shape=box style=filled fillcolor=lightyellow];
+    "User decided?" -> "WAIT — present options + recommendation, do not implement" [label="no"];
+    "User decided?" -> "Change is to the framed question / estimand?" [label="yes — approved"];
+    "Change is to the framed question / estimand?" -> "invoke question-framing — re-frame, then re-derive the plan" [label="yes"];
+    "Change is to the framed question / estimand?" -> "invoke pre-analysis-plan — record the deviation, re-lock" [label="no — deviation from the locked PAP"];
+}
+```
+
+## The Process
+
+1. **Run the checkpoint** — name the decision, show the evidence, lay out ≥2 options, give your recommendation, and **WAIT.** Do not implement past this point.
+2. **If non-interactive** — stop at the last validated state and return the options + recommendation as the deliverable; do not decide for the user.
+3. **Once the user decides**, absorb the change before resuming — route to exactly one next step and *invoke that skill*:
+   - **Estimand / question changed → invoke `question-framing`** to re-frame, then re-derive the brief.
+   - **Deviation from the locked plan → invoke `pre-analysis-plan`** to record the deviation and re-lock before any further estimation.
+4. **Then return to the skill you interrupted** (`wrong-number-debugging`, `executing-analysis-plans`, `structural-estimation`) and continue from the now-approved state — never resume on the silent change.## The bottom line
 
 ```
 Executing well  →  loop autonomously toward the agreed goal; stop and ask before changing the design, sample, spec, estimand, or any number already seen

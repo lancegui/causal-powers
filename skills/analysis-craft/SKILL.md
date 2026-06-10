@@ -72,11 +72,33 @@ Test: **"Could the owner of this notebook review my diff in two minutes and agre
 | "More error handling is safer." | Handling impossible inputs is noise that hides the checks that matter. Assert the real invariants (`data-contracts`); skip the rest. |
 | "It's faster to just start coding." | For anything past a quick fix, three lines of plan first is faster than rewriting code built on the wrong approach. Plan, confirm, then code. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- Required correctness invariants live in **`data-contracts`** — those are not "speculative error handling," they're the contract. This skill only trims the code that *isn't* pulling its weight.
-- Metric-level assumptions belong to **`question-framing`**; modeling parsimony and specification restraint to **`causal-identification`** and **`pre-analysis-plan`**.
-- When reviewing someone's analysis, **`analysis-review`** checks correctness; this skill is the lens for "is it also over-built or over-edited?"
+Analysis-craft is **not** a step on the spine — it is the discipline you run *alongside* every code write or edit. It does not terminate; it routes back into execution and out to the correctness siblings. Route imperatively, don't just note the relationship:
+
+```dot
+digraph analysis_craft_next {
+    "Writing/editing code right now?" [shape=diamond];
+    "stay in executing-analysis-plans — apply craft on every write/edit" [shape=box style=filled fillcolor=lightgreen];
+    "Need a correctness invariant, not less code?" [shape=diamond];
+    "invoke data-contracts — assert the contract (this is required, not trimmable)" [shape=box style=filled fillcolor=lightgreen];
+    "Parsimony is about the metric/spec, not the code?" [shape=diamond];
+    "invoke question-framing / causal-identification / pre-analysis-plan" [shape=box style=filled fillcolor=lightgreen];
+    "Writing/editing code right now?" -> "stay in executing-analysis-plans — apply craft on every write/edit" [label="yes"];
+    "Writing/editing code right now?" -> "Need a correctness invariant, not less code?" [label="no"];
+    "Need a correctness invariant, not less code?" -> "invoke data-contracts — assert the contract (this is required, not trimmable)" [label="yes"];
+    "Need a correctness invariant, not less code?" -> "Parsimony is about the metric/spec, not the code?" [label="no"];
+    "Parsimony is about the metric/spec, not the code?" -> "invoke question-framing / causal-identification / pre-analysis-plan" [label="yes"];
+}
+```
+
+## The Process
+
+1. **Apply craft inline as you execute** — minimum code that answers the question, smallest diff that does the job. This is not a phase; it runs on *every* write/edit → stay inside **`executing-analysis-plans`**, don't break out to a separate "cleanup" step.
+2. **A required invariant is not over-engineering** — when you need to guarantee a join cardinality, grain, or row count, that's the contract → invoke **`data-contracts`**, don't trim it as "speculative."
+3. **Send statistical parsimony to its owner** — metric definition → invoke **`question-framing`**; specification restraint and control discipline → invoke **`causal-identification`** / **`pre-analysis-plan`**. This skill governs the *code*, not the model.
+4. **Reviewing for over-build/over-edit?** → invoke **`analysis-review`** for correctness, and use this skill as the "is it also over-built?" lens.
+5. **If a "small tweak" starts mutating the design or a number the user has seen → STOP and invoke `analysis-checkpoints`.**
 
 ## The bottom line
 

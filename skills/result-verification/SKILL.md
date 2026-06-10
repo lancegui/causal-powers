@@ -91,14 +91,28 @@ Before you close out, do a 60-second retro: **what silent failure actually bit t
 | "I already eyeballed the figures." | Eyeballing doesn't catch a stale number copied from last week's version. Tie each one to this run's output. |
 | "The deadline is now." | A wrong number presented on time is worse than a right one presented late, and far worse than a caveated one on time. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- The invariants you reconcile against come from **`data-contracts`**; freezing the verified result uses the same golden-output mechanism.
-- If verification fails — a total won't reconcile, a number won't reproduce — switch to **`wrong-number-debugging`**.
-- For confirmatory studies, the robustness suite here is the one locked in **`pre-analysis-plan`**.
-- For causal results, **`causal-identification`** supplies the design-specific robustness (placebo, pre-trends, sensitivity) that verification must include.
-- For structural results, the recovery test, out-of-sample fit, and the equilibrium-re-solved counterfactual are part of verification — see **`structural-estimation`**.
-- Before reporting, get an independent pass from the **`analysis-reviewer`** agent and tidy the repo with **`project-organization`** — both are verification steps, not separately-triggered favors.
+Verification is **not** the finish line. It either *fails and bisects*, or it *passes and propels* into the independent review and the tidy-up — route imperatively, don't just note the relationship:
+
+```dot
+digraph result_verification_next {
+    "A check FAILED? (won't reconcile / can't reproduce / magnitude absurd)" [shape=diamond];
+    "invoke wrong-number-debugging — bisect the pipeline" [shape=box style=filled fillcolor=lightgreen];
+    "invoke analysis-review — dispatch the analysis-reviewer for a fresh-context pass" [shape=box style=filled fillcolor=lightgreen];
+    "invoke project-organization — tidy scratch, then commit/push" [shape=box style=filled fillcolor=lightgreen];
+    "A check FAILED? (won't reconcile / can't reproduce / magnitude absurd)" -> "invoke wrong-number-debugging — bisect the pipeline" [label="yes — STOP, don't ship behind a caveat"];
+    "A check FAILED? (won't reconcile / can't reproduce / magnitude absurd)" -> "invoke analysis-review — dispatch the analysis-reviewer for a fresh-context pass" [label="no — all checks pass"];
+    "invoke analysis-review — dispatch the analysis-reviewer for a fresh-context pass" -> "invoke project-organization — tidy scratch, then commit/push";
+}
+```
+
+## The Process
+
+1. **Run the checklist** — reconcile to source, reproduce clean, confirm determinism, attack with robustness, read it like an economist, tie artifacts to prose, freeze the golden output.
+2. **If any check fails and you can't resolve it → STOP and invoke `wrong-number-debugging`** to bisect (or `analysis-checkpoints` if the fix is a design/sample/spec change). Do not footnote a failed check.
+3. **All checks pass → invoke `analysis-review`** — dispatch the independent `analysis-reviewer` to catch the silent failures you rationalized, *before* you ship.
+4. **Then invoke `project-organization`** — tidy scratch from deliverables before you commit or push. Don't end at "the result is X" — route to the review and the tidy-up.
 
 ## The bottom line
 

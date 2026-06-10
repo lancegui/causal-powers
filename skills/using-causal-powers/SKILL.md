@@ -17,13 +17,13 @@ For any analysis task, **invoke the relevant discipline skill before acting** �
 
 And the rule that the rest of the family rests on: **you execute autonomously toward the agreed goal, but you never change the goal behind the user's back.** Changing the research design, the estimand, the sample, the spec, or a metric — or deviating from the framed question or pre-analysis plan — is the *user's* decision, not yours. When execution wants to do any of those (it most often does mid-debugging), **STOP and bring it to them** (`analysis-checkpoints`). This is the discipline that was missing when an analysis quietly became one nobody agreed to.
 
-And the rule that keeps the work from drifting: **always work from a written plan.** Before any non-trivial work, commit the plan to a file and confirm it — the framing brief (`question-framing`), the pre-analysis plan (`pre-analysis-plan`), or the structural **model card** (`structural-estimation`) — *wherever you're dropped in*; "just estimate / fix / run this" mid-stream is not a licence to dive in. Keep it actively updated, and at each finished phase write the decisions + post-compact next steps into it and offer to compact (`executing-analysis-plans`). A plan you can't point to is one that drifts.
+And the rule that keeps the work from drifting: **always work from a written plan.** Before any non-trivial work, commit the plan to a file and confirm it — the framing brief *and, for general/exploratory work, its data/approach/deliverable plan* (`question-framing`), the pre-analysis plan (`pre-analysis-plan`), or the structural **model card** (`structural-estimation`) — *wherever you're dropped in*; "just estimate / fix / run this" mid-stream is not a licence to dive in. Keep it actively updated, and at each finished phase write the decisions + post-compact next steps into it and offer to compact (`executing-analysis-plans`). A plan you can't point to is one that drifts.
 
 ## The family — and when each fires
 
 | Skill | Use it when… |
 |---|---|
-| **`question-framing`** | Before any analysis — to pin the estimand/metric, population, unit, and the decision the number informs. The "what are we actually measuring" skill. |
+| **`question-framing`** | Before any analysis — to pin the estimand/metric, population, unit, and the decision the number informs. The "what are we actually measuring" skill. For general/exploratory work it also **owns the everyday plan** — data sources, approach/spec, deliverable — written to the same file and signed off before building (no PAP or model card on that branch). |
 | **`pre-analysis-plan`** | Before a *confirmatory* study (experiment readout, policy eval, anything with stakes) — lock hypotheses, primary spec, and robustness suite before seeing outcomes. |
 | **`data-contracts`** | Whenever you load, transform, clean, **join/merge**, aggregate, or model — assert invariants and join cardinality, reconcile totals, freeze baselines. The everyday workhorse. |
 | **`wrong-number-debugging`** | The moment a number looks wrong, surprising, or won't reconcile — bisect the pipeline to the bad step instead of patching the symptom. |
@@ -48,7 +48,7 @@ Don't go structural for its own sake — if a quasi-experiment answers it, that 
 ## The typical flow
 
 ```
-question-framing  →  [pre-analysis-plan if confirmatory / model card if structural]  →  (approval gate)
+question-framing  →  [pre-analysis-plan if confirmatory / model card if structural / else extend the brief into the data+approach+deliverable plan]  →  (approval gate)
    →  executing-analysis-plans  →  data-contracts (load/clean/join/aggregate)
    →  [ causal-identification  if reduced-form  |  structural-estimation  if structural ]
    →  [wrong-number-debugging when something's off]

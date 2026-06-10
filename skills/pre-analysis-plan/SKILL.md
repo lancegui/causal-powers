@@ -63,15 +63,32 @@ Even with no conscious cheating, the sheer number of defensible choices — whic
 | "We don't have time to write a plan." | The plan is a few lines. Re-running an analysis after someone catches the forking-paths problem costs far more. |
 | "I found something better than I planned." | Great — report it as exploratory and confirm it on fresh data. Don't relabel it as the test you ran. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- Build the estimand and metric definitions with **`question-framing`** first.
-- Enforce the locked sample/exclusion rules mechanically with **`data-contracts`**.
-- Execute the identification strategy and run the committed robustness suite via **`causal-identification`**.
-- Confirm the pre-registered result before reporting with **`result-verification`**.
-- Any deviation from the plan during execution is a user decision — route it through **`analysis-checkpoints`**.
-- Once the plan is approved, hand off to **`executing-analysis-plans`** to carry it out (spine in order, robustness/designs fanned out to subagents).
-- For structural work, the analog of this plan is the **model card** — primitives, per-parameter identification, estimand/counterfactual, and estimation plan — locked and approved before estimation begins; see **`structural-estimation`**.
+A PAP is **not** a terminal artifact. Once it's written to a file AND signed off while everyone is still blind, it *propels* into execution — route imperatively, don't just note the relationship:
+
+```dot
+digraph pre_analysis_plan_next {
+    "PAP written to a file AND signed off (still blind)?" [shape=diamond];
+    "Structural / counterfactual estimation?" [shape=diamond];
+    "invoke structural-estimation — lock the model card instead" [shape=box style=filled fillcolor=lightgreen];
+    "invoke executing-analysis-plans — carry out the locked plan" [shape=box style=filled fillcolor=lightgreen];
+    "Outcomes surprise you / departure tempting?" [shape=diamond];
+    "invoke analysis-checkpoints — bring the deviation to the user" [shape=box style=filled fillcolor=lightgreen];
+    "PAP written to a file AND signed off (still blind)?" -> "Structural / counterfactual estimation?" [label="yes"];
+    "PAP written to a file AND signed off (still blind)?" -> "invoke executing-analysis-plans — carry out the locked plan" [label="not yet — keep locking, don't touch outcomes"];
+    "Structural / counterfactual estimation?" -> "invoke structural-estimation — lock the model card instead" [label="yes"];
+    "Structural / counterfactual estimation?" -> "invoke executing-analysis-plans — carry out the locked plan" [label="no — reduced-form"];
+    "Outcomes surprise you / departure tempting?" -> "invoke analysis-checkpoints — bring the deviation to the user" [label="any time"];
+}
+```
+
+## The Process
+
+1. **Lock the six items** — hypotheses (+ comparisons correction), estimand, primary spec, sample/exclusion rules, robustness suite, decision rule/power — using the `question-framing` brief and the mechanical sample rules `data-contracts` will enforce.
+2. **Persist the PAP to a file and get explicit sign-off before touching outcome data.** This gate is mandatory, not rhetorical — once outcomes are seen, the lock is gone.
+3. **Route to exactly one next step.** Structural/counterfactual work → *invoke `structural-estimation`* to lock the model card instead. Otherwise → *invoke `executing-analysis-plans`* to carry out the locked plan (spine in order, robustness/designs fanned to subagents; `causal-identification` runs the design diagnostics there).
+4. **If the outcomes surprise you and a departure tempts → STOP and invoke `analysis-checkpoints`** — report pre-registered and revised analyses; never deviate silently.
 
 ## The bottom line
 

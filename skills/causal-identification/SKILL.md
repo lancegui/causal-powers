@@ -117,14 +117,30 @@ When a stack lacks a mature implementation (much of staggered-DiD and RDD outsid
 | "The instrument is clearly exogenous." | Exclusion is untestable, which is exactly why it needs a real argument, not an assertion. |
 | "Robustness checks are for the appendix." | They're for deciding whether you believe your own result. Run them before you commit to it. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- Frame the estimand, treatment, and counterfactual first with **`question-framing`**; for a confirmatory study, lock the design and robustness suite in **`pre-analysis-plan`**.
-- The data feeding the model still needs **`data-contracts`** (a fanned-out join corrupts a causal estimate as surely as a descriptive one).
-- A causal estimate with the wrong sign or magnitude is often identification, not a data bug — but rule out the data bug with **`wrong-number-debugging`** first.
-- Before reporting, run the design's placebo/sensitivity battery as part of **`result-verification`**.
-- Any change to the design once work is underway is a user decision — route it through **`analysis-checkpoints`**.
-- This is the **reduced-form** half of the fork: when the decision needs a counterfactual *outside* the data (a merger price, consumer welfare, an equilibrium response), a reduced-form design can't reach it — that's the structural workflow, **`structural-estimation`**. The two are partners: a structural model's own elasticity at observed prices should sit in the neighborhood of a credible reduced-form/IV elasticity.
+Identification is **not** a terminal step. Once the design earns the estimate, it *propels* into exactly one next skill — route imperatively, don't just note the relationship:
+
+```dot
+digraph causal_identification_next {
+    "Diagnostic failed? (pre-trends / weak first stage / manipulation / imbalance) or design change needed?" [shape=diamond];
+    "invoke analysis-checkpoints — surface threat + remedies, user decides" [shape=box style=filled fillcolor=lightgreen];
+    "Estimate wrong sign / magnitude?" [shape=diamond];
+    "invoke wrong-number-debugging — rule out a data bug first" [shape=box style=filled fillcolor=lightgreen];
+    "invoke result-verification — verify before reporting" [shape=box style=filled fillcolor=lightgreen];
+    "Diagnostic failed? (pre-trends / weak first stage / manipulation / imbalance) or design change needed?" -> "invoke analysis-checkpoints — surface threat + remedies, user decides" [label="yes"];
+    "Diagnostic failed? (pre-trends / weak first stage / manipulation / imbalance) or design change needed?" -> "Estimate wrong sign / magnitude?" [label="no — design holds"];
+    "Estimate wrong sign / magnitude?" -> "invoke wrong-number-debugging — rule out a data bug first" [label="yes"];
+    "Estimate wrong sign / magnitude?" -> "invoke result-verification — verify before reporting" [label="no — design tested, robustness passed"];
+}
+```
+
+## The Process
+
+1. **Earn the estimate** — design named, untestable assumption argued, testable diagnostics passed, modern estimator used, threat-relevant robustness/placebo/sensitivity survived, reconciled with the raw data.
+2. **If any diagnostic fails or the design needs to change → STOP and invoke `analysis-checkpoints`** — present the threat, candidate remedies, and your recommendation; the design call is the user's, never a silent upgrade.
+3. **If the estimate has the wrong sign or magnitude → invoke `wrong-number-debugging` first** — rule out a data bug before blaming identification.
+4. **Once the design holds and robustness passes → invoke `result-verification`** — run the placebo/sensitivity battery as part of verification before any number leaves the building. Do not end at "the coefficient is X".
 
 ## The bottom line
 

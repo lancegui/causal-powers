@@ -94,14 +94,29 @@ Your job here ends at **diagnose and explain**. You surface the threat and the c
 | "I'll just rebuild the query from scratch." | You'll likely reintroduce the same bug. Localize it first; understand it; then rebuild if you must. |
 | "The number looks reasonable now." | "Looks reasonable" is the exact disguise a hidden bug wears. Reasonable ≠ reconciled. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- The bug usually means an invariant from **`data-contracts`** was missing — add it after you fix, and watch it bite.
-- Once the number reconciles, **`result-verification`** is what confirms the whole analysis before you report it.
-- A wrong *causal* estimate (right data, wrong sign or magnitude) is often an identification problem, not a data bug — escalate to **`causal-identification`**.
-- An implausible *structural* counterfactual is often the model, not a data bug — but bisect the pipeline here first to rule out the data bug, then escalate model/identification questions to **`structural-estimation`**.
-- When the remedy would change the design, sample, or spec, it stops being a fix and becomes a user decision — route it through **`analysis-checkpoints`**.
+Debugging is **not** terminal, and it is **not** licence to redesign. Once you've named the mechanism, the dividing question routes you imperatively to exactly one next skill:
 
+```dot
+digraph wrong_number_next {
+    "Mechanism named — data bug or design change?" [shape=diamond];
+    "Data bug — restores the agreed computation?" [shape=diamond];
+    "invoke data-contracts — add the check that would have caught it" [shape=box style=filled fillcolor=lightgreen];
+    "invoke analysis-checkpoints — route the redesign to the user" [shape=box style=filled fillcolor=lightgreen];
+    "Mechanism named — data bug or design change?" -> "Data bug — restores the agreed computation?" [label="data bug"];
+    "Mechanism named — data bug or design change?" -> "invoke analysis-checkpoints — route the redesign to the user" [label="design/sample/spec/estimand change"];
+    "Data bug — restores the agreed computation?" -> "invoke data-contracts — add the check that would have caught it" [label="fixed at source"];
+    "Data bug — restores the agreed computation?" -> "invoke analysis-checkpoints — route the redesign to the user" [label="remedy moves the design"];
+}
+```
+
+## The Process
+
+1. **Reproduce minimally, bisect to the stage, name the mechanism in one sentence.** No fix until you can.
+2. **Answer the dividing question** — restoring the agreed analysis, or changing it?
+3. **Data bug → fix at the source, then *invoke `data-contracts`*** to add the invariant that would have caught it and watch it bite on the broken version — never patch the symptom on the final output.
+4. **Design/sample/spec/estimand change → STOP and *invoke `analysis-checkpoints`*.** Present the threat, the candidate remedies, and your recommendation; do not smuggle a redesign in as a bug fix. An approved redesign re-enters at REPRODUCE as a new result to validate.
 ## The bottom line
 
 ```

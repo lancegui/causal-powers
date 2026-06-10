@@ -1,6 +1,6 @@
 ---
 name: question-framing
-description: Use BEFORE starting any data analysis, metric, model, or causal study — the moment someone asks "what's the trend", "is X driving Y", "how many users", "did the policy work", "build me a dashboard metric", or hands you a dataset to "look into". Pins down the estimand/metric definition, population, unit of observation, and the actual decision the number informs before a single line of code is written. Use this even when the request feels clear, because vague metric definitions ("active users", "the effect of X") are the root cause of analyses that answer the wrong question precisely.
+description: Use BEFORE starting any data analysis, metric, model, or causal study — the moment someone asks "what's the trend", "is X driving Y", "how many users", "did the policy work", "build me a dashboard metric", or hands you a dataset to "look into". Pins down the estimand/metric definition, population, unit of observation, and the actual decision the number informs before a single line of code is written — and, for general/exploratory work, also fixes the data sources, the approach/spec, and the deliverable in the same file: the everyday analysis plan. Use this even when the request feels clear, because vague metric definitions ("active users", "the effect of X") are the root cause of analyses that answer the wrong question precisely.
 ---
 
 # Question Framing
@@ -15,7 +15,7 @@ This is the analytics counterpart of brainstorming a feature before building it.
 
 ## The framing brief
 
-Produce a short written brief — a few lines, not a document — that answers these. Each one is a place analyses go wrong:
+Produce a short written brief — short but complete, not a sprawling document. It answers the elements below; for general/exploratory work it then also fixes the data, approach, and deliverable (see *The plan: data, approach, deliverable* below). Each one is a place analyses go wrong:
 
 1. **The decision.** What action does this number inform, and who takes it? If no decision rides on it, scope it down or drop it. "Interesting" is not a spec.
 2. **The estimand / metric, exactly.** Not "engagement" but "median sessions per 7-day-active user, per calendar week, in the US." Not "the effect of the pricing change" but "the change in 30-day retention for users who saw the new price vs. those who didn't." Pin the **numerator, denominator, unit, and time window**.
@@ -33,6 +33,16 @@ For a **causal** question, add three more and hand off to `causal-identification
 
 **Is this confirmatory? Decide it now.** If the result will drive or defend a decision, you (or the requester) have a stake in how it comes out, the question is causal, or the work will be scrutinized — it is **confirmatory**, and it needs a locked `pre-analysis-plan` *before outcomes are seen*. This determination is a framing step, not a silent judgment to make later: settle it here, and if confirmatory hand off to `pre-analysis-plan` before touching outcome data.
 
+## The plan: data, approach, deliverable (general/exploratory work)
+
+The brief above pins *what* you're measuring. For general/exploratory work — neither confirmatory (no `pre-analysis-plan`) nor structural (no model card) — framing is **not done there**. In the same file, before any code, also fix the three things the brief leaves open, because `executing-analysis-plans` will assume they were decided:
+
+1. **Data — with what?** The specific source(s) the metric comes from — table(s), file(s), query — the grain of each, the key joins required, and whether that data actually exists and is reachable. If you can't name the source, *confirming it is the first task, not an assumption.* This is where most "the number is wrong" problems are really born.
+2. **Approach / spec — how?** The method (trend / cohort / cut / simple regression), the comparison if any, and the controls or segmentation. **Hard stop on a causal cut:** if the approach is causal — any "is X driving Y", any cut you'd read as an effect — you may **not** proceed on the everyday plan until you have answered the confirmatory determination above. A causal cut you will report *is* confirmatory and belongs in a locked `pre-analysis-plan`, not here; the everyday plan continues only if that determination came back genuinely exploratory-and-unreported, and you say so explicitly. Hand the design itself to `causal-identification`.
+3. **Deliverable — what do they get?** One number, a table, a chart, a short memo — and at what cut. If you can't say what lands on the user's screen, you can't tell when you're done.
+
+This combined artifact **is** the everyday analysis plan that `executing-analysis-plans` expects. On the general branch there is no separate PAP or model card, so this — the brief plus its data/approach/deliverable plan — is where the plan gets locked and signed off.
+
 ## Form your economic prior — before the data
 
 An economist doesn't approach a result as a blank slate; they arrive with a prediction, and that prediction is what makes the eventual estimate *mean* something. Before computing, write down:
@@ -43,7 +53,7 @@ An economist doesn't approach a result as a blank slate; they arrive with a pred
 
 Then name **what result would surprise you**. This matters because a surprising estimate is a fork: it's either a genuine finding or a bug, and you decide *in advance* which lens you'll reach for, instead of rationalizing whatever number appears. A prior set after seeing the estimate isn't a prior.
 
-**Write it down, then confirm before proceeding.** Persist the brief — the metric/estimand, population, unit, the decision, the confirmatory/structural determination, and your prior (sign, magnitude, mechanism) — as a short file (e.g. `analysis-brief.md`), not just your head or the chat. Then present it and get the user's confirmation that the question, metric, and population are right *before* you load data. This is a real stop, not rhetorical: framing is undone if you frame and immediately barrel into the analysis on your own reading. (If no user is reachable, proceed on the most defensible reading but record every assumption for review — `analysis-checkpoints`.)
+**Write it down, then confirm before proceeding.** Persist the brief — the metric/estimand, population, unit, the decision, the confirmatory/structural determination, and your prior (sign, magnitude, mechanism) — as a short file (e.g. `analysis-brief.md`), not just your head or the chat. Then present it and get the user's confirmation that the question, metric, and population are right *before* you load data — and, for general/exploratory work, that the data sources, the approach/spec, and the deliverable are right too. On that branch this is the *only* approval gate there is (no PAP, no model card), so it must cover the WHAT, the WITH-WHAT-DATA, and the HOW, or `executing-analysis-plans` inherits a plan that never said what to build. This is a real stop, not rhetorical: framing is undone if you frame and immediately barrel into the analysis on your own reading. (If no user is reachable, proceed on the most defensible reading but record every assumption for review — `analysis-checkpoints`.)
 
 ## Watch for the silent reframe
 
@@ -73,14 +83,44 @@ When the request is genuinely ambiguous, **state your assumption explicitly and 
 | "They just want a number." | A number with an unstated definition is a number with an unstated bug. |
 | "Framing is overhead, the analysis is the real work." | An analysis that answers the wrong question is 100% waste, however rigorous. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- For a confirmatory study, turn the brief into a locked **`pre-analysis-plan`** before seeing outcomes.
-- Once the question is framed, enforce the metric definition with **`data-contracts`**.
-- For causal questions, hand the treatment/counterfactual/estimand to **`causal-identification`**.
-- When the decision needs a counterfactual *outside* the data (welfare, a merger price, an equilibrium response), the estimand is a structural counterfactual — hand off to **`structural-estimation`** (whose model card is the structural analog of the PAP). The reduced-form-vs-structural fork is decided here, at framing.
-- Once the brief (and PAP, if confirmatory) is approved, **`executing-analysis-plans`** carries the analysis out.
-- A definition that drifts after framing, or any later change to the estimand/population, is an **`analysis-checkpoints`** event — surface and re-confirm, don't absorb it.
+Framing is **not** a terminal step. It *propels* into exactly one next skill — route imperatively, don't just note the relationship:
+
+```dot
+digraph question_framing_next {
+    "Brief written + estimand/population/unit/decision pinned?" [shape=diamond];
+    "Re-confirm with user before loading data" [shape=box];
+    "Confirmatory? (drives/defends a decision, you have a stake, causal-and-reported, or will be scrutinized)" [shape=diamond];
+    "invoke pre-analysis-plan — lock it before outcomes" [shape=box style=filled fillcolor=lightgreen];
+    "Counterfactual OUTSIDE the data? (welfare, merger price, equilibrium response)" [shape=diamond];
+    "invoke structural-estimation — write the model card" [shape=box style=filled fillcolor=lightgreen];
+    "Causal cut answerable INSIDE the data?" [shape=diamond];
+    "invoke causal-identification — name the design" [shape=box style=filled fillcolor=lightgreen];
+    "invoke executing-analysis-plans — run the approved brief-with-plan" [shape=box style=filled fillcolor=lightgreen];
+
+    "Brief written + estimand/population/unit/decision pinned?" -> "Re-confirm with user before loading data" [label="yes"];
+    "Re-confirm with user before loading data" -> "Confirmatory? (drives/defends a decision, you have a stake, causal-and-reported, or will be scrutinized)";
+    "Confirmatory? (drives/defends a decision, you have a stake, causal-and-reported, or will be scrutinized)" -> "invoke pre-analysis-plan — lock it before outcomes" [label="yes"];
+    "Confirmatory? (drives/defends a decision, you have a stake, causal-and-reported, or will be scrutinized)" -> "Counterfactual OUTSIDE the data? (welfare, merger price, equilibrium response)" [label="no"];
+    "Counterfactual OUTSIDE the data? (welfare, merger price, equilibrium response)" -> "invoke structural-estimation — write the model card" [label="yes"];
+    "Counterfactual OUTSIDE the data? (welfare, merger price, equilibrium response)" -> "Causal cut answerable INSIDE the data?" [label="no"];
+    "Causal cut answerable INSIDE the data?" -> "invoke causal-identification — name the design" [label="yes"];
+    "Causal cut answerable INSIDE the data?" -> "invoke executing-analysis-plans — run the approved brief-with-plan" [label="no — general/exploratory"];
+}
+```
+
+## The Process
+
+1. **Pin the brief** — estimand/metric, population, unit, decision, what-would-flip-it, and your economic prior. For general/exploratory work, extend it with the data/approach/deliverable plan above.
+2. **Re-confirm with the user before loading data.** A framing the user never signed off on is one you guessed — this gate is mandatory, not rhetorical.
+3. **Route to exactly one next step** (graph above), and *invoke that skill* — do not end at "here's the brief":
+   - confirmatory → **`pre-analysis-plan`** (lock before outcomes);
+   - counterfactual outside the data → **`structural-estimation`** (model card — the structural analog of the PAP);
+   - causal cut inside the data → **`causal-identification`** (name the design);
+   - else, general/exploratory → the approved brief-with-plan *is* the plan, so → **`executing-analysis-plans`**.
+4. **During execution, enforce the metric definition with `data-contracts`.**
+5. **If the question/estimand/population drifts later → STOP and invoke `analysis-checkpoints`** — surface and re-confirm, never absorb it.
 
 ## The bottom line
 

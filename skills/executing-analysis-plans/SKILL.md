@@ -36,7 +36,14 @@ Once the validated dataset and primary spec exist, the supporting analyses are i
 - the one **sensitivity analysis** that matters (Oster δ, e-value, bandwidth);
 - for **structural** work, the independent pieces are the **Monte-Carlo recovery reps** (across true-θ points and sample sizes), the **multiple starting values** on the non-convex objective, and the **counterfactual scenarios** (one per mechanism) — they fan out the same way (`structural-estimation`).
 
-The approved shortlist reads the *same* validated dataset, so it parallelizes cleanly. Dispatch each chosen task to the **`robustness-runner`** agent that Causal Powers ships — it executes one pre-specified spec, asserts the data contracts, and returns a structured result, stopping if it hits a design decision. Use superpowers' **`dispatching-parallel-agents`** / **`subagent-driven-development`** for the dispatch mechanics.
+The approved shortlist reads the *same* validated dataset, so it parallelizes cleanly. **But choosing the execution *mode* is itself a checkpoint — present it, don't assume it.** Before running the shortlist, ask the user how they want it run:
+
+- **Inline** — each chosen spec in turn, here in this session, every step fully observable as it goes.
+- **Subagent dispatch** — one parallel subagent per spec, run concurrently.
+
+Recommend **subagent dispatch** for genuinely independent specs (faster, and it isolates each spec's context from yours), but it is the user's call — inline keeps everything in view, which some prefer for a small or delicate run. Make this a real, up-front question, not a silent default; this mirrors the inline-vs-subagent choice superpowers presents at execution.
+
+Once they choose: for **subagent dispatch**, hand each chosen task to the **`robustness-runner`** agent that Causal Powers ships — it executes one pre-specified spec, asserts the data contracts, and returns a structured result, stopping if it hits a design decision (use superpowers' **`dispatching-parallel-agents`** / **`subagent-driven-development`** for the mechanics). For **inline**, run the chosen specs one at a time, applying the same data-contract assertions to each. Either way the shortlist and what each spec carries (next sections) are unchanged — only the execution mode differs.
 
 ## Robustness is an argument, not an inventory
 
@@ -105,15 +112,35 @@ When the fan-out completes, assemble — don't just dump:
 | "The data suggested a better spec, so I added it." | Adding it silently is specification search. Surface it as a checkpoint; run it labeled as exploratory if approved. |
 | "I'll show all the results at the end." | Then a wrong intermediate poisons everything after it unseen. Validate each step as it lands. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- Runs **after** an approved **`question-framing`** brief and **`pre-analysis-plan`**; if there's no approval, go get it first.
-- Every spine step and every fanned-out spec validates with **`data-contracts`**.
-- Consequential decisions that surface during execution stop at **`analysis-checkpoints`**; wrong numbers go to **`wrong-number-debugging`**; design changes to **`causal-identification`**.
-- Keep the per-step code minimal and surgical with **`analysis-craft`**.
-- Synthesized results go to **`result-verification`** before reporting, and to **`analysis-review`** before they ship.
-- For structural work, this skill carries out the approved **model card** from **`structural-estimation`** — recovery reps, starts, and per-mechanism counterfactuals fan out like any independent specs.
+Execution is **not** a terminal step. The spine validates, the fan-out reconciles, and then it *propels* into verification — and forks by design type along the way. Route imperatively, don't just note the relationship:
 
+```dot
+digraph executing_next {
+    "Every spine step + every fanned-out spec" [shape=box style=filled fillcolor=lightblue];
+    "invoke data-contracts — assert before trusting any number" [shape=box style=filled fillcolor=lightgreen];
+    "Design type?" [shape=diamond];
+    "invoke causal-identification — reduced-form, effect lives in the data" [shape=box style=filled fillcolor=lightgreen];
+    "invoke structural-estimation — structural, counterfactual outside data" [shape=box style=filled fillcolor=lightgreen];
+    "Spine + fan-out complete?" [shape=diamond];
+    "invoke result-verification — reconcile + reproduce before any result is written" [shape=box style=filled fillcolor=lightgreen];
+    "Every spine step + every fanned-out spec" -> "invoke data-contracts — assert before trusting any number";
+    "invoke data-contracts — assert before trusting any number" -> "Design type?";
+    "Design type?" -> "invoke causal-identification — reduced-form, effect lives in the data" [label="reduced-form"];
+    "Design type?" -> "invoke structural-estimation — structural, counterfactual outside data" [label="structural"];
+    "Design type?" -> "Spine + fan-out complete?" [label="estimated"];
+    "Spine + fan-out complete?" -> "invoke result-verification — reconcile + reproduce before any result is written" [label="yes"];
+}
+```
+
+## The Process
+
+1. **Validate every spine step before trusting a number** — row counts, join cardinality, reconciliation → *invoke `data-contracts`* on the dataset and on each fanned-out spec.
+2. **Fork by design as you estimate** — reduced-form (effect lives in the data) → *invoke `causal-identification`* for the robustness suite; structural (counterfactual outside the data) → *invoke `structural-estimation`* for recovery reps, starts, and per-mechanism counterfactuals.
+3. **On every write, keep the code minimal and surgical → invoke `analysis-craft`.** Touch only what the step needs.
+4. **Any decision that changes design/sample/spec/estimand — or any number the user has already seen — STOP and invoke `analysis-checkpoints`.** A surprising result is a checkpoint, not a step; a number that looks wrong is `wrong-number-debugging`, not a silent patch.
+5. **Spine + fan-out complete, before any result is written or reported → invoke `result-verification`.** Do not end at "here are the results" — reconcile, reproduce, then hand off.
 ## The bottom line
 
 ```

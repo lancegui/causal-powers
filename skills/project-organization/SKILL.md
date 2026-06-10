@@ -88,12 +88,31 @@ The repo a collaborator sees should be code + manuscript + results + the shareab
 | "Dates and `v2` track versions." | Git does. `results_final_v3_REALLY.csv` is how you lose the canonical one. One name per artifact. |
 | "Just delete the scratch to tidy up." | Deleting files the user might want is their call. Offer; prefer gitignore/move; never touch `raw/`. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- This is `analysis-craft`'s legibility, scaled from the diff to the directory.
-- The cleanup fires at the **done** boundary with **`result-verification`** (freeze the verified result into its folder) and the phase-boundary tidy in **`executing-analysis-plans`**.
-- The structural stages and `docs/MODEL_CARD.md` come from **`structural-estimation`**; `docs/pre-analysis-plan.md` from **`pre-analysis-plan`**; `docs/LESSONS.md` from **`result-verification`**.
-- Deleting or moving files is consequential — route it through **`analysis-checkpoints`**.
+Organization is the **terminal** step — the chain *routes into* it and *ends* here. Don't propel to a successor; land the work as shippable:
+
+```dot
+digraph project_organization_next {
+    "Result verified? (reconciled / reproduced clean)" [shape=diamond];
+    "invoke result-verification — freeze before you organize" [shape=box style=filled fillcolor=lightyellow];
+    "About to delete/move files the user may want?" [shape=diamond];
+    "invoke analysis-checkpoints — moves/deletes are a gate" [shape=box style=filled fillcolor=lightgreen];
+    "TERMINAL: deliverables placed, scratch archived, names standardized → shippable" [shape=box style=filled fillcolor=lightgrey];
+    "Result verified? (reconciled / reproduced clean)" -> "invoke result-verification — freeze before you organize" [label="no — go back"];
+    "Result verified? (reconciled / reproduced clean)" -> "About to delete/move files the user may want?" [label="yes"];
+    "About to delete/move files the user may want?" -> "invoke analysis-checkpoints — moves/deletes are a gate" [label="yes"];
+    "About to delete/move files the user may want?" -> "TERMINAL: deliverables placed, scratch archived, names standardized → shippable" [label="no"];
+}
+```
+
+## The Process
+
+1. **Read the README's conventions first**, then inventory what the workflow produced.
+2. **Classify each artifact** — deliverable → its folder; superseded-but-keep → the category's `archive/` (move, never delete); intermediate → keep or gitignore; scratch/diagnostic → `sandbox/` or `results/diagnostics/`; sensitive/oversized → shrink-or-gitignore; secret → gitignore now.
+3. **Before any move or delete the user might want kept → STOP and invoke `analysis-checkpoints`.** Never touch `raw/`; prefer move/gitignore over delete.
+4. **Standardize names, update `.gitignore`, confirm one-command reproduction.**
+5. **This is the end of the chain — do not invoke a successor.** When deliverables are placed, scratch is archived, and names are standardized, the work is **shippable**: ready to commit and push.
 
 ## The bottom line
 

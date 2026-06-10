@@ -18,5 +18,15 @@
   {"query": "review this analysis a colleague handed me and tell me if the conclusion actually holds up", "should_trigger": false},
   {"query": "i need an instrument for price and want the demand elasticity via 2SLS, the identification is the hard part here", "should_trigger": false},
   {"query": "what price would the merged firm set? i have shares and characteristics and need the post-merger equilibrium, not a comparison in the data", "should_trigger": false},
-  {"query": "rewrite the executive summary of my analysis so it's punchier for a non-technical audience", "should_trigger": false}
+  {"query": "rewrite the executive summary of my analysis so it's punchier for a non-technical audience", "should_trigger": false},
+  {"query": "write me an analysis plan for churn before i touch the data — what tables, what method, what lands as the deliverable", "should_trigger": true},
+  {"query": "what data do we need for this conversion analysis, and where does the revenue number actually come from?", "should_trigger": true},
+  {"query": "how should we approach this estimation of activation by cohort — spec it out before i write any code", "should_trigger": true},
+  {"query": "i want to look into seasonality in orders but i'm not even sure which table has clean order timestamps yet", "should_trigger": true},
+  {"query": "what's the plan for the team offsite next week", "should_trigger": false},
+  {"query": "help me put together a plan for the database migration", "should_trigger": false},
+  {"query": "i need a plan for refactoring the auth module before we ship", "should_trigger": false},
+  {"query": "before i build the API, can you walk me through the architecture?", "should_trigger": false},
+  {"query": "what data do we need to file our taxes this year?", "should_trigger": false},
+  {"query": "what's the game plan for the product launch on friday", "should_trigger": false}
 ]

@@ -18,5 +18,10 @@
   {"query": "tighten the methods paragraph where i describe the staggered rollout, the referee said it reads clunky", "should_trigger": false},
   {"query": "my 2sls script throws 'system is computationally singular' in R, how do i fix the code", "should_trigger": false},
   {"query": "explain intuitively why a robustness table with 30 columns can actually hurt credibility, i'm prepping a methods lecture", "should_trigger": false},
-  {"query": "draft the robustness section of the PAP — which checks should we pre-commit to for this RD before we ever touch the outcomes?", "should_trigger": false}
+  {"query": "draft the robustness section of the PAP — which checks should we pre-commit to for this RD before we ever touch the outcomes?", "should_trigger": false},
+  {"query": "fan the robustness specs out to parallel subagents and assemble the table", "should_trigger": true},
+  {"query": "run the unit tests and tell me if they pass", "should_trigger": false},
+  {"query": "execute the deployment to staging", "should_trigger": false},
+  {"query": "the offsite plan is approved, let's book the venue", "should_trigger": false},
+  {"query": "run the app and screenshot the dashboard for me", "should_trigger": false}
 ]

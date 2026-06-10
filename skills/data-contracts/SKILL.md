@@ -138,14 +138,31 @@ Use floating-point-aware comparison (`np.isclose` / `all.equal` / `isapprox`) fo
 | "The totals are close enough." | "Close" on a reconciliation usually means rows are leaking. Find out why before you round it away. |
 | "Adding checks slows me down." | A wrong number in front of a stakeholder costs far more than the 60 seconds the assertion took. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- Frame the question and the metric definitions first with **`question-framing`**; lock confirmatory specs with **`pre-analysis-plan`**.
-- When a validated number still comes out **wrong or surprising**, switch to **`wrong-number-debugging`** — bisect the pipeline to find where the data went bad.
-- When a failed contract tempts you to drop rows, change a join's grain, winsorize, or alter a number the user has seen, that "fix" may be a redesign — route it through **`analysis-checkpoints`** before applying it, don't smuggle it in.
-- Before **claiming an analysis is done or reporting a finding**, use **`result-verification`**.
-- For any **causal** claim, the contracts here are necessary but not sufficient — see **`causal-identification`**.
-- For **structural** work, the same discipline applies to the estimator: the Monte-Carlo recovery test is a data contract on the algorithm — assert that it recovers known θ, then freeze that as a golden baseline (**`structural-estimation`**).
+Contracts are **not** a terminal step. The moment a check trips, they *propel* you out of "keep building" and into a named next skill — route imperatively, don't just note the relationship:
+
+```dot
+digraph data_contracts_next {
+    "Reconciliation / total / join-cardinality assertion FAILS?" [shape=diamond];
+    "invoke wrong-number-debugging — bisect to the bad step" [shape=box style=filled fillcolor=lightgreen];
+    "The 'fix' drops/filters/winsorizes rows or redefines a metric?" [shape=diamond];
+    "invoke analysis-checkpoints — STOP, it's a design decision" [shape=box style=filled fillcolor=lightgreen];
+    "Contract holds — keep computing the next step" [shape=box];
+    "Reconciliation / total / join-cardinality assertion FAILS?" -> "invoke wrong-number-debugging — bisect to the bad step" [label="yes"];
+    "Reconciliation / total / join-cardinality assertion FAILS?" -> "The 'fix' drops/filters/winsorizes rows or redefines a metric?" [label="no, but a 'fix' is tempting"];
+    "The 'fix' drops/filters/winsorizes rows or redefines a metric?" -> "invoke analysis-checkpoints — STOP, it's a design decision" [label="yes"];
+    "The 'fix' drops/filters/winsorizes rows or redefines a metric?" -> "Contract holds — keep computing the next step" [label="no"];
+}
+```
+
+## The Process
+
+1. **Write the contract and watch it bite** — keys, ranges, totals, join cardinality; feed it one broken row and confirm the assertion fires before you trust it.
+2. **Compute, then reconcile against the source.** A clean run is not a correct result.
+3. **If a reconciliation / total / cardinality assertion FAILS → STOP and invoke `wrong-number-debugging`** — bisect the pipeline to the exact bad step; do not patch and proceed.
+4. **If the "fix" would drop/filter/winsorize rows, change a join's grain, or move a number the user has already seen → STOP and invoke `analysis-checkpoints`** — that's a sample/spec redesign, not an autonomous bug fix; don't smuggle it in.
+5. **Otherwise freeze the validated result as a golden baseline** and continue to the next step — every future re-run diffs against it.
 
 ## The bottom line
 

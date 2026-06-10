@@ -85,12 +85,32 @@ When someone critiques your analysis, the failure mode is reflexive agreement: "
 | "They flagged it, so it must be wrong — fixing." | Maybe. Verify it against the data first; agreeing without checking can introduce a new bug. |
 | "There's no time to ask for the intermediate checks." | Then there's no time to know whether the number is real. Reviewing only the output is reviewing nothing. |
 
-## Relationship to sibling skills
+## When to Use → where this hands off
 
-- The integrity checks you look for are defined in **`data-contracts`**; the reproduction check in **`result-verification`**.
-- Identification review hands off to **`causal-identification`**; specification-search review to **`pre-analysis-plan`**.
-- Structural-model review — identification stated per parameter, recovery shown, equilibrium re-solved in counterfactuals — hands off to **`structural-estimation`**.
-- When the review surfaces a wrong number, fixing it is **`wrong-number-debugging`**.
+Review is **not** terminal and it does **not** end at "looks good / here are my notes." It is the silent-failure sweep `result-verification` dispatches before shipping — every finding *propels* into a fixing skill. Route imperatively on what the review surfaced:
+
+```dot
+digraph analysis_review_next {
+    "Review surfaced a wrong number / data-integrity failure?" [shape=diamond];
+    "invoke wrong-number-debugging — bisect the pipeline to the bad step" [shape=box style=filled fillcolor=lightgreen];
+    "Review surfaced a design issue? (identification gap / spec search / misspecification)" [shape=diamond];
+    "invoke analysis-checkpoints — route the design decision to the user" [shape=box style=filled fillcolor=lightgreen];
+    "Clean — return to result-verification to ship" [shape=box style=filled fillcolor=lightgreen];
+    "Review surfaced a wrong number / data-integrity failure?" -> "invoke wrong-number-debugging — bisect the pipeline to the bad step" [label="yes"];
+    "Review surfaced a wrong number / data-integrity failure?" -> "Review surfaced a design issue? (identification gap / spec search / misspecification)" [label="no"];
+    "Review surfaced a design issue? (identification gap / spec search / misspecification)" -> "invoke analysis-checkpoints — route the design decision to the user" [label="yes"];
+    "Review surfaced a design issue? (identification gap / spec search / misspecification)" -> "Clean — return to result-verification to ship" [label="no"];
+}
+```
+
+## The Process
+
+1. **Run the checklist against *this* artifact** — claim, data path, models/causal claims, reproducibility. Don't answer from loaded context.
+2. **For each headline number, form the failure hypothesis and demand the evidence that rules it out** — row-counts, reconciliation, missingness, leakage check, identification statement.
+3. **Route every finding to a fixing skill — never stop at "here are my notes":**
+   - Wrong number / unreconciled total / fanned-out join → **STOP and invoke `wrong-number-debugging`** to bisect to the bad step.
+   - Design issue — identification gap, fished spec, structural misspecification → **STOP and invoke `analysis-checkpoints`** to route the decision to the user (it in turn hands to `causal-identification`, `pre-analysis-plan`, or `structural-estimation`).
+4. **If it's clean** — metric defined, joins checked, totals reconciled, leakage ruled out, identification stated, reproduces from a clean seed → **return to `result-verification`** to ship.
 
 ## The bottom line
 
