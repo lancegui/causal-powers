@@ -11,6 +11,8 @@ A number you computed but never validated is a guess wearing a lab coat.
 
 **Core principle:** Lock in what must be *true* before you trust what you *discovered*.
 
+This is the **checker**. It asserts invariants and reconciles totals; it does not plan or run the work. Its complement is the **doer**: during the cleaning phase, `data-preparation` *calls* this skill to validate each ingest/join/dedup/recode step, and `executing-analysis-plans` calls it on every later spine step and fanned-out spec. You reach for `data-contracts` directly the moment you're about to trust a number or do a join — and the doers reach for it on your behalf throughout.
+
 This is the data-analytics counterpart of test-driven development. TDD's literal ritual — "write a failing test asserting the exact output, then implement" — does not transfer to analysis, because in analysis the output is the unknown. You cannot assert `mean == 42.3` before you've computed it; computing it is the whole point. But the discipline underneath TDD transfers exactly, and matters *more* here.
 
 ## Why analysis breaks naive TDD (and why you still need its spirit)

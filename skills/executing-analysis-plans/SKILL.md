@@ -118,14 +118,19 @@ Execution is **not** a terminal step. The spine validates, the fan-out reconcile
 
 ```dot
 digraph executing_next {
-    "Every spine step + every fanned-out spec" [shape=box style=filled fillcolor=lightblue];
+    "Spine step 1 — build / clean / join the dataset?" [shape=diamond];
+    "invoke data-preparation — delegate the cleaning PHASE (it calls data-contracts within, returns the clean dataset)" [shape=box style=filled fillcolor=lightgreen];
+    "Every later spine step + every fanned-out spec" [shape=box style=filled fillcolor=lightblue];
     "invoke data-contracts — assert before trusting any number" [shape=box style=filled fillcolor=lightgreen];
     "Design type?" [shape=diamond];
     "invoke causal-identification — reduced-form, effect lives in the data" [shape=box style=filled fillcolor=lightgreen];
     "invoke structural-estimation — structural, counterfactual outside data" [shape=box style=filled fillcolor=lightgreen];
     "Spine + fan-out complete?" [shape=diamond];
     "invoke result-verification — reconcile + reproduce before any result is written" [shape=box style=filled fillcolor=lightgreen];
-    "Every spine step + every fanned-out spec" -> "invoke data-contracts — assert before trusting any number";
+    "Spine step 1 — build / clean / join the dataset?" -> "invoke data-preparation — delegate the cleaning PHASE (it calls data-contracts within, returns the clean dataset)" [label="yes — unless trivial clean load"];
+    "Spine step 1 — build / clean / join the dataset?" -> "Every later spine step + every fanned-out spec" [label="dataset already clean & built"];
+    "invoke data-preparation — delegate the cleaning PHASE (it calls data-contracts within, returns the clean dataset)" -> "Every later spine step + every fanned-out spec";
+    "Every later spine step + every fanned-out spec" -> "invoke data-contracts — assert before trusting any number";
     "invoke data-contracts — assert before trusting any number" -> "Design type?";
     "Design type?" -> "invoke causal-identification — reduced-form, effect lives in the data" [label="reduced-form"];
     "Design type?" -> "invoke structural-estimation — structural, counterfactual outside data" [label="structural"];
@@ -136,11 +141,12 @@ digraph executing_next {
 
 ## The Process
 
-1. **Validate every spine step before trusting a number** — row counts, join cardinality, reconciliation → *invoke `data-contracts`* on the dataset and on each fanned-out spec.
-2. **Fork by design as you estimate** — reduced-form (effect lives in the data) → *invoke `causal-identification`* for the robustness suite; structural (counterfactual outside the data) → *invoke `structural-estimation`* for recovery reps, starts, and per-mechanism counterfactuals.
-3. **On every write, keep the code minimal and surgical → invoke `analysis-craft`.** Touch only what the step needs.
-4. **Any decision that changes design/sample/spec/estimand — or any number the user has already seen — STOP and invoke `analysis-checkpoints`.** A surprising result is a checkpoint, not a step; a number that looks wrong is `wrong-number-debugging`, not a silent patch.
-5. **Spine + fan-out complete, before any result is written or reported → invoke `result-verification`.** Do not end at "here are the results" — reconcile, reproduce, then hand off.
+1. **Build / clean / join the dataset → delegate to `data-preparation`** (unless it's a trivial load of one already-clean file). It runs the ingest→clean→join→dedup→recode→reconcile phase — calling `data-contracts` per step, routing consequential cleaning decisions to `analysis-checkpoints` — and returns the clean, validated dataset.
+2. **Validate every later spine step + every fanned-out spec before trusting a number** — row counts, join cardinality, reconciliation → *invoke `data-contracts`*.
+3. **Fork by design as you estimate** — reduced-form (effect lives in the data) → *invoke `causal-identification`* for the robustness suite; structural (counterfactual outside the data) → *invoke `structural-estimation`* for recovery reps, starts, and per-mechanism counterfactuals.
+4. **On every write, keep the code minimal and surgical → invoke `analysis-craft`.** Touch only what the step needs.
+5. **Any decision that changes design/sample/spec/estimand — or any number the user has already seen — STOP and invoke `analysis-checkpoints`.** A surprising result is a checkpoint, not a step; a number that looks wrong is `wrong-number-debugging`, not a silent patch.
+6. **Spine + fan-out complete, before any result is written or reported → invoke `result-verification`.** Do not end at "here are the results" — reconcile, reproduce, then hand off.
 ## The bottom line
 
 ```
