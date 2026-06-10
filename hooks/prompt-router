@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# UserPromptSubmit hook for the causal-powers plugin.
+#
+# WHY THIS EXISTS: the SessionStart block (hooks/session-start) injects the
+# discipline ONCE, at session open, as low-priority background context. By a few
+# turns in it has scrolled off and gone "wallpaper" — so when a prompt actually
+# contains a trigger ("this number looks wrong", "merge these", "did it work"),
+# nothing re-surfaces the matching leaf skill at that moment, and the model
+# free-hands the discipline instead of invoking the skill.
+#
+# This hook fixes that failure mode: it runs on EVERY prompt, scans for trigger
+# phrases, and injects a short, per-turn nudge that NAMES the specific skill to
+# invoke. It is a soft nudge — it never blocks the prompt and adds no latency.
+#
+# Conventions mirror hooks/session-start: no jq dependency, always exit 0, emit
+# hookSpecificOutput on Claude Code and top-level additionalContext elsewhere.
+
+set -uo pipefail
+
+# Read the whole UserPromptSubmit payload. The prompt text lives in .prompt; we
+# grep the raw blob (lowercased) to stay dependency-free. The payload is just
+# session_id / prompt / cwd, so false matches on other fields are not a concern.
+payload="$(cat 2>/dev/null || true)"
+low="$(printf '%s' "$payload" | tr '[:upper:]' '[:lower:]')"
+
+# Suppression guard. This hook is a HIGH-PRECISION backstop for blatant literal
+# triggers, not a semantic classifier (regex tops out ~22% recall on the eval
+# corpus; the model's description-based matching is the real mechanism). So when
+# a prompt is plainly writing / formatting / teaching / code-syntax help that
+# merely NAMES a method (DiD, IV, RDD, BLP, "join"), it is not an analysis-
+# decision moment — the discipline skill should not fire, and neither should we.
+# These are the should_trigger=false cases in evals/trigger and were the main
+# false-fires. Suppress them outright; recall is intentionally traded for
+# precision here.
+if printf '%s' "$low" | grep -Eq "tighten|rephrase|reword|\bpolish\b|proofread|rewrite (the|my)|referee response|reviewer response|make (a )?slide|slide (that|to)|format (this|the|my)|latex table|significance stars|syntax for|what'?s the .*(argument|function)|difference between (an? )?(inner|left|right|outer|full)|computationally singular|explain .*(to (non-?technical|execs|a layperson)|the difference)|(intro|introduction|abstract|empirics? section) of (my|the) paper|section of (my|the) paper"; then
+  exit 0
+fi
+
+# Collect matched skills (one line each). Each family is high-precision so normal
+# conversation does not trip it; matching is intentionally biased toward the
+# moments where the discipline is most often skipped.
+matches=""
+m() {  # m <regex> <nudge-line>
+  if printf '%s' "$low" | grep -Eq "$1"; then
+    matches="${matches}- ${2}"$'\n'
+  fi
+}
+
+m "doesn'?t match|don'?t match|didn'?t match|do not match|too high|too low|off by|can'?t be right|cannot be right|that can'?t be|doesn'?t converge|wouldn'?t converge|didn'?t converge|not converg|unexpected|suspicious|totals? (are|is) off|this number|looks wrong|wrong sign|surprising|why is (this|it) so" \
+  "causal-powers:wrong-number-debugging — a result looks wrong; bisect the pipeline to the bad step, do NOT guess-and-patch."
+
+m "\bmerge\b|\bjoin\b|\bgroup by\b|\bgroupby\b|aggregate|\breshape\b|combine (these|the)|cardinality|row counts?" \
+  "causal-powers:data-contracts — assert join cardinality + row counts and reconcile totals BEFORE trusting the merged result."
+
+m "effect of|did it work|impact of|\bregress|\bcaused\b|because we (did|ran)|did (the |this )?(policy|program|intervention|treatment|law|reform|mandate|expansion|rollout|ban|subsidy|tax)|(policy|program|intervention|treatment|law|reform|mandate|expansion) (raise|lower|increase|reduce|cause|affect|change|move|boost|cut)|treatment (effect|increased|raised)|difference.?in.?difference|event study|\biv\b|instrument|regression discontinuity|\brdd\b|synthetic control|parallel trends" \
+  "causal-powers:causal-identification — name the design + test its assumptions before reading a coefficient as an effect."
+
+m "\bdrop\b|winsoriz|trim the|remove (the )?outlier|exclude (the|these|those)|\bfilter out\b|should i drop|change the (spec|sample|definition)|redefine|rebuild|re-?run with" \
+  "causal-powers:analysis-checkpoints — this changes sample/spec/a seen number; STOP and surface options, don't decide it silently."
+
+m "report this|\bfinal\b|the answer is|put this in|send this to|in the (deck|slide|paper|table)|sanity.?check|does this look right|looks right|i'?m done|ready to ship" \
+  "causal-powers:result-verification — reconcile to source + reproduce from a clean seed before this number leaves the room."
+
+m "\bblp\b|demand estimation|counterfactual|structural (model|estimat)|merger sim|discrete choice|\bgmm\b|equilibrium|recover( the)? parameters" \
+  "causal-powers:structural-estimation — write/confirm the model card (per-parameter identification + recovery test) before estimating."
+
+m "review (this|my) (analysis|notebook|script|model)|check my (notebook|analysis)|before i (send|ship|publish)|is this analysis" \
+  "causal-powers:analysis-review — hunt the silent-failure classes (unchecked joins, leakage, fished specs, undefined metrics)."
+
+m "analyze this|what'?s the trend|how many (users|people|rows|records)|look into (this|the) (data|dataset)|build (me )?(a )?(metric|dashboard)|measure the" \
+  "causal-powers:question-framing — pin the estimand/metric, population, and unit before writing code."
+
+# No trigger: inject nothing, never disturb the prompt.
+if [ -z "$matches" ]; then
+  exit 0
+fi
+
+context="<system-reminder>
+Causal Powers trigger detected in this prompt. Per the discipline, invoke the matching skill via the Skill tool BEFORE responding — do not free-hand it from memory; the skill files carry checklists you are otherwise working without. If, after invoking, a skill turns out not to fit, you may stand down.
+
+Matched:
+${matches}</system-reminder>"
+
+# Escape for safe JSON embedding (single-pass bash parameter substitution).
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+context_escaped=$(escape_for_json "$context")
+
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "UserPromptSubmit",\n    "additionalContext": "%s"\n  }\n}\n' "$context_escaped"
+else
+  printf '{\n  "additionalContext": "%s"\n}\n' "$context_escaped"
+fi
+
+exit 0
