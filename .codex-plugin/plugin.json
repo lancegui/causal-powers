@@ -1,0 +1,43 @@
+{
+  "name": "causal-powers",
+  "version": "0.18.0",
+  "description": "Superpowers for data analytics, causal inference, and econometrics — discipline skills that make the silent failures of data work loud (the clean run that hands you a confident, wrong answer). R, Julia, Python.",
+  "author": {
+    "name": "Lance Gui",
+    "email": "lance.guixiaofan@gmail.com",
+    "url": "https://github.com/lancegui"
+  },
+  "homepage": "https://github.com/lancegui/causal-powers",
+  "repository": "https://github.com/lancegui/causal-powers",
+  "license": "MIT",
+  "keywords": [
+    "data-analysis",
+    "causal-inference",
+    "econometrics",
+    "data-cleaning",
+    "data-quality",
+    "validation",
+    "structural-estimation",
+    "R",
+    "julia",
+    "python"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Causal Powers",
+    "shortDescription": "Rigor for data analysis, causal inference & econometrics — make silent failures loud",
+    "longDescription": "Guides analytical work through question framing, data preparation, data contracts, pre-analysis plans, causal identification, structural estimation, bounded robust execution, and verification — catching the silent bugs that run clean and hand you a confident, wrong answer. Reduced-form and structural workflows for R, Julia, and Python.",
+    "developerName": "Lance Gui",
+    "category": "Data & Analytics",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Help me frame this analysis before I touch the data.",
+      "Clean and build the dataset for this study, then plan the estimation."
+    ],
+    "websiteURL": "https://github.com/lancegui/causal-powers"
+  }
+}

@@ -100,7 +100,9 @@ discipline present, makes the chain *fire* reliably, and makes long work resumab
 
 ## Requirements
 
-- [Claude Code](https://docs.claude.com/en/docs/claude-code) with plugin support.
+- [Claude Code](https://docs.claude.com/en/docs/claude-code) with plugin support —
+  or **[Codex](https://developers.openai.com/codex/skills)** / any agent that reads
+  `SKILL.md` skills + `AGENTS.md` (see [On Codex](#on-codex-and-other-agents) below).
 - The hooks (the always-on block, the trigger router / skill-chain, and the
   `analysis-plan.md` resumability hook) need **Claude Code v2.1+**, which auto-loads
   `hooks/hooks.json` from installed plugins. Everything else (skills, agents) works
@@ -138,16 +140,53 @@ git clone https://github.com/lancegui/causal-powers
 #   /plugin install causal-powers@causal-powers
 ```
 
+## On Codex (and other agents)
+
+The skills are plain `SKILL.md` files with `name` + `description` frontmatter —
+**the same format Codex uses** — so they load and trigger natively (off the
+`description`, or by explicit `$<skill-name>`). Codex compatibility ships in the
+repo: a Codex manifest (`.codex-plugin/plugin.json`), an `AGENTS.md` that carries
+the always-on discipline (Codex has no SessionStart hook), and a tool-mapping
+reference ([`skills/using-causal-powers/references/codex-tools.md`](skills/using-causal-powers/references/codex-tools.md)).
+
+Install the skills into a directory Codex scans (per the
+[Codex skills docs](https://developers.openai.com/codex/skills) — a project
+`.agents/skills/` or your user `~/.agents/skills/`), then restart Codex:
+
+```bash
+git clone https://github.com/lancegui/causal-powers
+# user scope (all projects):
+mkdir -p ~/.agents/skills && ln -s "$PWD/causal-powers/skills"/* ~/.agents/skills/
+# or project scope: copy/symlink the skills into <your-repo>/.agents/skills/
+# and copy AGENTS.md to your repo root so the always-on discipline loads.
+```
+
+Or use Codex's built-in installer (`$skill-installer`) / the `/plugins` directory
+if you prefer in-app install — see the
+[Codex plugins docs](https://developers.openai.com/codex/plugins). Either way,
+**copy `AGENTS.md` to your project root** (or merge it into an existing one) so the
+discipline is always on, since the Claude Code hooks don't run on Codex.
+
+**What changes on Codex:** the `hooks/` (always-on injection, trigger router,
+skill-chain, `analysis-plan.md` resumability) are Claude-Code-only. On Codex the
+discipline lives in `AGENTS.md`, skills trigger off their descriptions natively,
+the subagent fan-out uses `spawn_agent` (or degrades to inline — enable
+`[features] multi_agent = true` in `~/.codex/config.toml`), and you maintain the
+living `analysis-plan.md` yourself (flush it before compacting). Full mapping in
+[`codex-tools.md`](skills/using-causal-powers/references/codex-tools.md).
+
 ## How it's organized
 
 ```
 causal-powers/
-├── skills/        # the 14 disciplines (gateway + 13)
+├── skills/        # the 14 disciplines (gateway + 13); plain SKILL.md — also Codex-native
 ├── agents/        # robustness-runner, analysis-reviewer
-├── hooks/         # always-on block + trigger router + skill-chain + plan resumability
+├── hooks/         # Claude Code: always-on block + trigger router + skill-chain + plan resumability
 ├── evals/trigger/ # per-skill trigger tests (the router's precision/recall regression set)
 ├── docs/          # design specs + LESSONS.md
-└── .claude-plugin/  # plugin + marketplace manifests
+├── AGENTS.md      # always-on discipline for Codex / other agents (symlink → hooks/session-context.md)
+├── .codex-plugin/   # Codex plugin manifest
+└── .claude-plugin/  # Claude Code plugin + marketplace manifests
 ```
 
 ## Design notes

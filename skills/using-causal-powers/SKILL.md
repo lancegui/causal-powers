@@ -71,6 +71,27 @@ Rigor keeps you from being *wrong*; craft keeps the analysis *legible and cheap 
 
 The simplicity-first and surgical-edit halves of that lineage live in **`analysis-craft`**.
 
+## Running on Codex / other agents
+
+These skills are plain `SKILL.md` files (`name` + `description` frontmatter) — the
+same format Claude Code and **Codex** both use — so they load and trigger natively
+on either: off the `description`, or by explicit `$<skill-name>` on Codex. What
+differs by platform is the *always-on* and *backstop* layer, which on Claude Code
+is hooks and on Codex is `AGENTS.md`:
+
+- **Always-on discipline:** Claude Code injects it via a SessionStart hook; on
+  Codex the same block is `AGENTS.md` at the repo root (symlinked to
+  `hooks/session-context.md`), read automatically.
+- **Triggering:** Claude Code adds a keyword router + skill-chain as backstops; on
+  Codex, description-matching + each skill's own `## When to Use` / `## The Process`
+  do the routing — no hooks needed.
+- **Tool names:** when a skill says `Task` (dispatch a subagent), `TodoWrite`, or
+  `Skill`, translate to your platform via
+  [`references/codex-tools.md`](references/codex-tools.md). The robustness fan-out
+  uses `spawn_agent` on Codex (or degrades to inline if multi-agent is off).
+- **Resumability:** maintain the living `analysis-plan.md` and flush it before
+  compacting — Claude Code automates the re-read with a hook; on Codex you do it.
+
 ## Instruction priority
 
 These skills override default behavior, but **user instructions always win**. If the user (or a project's CLAUDE.md) says to skip a step, follow the user — they're in control. The skills tell you *how* to do rigorous analysis when rigor is wanted. One caveat: a user can *waive* a step, but you may never *silently* skip a confirmation gate — if you bypass framing, a PAP/model-card sign-off, or a checkpoint, say so explicitly so the waiver is the user's choice, not your omission.
