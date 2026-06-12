@@ -1,0 +1,11 @@
+[
+  "bad-control",
+  "fanout-join",
+  "leakage-overlap",
+  "na-silent-drop",
+  "nonidentified-param",
+  "pretrend-violation",
+  "silent-filter-total",
+  "spatial-silent-drop",
+  "unit-mismatch"
+]

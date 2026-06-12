@@ -95,8 +95,19 @@ discipline present, makes the chain *fire* reliably, and makes long work resumab
   `analysis-reviewer` (independent adversarial review for the silent-failure
   classes).
 - **Lessons-capture** (`docs/LESSONS.md`): a manual, no-machinery `/evolve` —
-  record the silent failure that bit each project and fold general ones back into
-  the skills.
+  `wrong-number-debugging`, `analysis-review`, and `result-verification` each end
+  by logging the failure class that bit, and general lessons fold back into the
+  skills.
+- **Evals that measure both halves** (`evals/`, `scripts/`). *Does it fire?* —
+  `scripts/eval-triggers.py` runs the trigger corpus through the real
+  `prompt-router` against a committed regression baseline, with a `--live`
+  description-matching mode that includes the *competing* superpowers
+  descriptions. *Does it catch anything?* — `scripts/run-behavioral-eval.py`
+  A/Bs `claude -p` with and without the always-on card on nine tasks with
+  planted silent failures (fan-out join, leakage, bad control, pre-trend
+  violation, non-identified parameter, …), isolated from locally installed
+  plugins, LLM-graded against per-scenario catch criteria
+  (`evals/behavioral/README.md`).
 
 ## Requirements
 
@@ -191,7 +202,8 @@ causal-powers/
 ├── skills/        # the 14 disciplines (gateway + 13); plain SKILL.md — also Codex-native
 ├── agents/        # robustness-runner, analysis-reviewer
 ├── hooks/         # Claude Code: always-on block + trigger router + skill-chain + plan resumability
-├── evals/trigger/ # per-skill trigger tests (the router's precision/recall regression set)
+├── evals/         # trigger/ (router CI corpus + baseline) · behavioral/ (planted-silent-failure benchmark)
+├── scripts/       # eval-triggers.py (trigger CI) · run-behavioral-eval.py (benchmark) · install-codex.sh
 ├── docs/          # design specs + LESSONS.md
 ├── AGENTS.md      # always-on discipline for Codex / other agents (symlink → hooks/session-context.md)
 ├── .codex-plugin/   # Codex plugin manifest

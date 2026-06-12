@@ -121,6 +121,8 @@ Use the idioms native to each stack rather than bolting on a framework you don't
 
 Use floating-point-aware comparison (`np.isclose` / `all.equal` / `isapprox`) for any reconciliation — exact `==` on floats will betray you.
 
+The table above covers one check at one line. The moment a script has **two or more joins, a reconciliation, or a baseline to freeze**, don't re-derive helper functions from scratch — copy the canonical prelude for your language from [`references/contract-helpers.md`](references/contract-helpers.md): `assert_join` (declared cardinality + row-count bracket + unmatched-key report), `reconcile`, `na_audit`, and `freeze_baseline`/`check_baseline`, in Python, R, Julia, **and Stata** (where `isid`, `merge, assert()`, and `datasignature` are built in).
+
 ## Red flags — STOP and validate
 
 - "The pipeline ran without errors, so the numbers are right." (Clean run ≠ correct result.)

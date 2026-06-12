@@ -110,7 +110,8 @@ digraph analysis_review_next {
 3. **Route every finding to a fixing skill — never stop at "here are my notes":**
    - Wrong number / unreconciled total / fanned-out join → **STOP and invoke `wrong-number-debugging`** to bisect to the bad step.
    - Design issue — identification gap, fished spec, structural misspecification → **STOP and invoke `analysis-checkpoints`** to route the decision to the user (it in turn hands to `causal-identification`, `pre-analysis-plan`, or `structural-estimation`).
-4. **If it's clean** — metric defined, joins checked, totals reconciled, leakage ruled out, identification stated, reproduces from a clean seed → **return to `result-verification`** to ship.
+4. **Log each confirmed finding's failure class** — one line per finding to the project's `docs/LESSONS.md` (symptom, cause, the check that would have caught it; create the file if absent). A review that only fixes this artifact fixes one artifact; the logged pattern hardens every future one (`result-verification` → "Capture what bit you").
+5. **If it's clean** — metric defined, joins checked, totals reconciled, leakage ruled out, identification stated, reproduces from a clean seed → **return to `result-verification`** to ship.
 
 ## The bottom line
 

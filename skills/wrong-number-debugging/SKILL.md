@@ -117,6 +117,8 @@ digraph wrong_number_next {
 2. **Answer the dividing question** — restoring the agreed analysis, or changing it?
 3. **Data bug → fix at the source, then *invoke `data-contracts`*** to add the invariant that would have caught it and watch it bite on the broken version — never patch the symptom on the final output.
 4. **Design/sample/spec/estimand change → STOP and *invoke `analysis-checkpoints`*.** Present the threat, the candidate remedies, and your recommendation; do not smuggle a redesign in as a bug fix. An approved redesign re-enters at REPRODUCE as a new result to validate.
+5. **Log the lesson while the bisect is fresh** — one line to the project's `docs/LESSONS.md` (symptom, cause, the check that would have caught it; create the file if absent). You just paid for the exact failure class; thirty more seconds converts it into a standing check instead of a future re-bisect. If it would bite *any* analysis, propose folding it into the relevant skill (`result-verification` → "Capture what bit you" — skill edits need sign-off).
+
 ## The bottom line
 
 ```

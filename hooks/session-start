@@ -11,6 +11,28 @@ context_file="${SCRIPT_DIR}/session-context.md"
 
 content=$(cat "$context_file" 2>/dev/null || echo "Causal Powers is installed. Invoke causal-powers:using-causal-powers for the discipline map.")
 
+# Stale-version warning (cached daily, fail-silent). A session loads skills and
+# hooks once at start, so a stale install silently misses every fix — the exact
+# failure mode behind "the skills never triggered" (see claude-code#52218: auto-
+# update never refreshes plugin installs). Costs zero network on cache hits.
+version_note=""
+local_version=$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "${SCRIPT_DIR}/../.claude-plugin/plugin.json" 2>/dev/null | head -1)
+cache="${TMPDIR:-/tmp}/causal-powers-remote-version"
+if [ -n "$local_version" ]; then
+  if [ ! -f "$cache" ] || [ -n "$(find "$cache" -mmin +1440 2>/dev/null)" ]; then
+    curl -fsSL --max-time 2 https://raw.githubusercontent.com/lancegui/causal-powers/main/.claude-plugin/plugin.json 2>/dev/null \
+      | sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1 > "$cache" || true
+  fi
+  remote_version=$(cat "$cache" 2>/dev/null || true)
+  case "$remote_version" in
+    ''|*[!0-9.]*) : ;;  # empty or unparsable — stay silent
+    *) if [ "$remote_version" != "$local_version" ]; then
+         version_note=$'\n\n'"⚠️ **Plugin stale:** this session loaded causal-powers v${local_version} but v${remote_version} is published. Tell the user at the first natural moment: run /plugin update causal-powers@causal-powers, then restart Claude Code — skills and hooks only load at session start."
+       fi ;;
+  esac
+fi
+content="${content}${version_note}"
+
 # Escape for safe JSON embedding (single-pass bash parameter substitution).
 escape_for_json() {
     local s="$1"

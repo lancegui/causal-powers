@@ -1,0 +1,115 @@
+{
+  "analysis-checkpoints": {
+    "hits": [
+      "active users keeps coming out lower than the dashboard. i'll just redefine it to anyone who opened the app in the last 28 days instead of 7 and the gap closes",
+      "revenue lift you saw yesterday was 12%. after i winsorize the top 1% of orders it's actually 4%. should i swap in the winsorized version as the headline number?",
+      "these 6 firms have insane leverage ratios and they're dragging the regression. gonna just drop them as outliers and re-estimate so the coefficient makes sense",
+      "to make the first stage strong enough i was going to drop the two weakest instruments and only keep distance-to-college. that changes what we're identifying though right"
+    ],
+    "violations": []
+  },
+  "analysis-craft": {
+    "hits": [],
+    "violations": []
+  },
+  "analysis-review": {
+    "hits": [
+      "before i ship this, can you look over the model results? our holdout AUC jumped to 0.97 and i want a second pair of eyes on whether something's off",
+      "can you review my churn notebook before i send it to the VP? it's analysis/q3_churn.ipynb \u2014 i mostly want to know if the numbers are trustworthy, not whether the code is pretty"
+    ],
+    "violations": []
+  },
+  "causal-identification": {
+    "hits": [
+      "estimate the employment impact of the 2014 minimum wage hike using the bordering-counties comparison",
+      "i have an instrument for schooling (distance to nearest college) and want returns to education. set up the 2SLS in python with linearmodels and tell me what to check",
+      "i want to claim the new policy cut recidivism by 8 percent. what placebo and sensitivity tests should i run before i put that number in the report?",
+      "regress log wages on union membership with worker and year fixed effects \u2014 can i read that coefficient as the causal union premium?",
+      "synthetic control for one treated state vs a donor pool of 30 others, how do i tell if the gap is actually significant"
+    ],
+    "violations": []
+  },
+  "data-contracts": {
+    "hits": [
+      "before i join these two extracts, check that the keys are actually unique on the side i think they are",
+      "i need to aggregate the transactions table to the customer-month grain before i feed it into a model",
+      "i'm about to merge a customers csv and an orders csv on customer_id and then sum revenue by region \u2014 set this up carefully in pandas so i don't fan out rows",
+      "reshape this wide panel to long and compute year-over-year growth per unit \u2014 what should i be checking along the way"
+    ],
+    "violations": []
+  },
+  "data-preparation": {
+    "hits": [
+      "clean up this raw survey extract and build the analysis dataset before i compute anything",
+      "construct the master dataset from these dirty exports, plan it out in phases",
+      "dedupe the customer records and recode the messy industry categories before i merge",
+      "harmonize the category codes across these three raw datasets and dedupe the rows",
+      "help me prepare the analysis-ready panel: clean the raw data, reconcile the totals, then it's ready",
+      "i need to assemble the modeling dataset from these 12 monthly csv exports \u2014 ingest, clean, join, dedup",
+      "this claims extract is messy \u2014 standardize the values, impute the missing fields, and get the dataset ready",
+      "walk me through the data cleaning phase for this survey before any modeling"
+    ],
+    "violations": []
+  },
+  "executing-analysis-plans": {
+    "hits": [
+      "do the robustness checks we locked in \u2014 drop the 2016 recording-jump cities, the donut RD, and the Oster delta \u2014 and dispatch each to its own subagent",
+      "fan the robustness specs out to parallel subagents and assemble the table",
+      "now do the analysis. start by joining the claims file to the enrollment panel, fit the event study, and fan the placebo + the two subsample cuts out to parallel workers",
+      "ok the brief is approved \u2014 build the analysis dataset, estimate the primary did spec, then run the robustness suite we agreed on",
+      "plan looks good, go ahead and run it",
+      "run all the specs in the plan \u2014 primary, the leave-one-out, and the bordering-counties version \u2014 in parallel and give me the robustness table",
+      "we signed off on the PAP this morning. execute it end to end"
+    ],
+    "violations": []
+  },
+  "pre-analysis-plan": {
+    "hits": [
+      "did the pricing experiment move ARPU? data's not unblinded yet, want to set up a proper confirmatory readout in pap.md before i estimate",
+      "evaluate whether the discount campaign worked. before i start poking at it i want hypotheses ranked, one primary spec locked, and a decision rule for what counts as no effect",
+      "register this analysis \u2014 i'm evaluating whether the state paid-leave mandate reduced infant mortality and i need the primary spec, sample rules, and robustness suite written down before i touch outcomes",
+      "test the hypothesis that the new feature increased weekly active sessions. this is going in the board deck so it needs to be airtight, not a spec search",
+      "the regulator is going to scrutinize our claim that the rate change didn't harm low-income borrowers. how do i pre-commit the analysis so it holds up to a skeptical reviewer",
+      "we're about to read out the checkout-redesign A/B test next week. before i look at the conversion numbers, help me lock down exactly what we'll test and what counts as a win"
+    ],
+    "violations": []
+  },
+  "question-framing": {
+    "hits": [
+      "can you make a figure of treatment vs control facilities on a map so i can sanity-check that the treated ones actually cluster where i think",
+      "how should we approach this estimation of activation by cohort \u2014 spec it out before i write any code",
+      "i want an interactive dashboard of our store-level sales from stores.parquet \u2014 map of locations colored by YoY growth with a popup per store",
+      "in a new branch, build me a leaflet map of the treatment facilities in my multicity spatial DiD \u2014 popup showing when each clinic was acquired by PE, which firm bought it, and what services it offers, and overlay the police jurisdiction polygons",
+      "make a choropleth of the uninsured rate by county from my ACS extract (acs_2019.parquet, FIPS in column geoid)",
+      "plot the distribution of acquisition dates for the PE-acquired clinics in my panel so i can eyeball the timing before i run the event study",
+      "we need a north-star metric for the growth dashboard. something like engagement per user. can you help me define it before i build the pipeline in dbt?",
+      "what data do we need for this conversion analysis, and where does the revenue number actually come from?",
+      "write me an analysis plan for churn before i touch the data \u2014 what tables, what method, what lands as the deliverable"
+    ],
+    "violations": []
+  },
+  "result-verification": {
+    "hits": [
+      "final gut check on the treatment effect before it goes to the exec team \u2014 does 8% recidivism drop survive dropping outliers and a clean rerun?",
+      "i want to reproduce my whole pipeline from a clean kernel with the seed fixed before i report this, the notebook's been open for hours and i don't trust the cached state",
+      "ok the lift is 4.2% and i'm putting it in the board deck tomorrow morning. anything i should do before that slide is final?",
+      "the answer is the price elasticity is -1.8. wrapping up the memo now",
+      "think i'm done with the churn analysis. the headline is 11.3% monthly churn for the SMB segment. about to send the summary to the VP of sales"
+    ],
+    "violations": []
+  },
+  "structural-estimation": {
+    "hits": [
+      "before i trust my BLP estimates i want to be sure the estimator actually works \u2014 how do i simulate data at known parameters and confirm the optimizer recovers them?",
+      "the numerical gradient on my GMM demand estimator is painfully slow and the optimizer keeps stalling \u2014 can i derive the analytical gradient market by market to speed it up?"
+    ],
+    "violations": []
+  },
+  "wrong-number-debugging": {
+    "hits": [
+      "my reconciliation failed \u2014 the segment revenues don't sum to the grand total i started with, off by about 3%",
+      "my total revenue jumped from 4.1M to 12.3M right after i joined the product table in, that can't be right \u2014 what happened"
+    ],
+    "violations": []
+  }
+}

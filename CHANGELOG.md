@@ -2,6 +2,143 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.19.0 — Measure the value, not just the firing
+
+The release theme: the family's evals previously tested whether skills *trigger*;
+nothing tested whether following them *catches anything*. Now both are measured,
+the everyday workhorse ships code, the learning loop is closed, and the always-on
+card paid down its accretion debt.
+
+- **NEW: behavioral benchmark** (`evals/behavioral/` + `scripts/run-behavioral-eval.py`).
+  Nine scenario tasks, each with one planted silent failure from the family's
+  threat model (fan-out join, silently filtered rollup, cents-vs-dollars,
+  top-coded missingness, train/test overlap, post-treatment "control", diverging
+  pre-trends, spatial silent drop, non-identified elasticity). A deterministic
+  generator emits data + task + grading rubric together, so rubric numbers are
+  computed from the actual data. The runner A/Bs `claude -p` arms — baseline vs.
+  the always-on card — under an **isolated `CLAUDE_CONFIG_DIR`** (locally
+  installed plugins can't contaminate the baseline), then an LLM grader applies
+  each plant's catch criterion. First calibration run (sonnet-4-6): **card 8/9
+  vs baseline 8/9** — near-ceiling both arms. The honest reading: sonnet-4-6's
+  default discipline already covers loud single-task plants (a baseline catch
+  is good news about the model); the card's one clean differential was the
+  least-salient plant (train/test overlap, caught only with the card); the v0
+  scenarios need pressure framings + pipeline embedding before the headline
+  number discriminates. Full analysis + v1 hardening plan:
+  `docs/2026-06-12-behavioral-benchmark-v0.md`.
+- **NEW: trigger CI** (`scripts/eval-triggers.py`). Part A pipes every
+  `evals/trigger/*.json` query through the *real* `hooks/prompt-router` and
+  scores it against a committed baseline
+  (`evals/trigger/router-baseline.json`); CI fails on new precision violations
+  or lost recall hits, so router/description edits are regression-tested instead
+  of hand-simulated. Current state: recall 54/127 (a backstop, by design),
+  precision 145/145. Part B (`--live`, optional cost) tests description
+  matching via `claude -p` — with `--competitors` it includes the overlapping
+  superpowers descriptions, directly measuring the
+  "brainstorming-steals-the-trigger" failure mode that motivated 0.19.0's
+  question-framing fix.
+- **NEW: `data-contracts` ships code** —
+  `skills/data-contracts/references/contract-helpers.md`: copy-paste
+  `assert_join` (declared cardinality + row-count bracket + unmatched-key
+  report), `reconcile`, `na_audit`, `freeze_baseline`/`check_baseline` in
+  Python, R, Julia, **and Stata** (`isid`, `merge, assert()`, `datasignature` —
+  resolving the family's Stata inconsistency: organization + helpers cover
+  Stata; guidance prose remains R/Julia/Python).
+- **Lessons loop closed**: `wrong-number-debugging` (new Process step 5) and
+  `analysis-review` (new step 4) now end by logging the failure class to the
+  project's `docs/LESSONS.md` — the two moments a failure class is freshest;
+  `result-verification`'s ship-time retro already existed.
+- **Always-on card diet**: `hooks/session-context.md` tightened 1,258 → 970
+  words (−23%) with zero rules dropped — the workflow spine merged into the
+  written-plan rule, repeated rationale riffs cut. `AGENTS.md` inherits via
+  symlink.
+- **Stale-plugin warning** (`hooks/session-start`): compares the loaded
+  plugin version against the published manifest (daily-cached, 2s-capped,
+  fail-silent `curl`) and tells the session to suggest
+  `/plugin update` + restart. Counters claude-code#52218 (auto-update never
+  refreshes plugin installs) — the mechanism behind "the skills never
+  triggered" on a stale live session.
+- **question-framing broadened to data-visualization deliverables** (commit
+  729fd6b): a map/figure/dashboard/interactive viz *built from a dataset* now
+  triggers framing (unit = what each mark represents, encoding = the metric,
+  joins get more scrutiny, not less) across all five surfaces — description,
+  body, gateway, always-on card, router + trigger eval (9 new cases). Fixes
+  the real-session miss where "build a leaflet map of my treatment facilities"
+  fired only superpowers:brainstorming.
+- **Evolution survey**: `docs/2026-06-12-evolution-candidates.md` — a sourced
+  survey of superpowers / anthropics-skills / ecc / planning-with-files and the
+  broader ecosystem, with ranked adoption candidates for future releases.
+
+## 0.18.1 — Codex one-liner installer
+
+- `scripts/install-codex.sh`: one copy-paste `curl | bash` installs the 14
+  skills into Codex's scan dir (`~/.agents/skills`, or `<repo>/.agents/skills`
+  with `--project`) and the always-on discipline as a managed, marker-delimited
+  block in `AGENTS.md` — idempotent, with `--uninstall` that removes only the
+  managed block. Verified install / re-install / uninstall end-to-end.
+
+## 0.18.0 — Codex compatibility
+
+The skills are plain `SKILL.md` (name + description) — the format Codex also
+triggers on natively. Added the surrounding layer Codex needs (it has no
+SessionStart hook): `AGENTS.md` (symlink → `hooks/session-context.md`, single
+source, no drift), a `.codex-plugin/plugin.json` manifest, a Claude-Code→Codex
+tool mapping (`references/codex-tools.md`: Task→spawn_agent, Skill→native,
+TodoWrite→update_plan, fan-out degrades to inline), and README/gateway sections.
+Claude Code behavior unchanged.
+
+## 0.17.2 — Post-addition consistency audit
+
+`data-preparation` arrived after the chain-parity rewrites, so the other
+skills' handoff graphs predated it. Audited all 14: `executing-analysis-plans`
+now routes its build step through `data-preparation` (which calls
+`data-contracts` within) instead of jumping straight to the checker;
+`data-contracts` documents the doer/checker boundary from its side. The other
+12 were already consistent. Corpus precision unchanged at 100%.
+
+## 0.17.1 — Docs sync
+
+Gateway prose and README caught up with the shipped plugin: the written-plan
+rule describes the phased, living `analysis-plan.md` (Phase 1 =
+`data-preparation`'s sub-plan, disk-as-RAM, resumable across `/clear` and
+compaction via the SessionStart/PreCompact hook); README covers the full hook
+layer and adds `data-preparation` to the table.
+
+## 0.17.0 — `data-preparation` + the phased, resumable execution plan
+
+Closes the grain mismatch: cleaning — the heaviest, most decision-dense phase —
+was a single spine bullet. New skill `data-preparation` (the **doer/planner**
+for the cleaning phase; `data-contracts` is the **checker** it calls per step):
+ingest→clean→join→dedup→recode→reconcile as a checkboxed Phase 1 of a living
+`analysis-plan.md` with a decisions log; consequential cleaning choices fork to
+`analysis-checkpoints`. Ships `analysis-plan-template.md`. New `plan-resume`
+hook (SessionStart + PreCompact) resumes the next open step after `/clear` or
+compaction. Router family added (0 false-fires on repo-cleanup phrasings).
+
+## 0.16.0 — Chain enforcement parity
+
+The chain documented its transitions but didn't reliably *fire* them. Three
+legs: all 12 content skills replaced the descriptive "Relationship to sibling
+skills" section with an imperative **When to Use decision graph + The Process**
+that invokes the next skill; a new **PostToolUse skill-chain hook** surfaces
+each skill's next obligation the moment it's invoked (framing→plan+gate,
+execution→inline-vs-subagent ask + bounded fan-out, verify→review);
+the router gained the executing-analysis-plans and pre-analysis-plan families.
+`question-framing` now owns the everyday analysis plan (data + approach +
+deliverable) for general/exploratory work, with a hard confirmatory-cut check.
+
+*(0.12–0.15 were never cut — version numbering jumped during rapid iteration.)*
+
+## 0.11.0 — UserPromptSubmit trigger router
+
+The discipline was only injected at SessionStart — once, then it scrolls off
+and goes wallpaper. New `hooks/prompt-router` fires on every prompt, scans for
+trigger phrases across the skill families, and injects a per-turn nudge naming
+the specific skill to invoke. Scoped honestly as a **high-precision backstop**
+(precision 100% on the eval corpus after a suppression guard for
+writing/formatting/teaching prompts that merely *name* a method; recall ~22% by
+design — description matching remains the primary mechanism).
+
 ## 0.10.2 — Re-trigger per request (don't coast on a locked design)
 - Added the **re-trigger rule** to the always-on hook card and the
   `using-causal-powers` gateway: a skill invoked earlier in the session does not
