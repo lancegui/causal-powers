@@ -20,6 +20,11 @@
 # silently, never block the session.
 
 set -uo pipefail
+# Kill-switch: CAUSAL_POWERS_DISABLED_HOOKS is a comma-separated list of hook
+# names to disable at runtime (e.g. "prompt-router,skill-chain") — the escape
+# hatch when a hook misbehaves, without uninstalling the plugin.
+case ",${CAUSAL_POWERS_DISABLED_HOOKS:-}," in *",plan-resume,"*) exit 0 ;; esac
+
 
 payload="$(cat 2>/dev/null || true)"
 
@@ -53,6 +58,18 @@ escape_for_json() {
     s="${s//$'\r'/\\r}"
     s="${s//$'\t'/\\t}"
     printf '%s' "$s"
+}
+
+# SECURITY: plan-file content is re-injected into context on every SessionStart,
+# so analysis-plan.md is an injection surface — anything that can write to it
+# (including text pasted from fetched web pages) gets replayed to the model here
+# (cf. planning-with-files' 2026-03 prompt-injection audit). Mitigation: inject
+# only short EXCERPTS, cap their length, and strip the reminder-wrapper tokens
+# so plan text cannot close or forge the <system-reminder> block.
+sanitize_excerpt() {
+    printf '%s' "$1" \
+      | sed -e 's;</system-reminder>;;g' -e 's;<system-reminder>;;g' \
+      | head -c 240
 }
 
 emit() {
@@ -105,14 +122,14 @@ last_decision="$(grep -E '^[[:space:]]*[-*][[:space:]]' "$plan" 2>/dev/null \
 
 decision_line=""
 [ -n "$last_decision" ] && decision_line="
-- Most recent logged decision (do NOT silently revisit): ${last_decision}"
+- Most recent logged decision (do NOT silently revisit): $(sanitize_excerpt "$last_decision")"
 
 msg="<system-reminder>
 RESUMABILITY — an analysis-plan.md exists at ${plan}. This is a RESUMED or freshly-started session for work already in progress. Do NOT restart: do not re-frame the question, do not re-run completed phases, do not re-derive locked decisions. Read the plan and continue from where it stands.
 Snapshot from the plan:
 - Progress: ${done_n} checked / ${open_n} still open.
-- Current phase: ${current_phase}
-- Next step (first open box): ${next_step}${decision_line}
+- Current phase: $(sanitize_excerpt "$current_phase")
+- Next step (first open box): $(sanitize_excerpt "$next_step")${decision_line}
 Open analysis-plan.md now, confirm this snapshot against the full file, and resume at the next step. Keep the plan living — tick boxes and append to the Decisions log as you go.
 </system-reminder>"
 

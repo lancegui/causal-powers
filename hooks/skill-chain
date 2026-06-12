@@ -16,6 +16,11 @@
 # exit 0, hookSpecificOutput on Claude Code / top-level additionalContext else.
 
 set -uo pipefail
+# Kill-switch: CAUSAL_POWERS_DISABLED_HOOKS is a comma-separated list of hook
+# names to disable at runtime (e.g. "prompt-router,skill-chain") — the escape
+# hatch when a hook misbehaves, without uninstalling the plugin.
+case ",${CAUSAL_POWERS_DISABLED_HOOKS:-}," in *",skill-chain,"*) exit 0 ;; esac
+
 
 payload="$(cat 2>/dev/null || true)"
 

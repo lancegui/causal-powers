@@ -118,6 +118,8 @@ as the criterion requires. Reply with STRICT JSON only, no fences:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenarios", nargs="*", help="subset; default = manifest")
+    ap.add_argument("--manifest", default="manifest.json",
+                    help="suite manifest under evals/behavioral/ (e.g. manifest-pressure.json)")
     ap.add_argument("--arms", nargs="*", default=["baseline", "card"])
     ap.add_argument("--model", default="claude-sonnet-4-6")
     ap.add_argument("--grader-model", default="claude-sonnet-4-6")
@@ -125,7 +127,7 @@ def main():
     ap.add_argument("--jobs", type=int, default=4)
     a = ap.parse_args()
 
-    names = a.scenarios or json.loads((BEH / "manifest.json").read_text())
+    names = a.scenarios or json.loads((BEH / a.manifest).read_text())
     scenarios = [BEH / "scenarios" / n for n in names]
     for s in scenarios:
         assert (s / "task.md").exists(), f"missing scenario: {s}"

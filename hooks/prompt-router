@@ -16,6 +16,11 @@
 # hookSpecificOutput on Claude Code and top-level additionalContext elsewhere.
 
 set -uo pipefail
+# Kill-switch: CAUSAL_POWERS_DISABLED_HOOKS is a comma-separated list of hook
+# names to disable at runtime (e.g. "prompt-router,skill-chain") — the escape
+# hatch when a hook misbehaves, without uninstalling the plugin.
+case ",${CAUSAL_POWERS_DISABLED_HOOKS:-}," in *",prompt-router,"*) exit 0 ;; esac
+
 
 # Read the whole UserPromptSubmit payload. The prompt text lives in .prompt; we
 # grep the raw blob (lowercased) to stay dependency-free. The payload is just

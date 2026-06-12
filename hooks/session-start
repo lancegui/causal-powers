@@ -5,6 +5,11 @@
 # Mirrors the mechanism used by the superpowers plugin.
 
 set -euo pipefail
+# Kill-switch: CAUSAL_POWERS_DISABLED_HOOKS is a comma-separated list of hook
+# names to disable at runtime (e.g. "prompt-router,skill-chain") — the escape
+# hatch when a hook misbehaves, without uninstalling the plugin.
+case ",${CAUSAL_POWERS_DISABLED_HOOKS:-}," in *",session-start,"*) exit 0 ;; esac
+
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 context_file="${SCRIPT_DIR}/session-context.md"

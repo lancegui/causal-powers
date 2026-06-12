@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# Stop hook for the causal-powers plugin — a once-per-session SOFT GATE plus a
+# tiny JSONL run ledger.
+#
+# WHY THIS EXISTS: the two obligations most often skipped at the END of work are
+# (a) result-verification before a deliverable is written, and (b) logging the
+# failure class after a debugging session (the lessons loop). Prompt-time nudges
+# can't catch these — they're end-of-turn omissions. This hook checks for them
+# at Stop and, at most ONCE per session, blocks the stop with a precise reason
+# so the model closes the gap (or states in one line why it doesn't apply).
+#
+# LOOP SAFETY (the reason Stop gates are dangerous, adopted from
+# planning-with-files v3's five-condition design): this hook blocks only when
+# ALL of the following align —
+#   1. not already continuing from a prior block (stop_hook_active false);
+#   2. the project opted in (analysis-plan.md or docs/LESSONS.md exists in cwd);
+#   3. the session transcript is readable;
+#   4. no block was issued yet this session (marker file);
+#   5. a concrete obligation is provably open (patterns below).
+# The block reason always includes an OUT: if the obligation was already met in
+# substance or doesn't apply, say so in one line and stop — never loop.
+#
+# LEDGER: when condition 2 holds, append one JSON line per Stop to
+# .causal-powers/ledger.jsonl (results written? verification fired? debugging
+# fired? lessons touched?) — an append-only audit trail that survives
+# compaction. Add .causal-powers/ to the project .gitignore, or track it as
+# provenance; either is fine.
+
+set -uo pipefail
+# Kill-switch: CAUSAL_POWERS_DISABLED_HOOKS is a comma-separated list of hook
+# names to disable at runtime (e.g. "stop-gate") — the escape hatch when a hook
+# misbehaves, without uninstalling the plugin.
+case ",${CAUSAL_POWERS_DISABLED_HOOKS:-}," in *",stop-gate,"*) exit 0 ;; esac
+
+payload="$(cat 2>/dev/null || true)"
+
+# Never block when already continuing from a previous Stop-hook block.
+printf '%s' "$payload" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
+
+field() { # field <name> — extract a string field from the payload, no jq
+  printf '%s' "$payload" \
+    | grep -oE "\"$1\"[[:space:]]*:[[:space:]]*\"[^\"]*\"" | head -1 \
+    | sed -E 's/.*:[[:space:]]*"([^"]*)"$/\1/'
+}
+session_id="$(field session_id)"; session_id="${session_id:-unknown}"
+transcript="$(field transcript_path)"
+proj="$(field cwd)"; proj="${proj:-${PWD:-.}}"
+
+# Opt-in surface: only analysis projects under the discipline.
+[ -f "${proj}/analysis-plan.md" ] || [ -f "${proj}/docs/LESSONS.md" ] || exit 0
+[ -n "$transcript" ] && [ -r "$transcript" ] || exit 0
+
+# Signals, from the session transcript (JSONL; one entry per line). Deliverable
+# writes = Write/Edit tool calls whose file_path looks like a results artifact.
+tail_blob="$(tail -c 400000 "$transcript" 2>/dev/null || true)"
+wrote_results=0
+printf '%s' "$tail_blob" | grep -Eq '"name":[[:space:]]*"(Write|Edit|NotebookEdit)"[^\n]*"file_path":[[:space:]]*"[^"]*(results?|summary|findings|estimates|tables?)[^"]*\.(md|csv|tex|txt|html)"' && wrote_results=1
+verified=0
+grep -Eq '"skill":[[:space:]]*"(causal-powers:)?result-verification"' "$transcript" 2>/dev/null && verified=1
+debugged=0
+grep -Eq '"skill":[[:space:]]*"(causal-powers:)?wrong-number-debugging"' "$transcript" 2>/dev/null && debugged=1
+lessons_touched=0
+printf '%s' "$tail_blob" | grep -Eq '"name":[[:space:]]*"(Write|Edit)"[^\n]*"file_path":[[:space:]]*"[^"]*LESSONS\.md"' && lessons_touched=1
+
+# Ledger (append-only; failures never block the session).
+{
+  mkdir -p "${proj}/.causal-powers" 2>/dev/null \
+  && printf '{"ts":"%s","session_id":"%s","event":"stop","wrote_results":%s,"verification_fired":%s,"debugging_fired":%s,"lessons_touched":%s}\n' \
+       "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$session_id" "$wrote_results" "$verified" "$debugged" "$lessons_touched" \
+       >> "${proj}/.causal-powers/ledger.jsonl"
+} 2>/dev/null || true
+
+# Once-per-session gate.
+marker="${TMPDIR:-/tmp}/cp-stop-gate-${session_id}"
+[ -f "$marker" ] && exit 0
+
+reason=""
+if [ "$wrote_results" = 1 ] && [ "$verified" = 0 ]; then
+  reason="A results artifact was written this session but causal-powers:result-verification never fired. Before stopping: verify the result (reconcile to source, reproduce, check figures-vs-prose) or invoke the skill — OR, if verification already effectively happened or this file isn't an analysis deliverable, state that in one line and stop. Do not loop on this."
+elif [ "$debugged" = 1 ] && [ "$lessons_touched" = 0 ]; then
+  reason="wrong-number-debugging ran this session but no lesson was logged. Append one line to docs/LESSONS.md (symptom, cause, the check that would have caught it) — OR, if the bug turned out not to be a data/analysis failure class, say so in one line and stop. Do not loop on this."
+fi
+[ -n "$reason" ] || exit 0
+
+touch "$marker" 2>/dev/null || true
+escaped="${reason//\\/\\\\}"; escaped="${escaped//\"/\\\"}"
+printf '{"decision": "block", "reason": "%s"}\n' "$escaped"
+exit 0

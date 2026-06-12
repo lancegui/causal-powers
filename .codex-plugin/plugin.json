@@ -1,6 +1,6 @@
 {
   "name": "causal-powers",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "description": "Superpowers for data analytics, causal inference, and econometrics — discipline skills that make the silent failures of data work loud (the clean run that hands you a confident, wrong answer). R, Julia, Python.",
   "author": {
     "name": "Lance Gui",

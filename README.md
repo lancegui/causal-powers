@@ -89,6 +89,16 @@ discipline present, makes the chain *fire* reliably, and makes long work resumab
   phase/step, so a long cleaning or estimation effort survives `/clear` and
   auto-compaction instead of restarting — disk-as-RAM, after
   [planning-with-files](https://github.com/othmanadi/planning-with-files).
+  Injected excerpts are length-capped and sanitized (the plan file is an
+  injection surface).
+- **A Stop-gate + run ledger** (`hooks/stop-gate`): at most once per session, in
+  analysis projects only (opt-in via `analysis-plan.md`/`docs/LESSONS.md`), and
+  never when already continuing from a block — if a results artifact was written
+  but `result-verification` never fired, or debugging ran but no lesson was
+  logged, the stop is blocked once with a precise reason (and an explicit out).
+  Every stop also appends one line to `.causal-powers/ledger.jsonl` — an
+  append-only audit trail that survives compaction. All hooks honor a
+  `CAUSAL_POWERS_DISABLED_HOOKS` env kill-switch (comma-separated hook names).
 - **Reusable subagents** (`agents/`): `robustness-runner` (executes one
   pre-specified spec against the validated data, asserts contracts, returns a
   structured result — the fan-out worker for `executing-analysis-plans`) and

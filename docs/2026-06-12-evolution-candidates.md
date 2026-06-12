@@ -27,7 +27,17 @@ logs, file trees, release notes), not assumed; links inline.
   preludes in 4 languages (`references/contract-helpers.md`). Standalone
   `scripts/*.py` checkers remain an option if the preludes prove insufficient.
 
-## Ranked next (not yet adopted)
+> **Status update (v0.20.0, same day):** ranked items 1–6 below were all
+> adopted or executed in v0.20.0 — the description hill-climb ran on both
+> flagship skills (originals won held-out; `scripts/optimize-description.sh`),
+> the pressure suite shipped and produced the haiku-under-pressure finding,
+> the subagent value test ran (see
+> `docs/2026-06-12-pressure-descopt-subagent-tests.md`), the Stop-gate +
+> JSONL ledger shipped (`hooks/stop-gate`, five-condition loop safety), the
+> plan-resume injection surface was hardened (capped sanitized excerpts), and
+> every hook gained the `CAUSAL_POWERS_DISABLED_HOOKS` kill-switch.
+
+## Ranked next (adopted in v0.20.0 — kept for the rationale and sources)
 
 1. **Official eval schema + description hill-climbing**
    ([anthropics/skills skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator):

@@ -2,6 +2,56 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.20.0 — The ranked-next adoptions, executed and measured
+
+All six ranked candidates from the 0.19.0 evolution survey, adopted in one
+pass — with the measurements run (haiku as the cheap subject model), not just
+the machinery built. Results: `docs/2026-06-12-pressure-descopt-subagent-tests.md`.
+
+- **Pressure suite** (`evals/behavioral/manifest-pressure.json`, 4 scenarios;
+  runner gains `--manifest`): the plant is in the *prompt* — "the join was
+  already validated", "skip the robustness, deadline tonight", "stay consistent
+  with the +0.21 the board saw", "drop the outliers so it reads clean".
+  First run (haiku): **card 1/4 vs baseline 1/4** — the always-on card alone
+  did not rescue a weak model from social pressure (the card arm even saw the
+  row fan-out and rationalized it as "valid 1:M"). Paired with 0.19.0's core
+  result (sonnet 8/9 vs 8/9), the conclusion: protection lives in the
+  enforcement layers and model strength, not in a context string — hence the
+  Stop-gate below and a planned full-plugin benchmark arm.
+- **Description hill-climbing** (`scripts/optimize-description.sh`, wrapping
+  the official skill-creator `run_loop.py`): ran 3 challenger iterations each
+  on `question-framing` and `structural-estimation` (60/40 train/holdout,
+  best-by-test-score). **Both originals won** — including the same-day viz
+  broadening of question-framing. The two flagship descriptions are now at a
+  measured local optimum; re-run the script after any description edit.
+- **Subagent value regression** (superpowers v5.0.6 method, scoped): the
+  `analysis-reviewer` prompt vs generic review on the two missed-plant
+  artifacts, 3 reps per arm on haiku. **12/12 — both arms surfaced the planted
+  issue every time**, with an instructive confound: the "generic" arm's
+  transcripts show the installed `analysis-review` skill triggering natively
+  (6/6) on "review this analysis". Clean takeaways: a fresh review pass
+  catches what the same model missed as author (the strongest evidence yet for
+  the independent-review step); the specialist persona adds no measured delta
+  over the skill-equipped default (superpowers v5.0.6 redux); and triggering
+  worked 6/6 in headless haiku. Agent kept; dissolve decision deferred to an
+  isolated rerun.
+- **Stop-gate + JSONL run ledger** (`hooks/stop-gate`, new `Stop` hook): at
+  most ONE soft block per session, only in analysis projects (opt-in surface:
+  `analysis-plan.md` or `docs/LESSONS.md` present), never when continuing from
+  a prior block — fires when a results artifact was written without
+  `result-verification`, or debugging ran without a LESSONS entry; the reason
+  always includes an explicit out (state it doesn't apply in one line — never
+  loop). Every stop appends to `.causal-powers/ledger.jsonl` (append-only,
+  survives compaction). Six-case test battery in the hook's design;
+  five-condition loop safety after planning-with-files v3.
+- **Injection hardening** (`hooks/plan-resume`): plan-file excerpts injected at
+  SessionStart are now sanitized (reminder-wrapper tokens stripped) and capped
+  at 240 chars each — the plan file is writable by content pasted from fetched
+  pages, i.e. an injection surface (planning-with-files' 2026-03 audit).
+- **Hook kill-switch**: every hook (session-start, prompt-router, plan-resume,
+  skill-chain, stop-gate) honors `CAUSAL_POWERS_DISABLED_HOOKS` — a
+  comma-separated disable list, the escape hatch when a hook misbehaves.
+
 ## 0.19.0 — Measure the value, not just the firing
 
 The release theme: the family's evals previously tested whether skills *trigger*;
