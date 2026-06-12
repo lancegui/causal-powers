@@ -1,6 +1,6 @@
 ---
 name: question-framing
-description: Use BEFORE starting any data analysis, metric, model, or causal study — the moment someone asks "what's the trend", "is X driving Y", "how many users", "did the policy work", "build me a dashboard metric", or hands you a dataset to "look into". Pins down the estimand/metric definition, population, unit of observation, and the actual decision the number informs before a single line of code is written — and, for general/exploratory work, also fixes the data sources, the approach/spec, and the deliverable in the same file: the everyday analysis plan. Use this even when the request feels clear, because vague metric definitions ("active users", "the effect of X") are the root cause of analyses that answer the wrong question precisely.
+description: Use BEFORE starting any data analysis, metric, model, causal study, or any deliverable built FROM data — the moment someone asks "what's the trend", "is X driving Y", "how many users", "did the policy work", "build me a dashboard metric", "plot/map/visualize this", "make a figure/chart/map/dashboard/table of …", "build an interactive map of these facilities", or hands you a dataset to "look into". This is the brainstorm-before-you-build skill for DATA work — it fires for building a map, figure, chart, dashboard, interactive visualization, or summary table from a dataset, not only for computing a metric, so it is the entry point even when the ask is phrased as "just build/plot/map this" rather than "estimate this" (the from-data anchor is what separates it from generic app/UI building). Pins down the metric/estimand (for a visualization, what each mark encodes), population, unit of observation (what each mark represents), the data sources and the joins that assemble them, and the actual decision the artifact informs — before a single line of code. For general/exploratory work it also fixes the data sources, the approach, and the deliverable in one file — the everyday analysis plan. Use this even when the request feels clear, because vague definitions ("active users", "the effect of X") and unspecified joins (which facility maps to which owner, which jurisdiction) are the root cause of artifacts that answer the wrong question precisely or silently mis-join.
 ---
 
 # Question Framing
@@ -42,6 +42,17 @@ The brief above pins *what* you're measuring. For general/exploratory work — n
 3. **Deliverable — what do they get?** One number, a table, a chart, a short memo — and at what cut. If you can't say what lands on the user's screen, you can't tell when you're done.
 
 This combined artifact **is** the everyday analysis plan that `executing-analysis-plans` expects. On the general branch there is no separate PAP or model card, so this — the brief plus its data/approach/deliverable plan — is where the plan gets locked and signed off.
+
+### When the deliverable is a visualization (map, figure, dashboard)
+
+A map, chart, or dashboard is a deliverable *built from data*, so it enters here — on the everyday-plan branch — exactly like a number does. This is the analytics counterpart of brainstorming a feature before building it: don't open a plotting library before you've framed it. The same brief applies; it just reads differently:
+
+- **Unit — what does each mark represent?** One facility? a facility-year? a jurisdiction polygon? Get this wrong and the same entity plots two or three times, or a panel collapses to one dot.
+- **Encoding — what does each mark *say*?** Color, size, popup fields, layers — the visualization's "metric." Define it as exactly as you'd define a numerator/denominator: "marker = one treatment facility, colored by acquiring PE firm, popup = acquisition date + services."
+- **Data sources and the joins that assemble them — this is where maps silently lie.** A point-to-owner join that fans out (a facility owned by several firms over time) double-plots it; a spatial point-in-polygon join *drops* every facility that falls outside all polygons without raising a thing. Name each source, each join key, and each expected cardinality now, and hand the joins to `data-contracts` — a visualization earns *more* join scrutiny than a table, not less, because a bad join just looks like a plausible map.
+- **The decision the artifact informs** — a referee exhibit, a data-validation eyeball, a board slide — changes what it must show and how polished it must be.
+
+Write this into the same plan file and get sign-off before building, exactly as for a numeric deliverable. "It's just a quick plot" is how an un-framed, mis-joined figure ends up in a paper.
 
 ## Form your economic prior — before the data
 

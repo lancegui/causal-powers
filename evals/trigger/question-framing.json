@@ -28,5 +28,14 @@
   {"query": "i need a plan for refactoring the auth module before we ship", "should_trigger": false},
   {"query": "before i build the API, can you walk me through the architecture?", "should_trigger": false},
   {"query": "what data do we need to file our taxes this year?", "should_trigger": false},
-  {"query": "what's the game plan for the product launch on friday", "should_trigger": false}
+  {"query": "what's the game plan for the product launch on friday", "should_trigger": false},
+  {"query": "in a new branch, build me a leaflet map of the treatment facilities in my multicity spatial DiD — popup showing when each clinic was acquired by PE, which firm bought it, and what services it offers, and overlay the police jurisdiction polygons", "should_trigger": true},
+  {"query": "make a choropleth of the uninsured rate by county from my ACS extract (acs_2019.parquet, FIPS in column geoid)", "should_trigger": true},
+  {"query": "i want an interactive dashboard of our store-level sales from stores.parquet — map of locations colored by YoY growth with a popup per store", "should_trigger": true},
+  {"query": "plot the distribution of acquisition dates for the PE-acquired clinics in my panel so i can eyeball the timing before i run the event study", "should_trigger": true},
+  {"query": "can you make a figure of treatment vs control facilities on a map so i can sanity-check that the treated ones actually cluster where i think", "should_trigger": true},
+  {"query": "build me a react todo app with dark mode and a calendar view", "should_trigger": false},
+  {"query": "i need a reusable Map component in our design system's storybook with pan/zoom and a marker slot", "should_trigger": false},
+  {"query": "plot the function f(x) = sin(x)/x from -10 to 10 so i can see the shape of it", "should_trigger": false},
+  {"query": "the leaflet markers aren't rendering — the layer adds but nothing shows on the tile, can you debug the JS?", "should_trigger": false}
 ]

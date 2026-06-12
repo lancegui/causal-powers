@@ -1,6 +1,6 @@
 # Causal Powers — active
 
-You have **Causal Powers**: discipline for data analytics, causal inference, and reduced-form econometrics (R / Julia / Python). For ANY data, analysis, modeling, or econometrics work these apply by default — invoke the matching skill (`causal-powers:using-causal-powers` for the full map) for the complete version. This is a summary, not a substitute.
+You have **Causal Powers**: discipline for data analytics, causal inference, and reduced-form econometrics (R / Julia / Python). For ANY data, analysis, modeling, econometrics, **or data-visualization** work — including **building a figure, map, chart, dashboard, or interactive viz from a dataset** (`question-framing` is the brainstorm-before-you-build gate; "plot/map/visualize my data" counts, not only "estimate this") — these apply by default. Invoke the matching skill (`causal-powers:using-causal-powers` for the full map) for the complete version. This is a summary, not a substitute.
 
 ## Re-trigger per request — don't coast on loaded context
 
