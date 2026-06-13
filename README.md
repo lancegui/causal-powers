@@ -2,13 +2,78 @@
 
 **Superpowers for data analytics, causal inference, and econometrics.**
 
-A Claude Code skill family that ports the *discipline* of the
-[superpowers](https://github.com/obra/superpowers) software skills to the failure
-modes that are specific to data work — where the dangerous bug is **silent** (the
-code runs clean and hands you a confident, wrong answer) rather than loud (a stack
-trace). Three-language throughout: **R, Julia, Python**.
+A Claude Code skill family that adapts the *discipline* of
+[superpowers](https://github.com/obra/superpowers), whose name it borrows in
+homage, to the failure modes specific to data work. In software the dangerous bug
+is loud: a stack trace points near its cause. In empirical work it is **silent** —
+the code runs clean and returns a confident, wrong answer. These skills make that
+failure visible before it reaches a result.
 
 > A number you computed but never validated is a guess wearing a lab coat.
+
+## What makes it different
+
+1. **Economic framing of mature, proven skills.** It adapts the disciplines proven in software engineering — contract-checked transforms, systematic debugging, specification before code, independent review — to the silent failures and judgment calls of empirical microeconomics.
+2. **It grows into your data's domain.** Each iteration records what went wrong in a given project and surfaces it the next time the same step recurs, so the discipline grows more attuned to that dataset over time. The shared skills stay general; what accumulates is the project's own record of past mistakes.
+3. **Built for day-to-day research, not one-shot answers.** Empirical projects run for weeks across many sessions. A living, phased `analysis-plan.md` keeps the state of the work on disk, so it survives `/clear`, automatic compaction, and interruption: a new session resumes where the last left off, with prior decisions and their rationale intact.
+
+## Motivation
+
+The most carefully designed agent skills today are built for **software engineering**, yet their organizing ideas are not specific to software:
+
+- **Goal-driven execution** — state the success criterion, then loop until it is met; evidence before assertion ([superpowers](https://github.com/obra/superpowers); [Karpathy's notes](https://github.com/multica-ai/andrej-karpathy-skills)).
+- **Human-in-the-loop gates** — surface a consequential decision for the user rather than settle it silently ([superpowers](https://github.com/obra/superpowers)).
+- **Evolving** — skills that sharpen each time they run, recording what failed and folding it back in ([ECC](https://github.com/affaan-m/ecc)).
+- **Planning** — a written plan that persists across sessions and resumes cleanly, treating the disk as working memory ([planning-with-files](https://github.com/othmanadi/planning-with-files)).
+
+Each transfers naturally to **empirical microeconomics**, where the consequential failures are silent and the work divides into two pathways with distinct purposes: **reduced-form** analysis, which measures an effect present in the data, and **structural** estimation, which recovers the primitives needed to simulate a counterfactual the data does not contain.
+
+Causal Powers therefore introduces no new methodology. It reorganizes these well-developed practices and refocuses them on microeconomic analysis, then adds the discipline the domain demands: identification before estimation, recovery before trust, and economic, not merely statistical, judgment.
+
+## What you get
+
+- **Catches the bugs that don't throw.** A join fans out and revenue triples; one `NA` poisons a mean; train/test overlap fakes a model metric; a control is post-treatment — every one a clean run. These skills make them loud **before** they reach a stakeholder.
+- **A senior economist's instincts, not an RA's checklist.** Forms a prior on sign, magnitude, and mechanism before the data; reads every estimate in interpretable units and judges *economic*, not just statistical, significance; refuses a causal claim without a named design ("what's your experiment?").
+- **Never changes the goal behind your back.** Dropping data, swapping a spec, "upgrading" the design mid-debug — each one stops and asks. You stay in control of the estimand, the sample, and the design; the agent loops autonomously *toward the agreed goal*, never past it.
+- **Plans at two altitudes.** It pins the estimand before code (study altitude) *and* the small-step roadmap before a merge or a debug (task altitude) — the roadmap you approve first, not a dive.
+- **Measured, not asserted.** Ships a trigger CI and a planted-silent-failure benchmark. Most skill libraries can't tell you whether they actually help; this one is instrumented (`scripts/eval-triggers.py`, `scripts/run-behavioral-eval.py`).
+
+## The flow
+
+```mermaid
+flowchart TD
+    A([any data, analysis, or figure request]) --> QF[question-framing<br/>estimand · unit · the decision]
+    QF --> FK{what does the<br/>decision need?}
+    FK -->|to measure an effect| RF[reduced-form<br/>causal-identification<br/>name + test the design]
+    FK -->|to simulate a counterfactual| ST[structural<br/>structural-estimation<br/>model card · prove recovery]
+    RF --> G{{write the plan — get approval<br/>pre-analysis plan · model card · everyday plan}}
+    ST --> G
+    G --> EX[executing-analysis-plans<br/>drive it · fan specs to subagents]
+    EX --> DP[data-preparation → data-contracts<br/>build · assert joins · reconcile totals]
+    DP --> RV[result-verification<br/>reconcile · reproduce · attack with robustness]
+    RV --> SH([analysis-review → ship])
+    DP -. number looks off .-> WN[wrong-number-debugging<br/>roadmap → bisect to the bad step]
+    WN -.-> DP
+    EX -. about to change the goal? .-> CP[analysis-checkpoints<br/>STOP: design / sample / spec / estimand]
+    LL["the learn loop — capture what bit you → docs/LESSONS.md → recall it before the next join or report"]
+
+    classDef spine fill:#E6F1FB,stroke:#0C447C,color:#042C53;
+    classDef gate fill:#FBEFD6,stroke:#9A5B00,color:#5A3600;
+    classDef rf fill:#D9F2EE,stroke:#0E6E5C,color:#06463A;
+    classDef st fill:#EEEDFE,stroke:#534AB7,color:#2E2870;
+    classDef stop fill:#FBE3E0,stroke:#B23A2E,color:#6E1E16;
+    classDef done fill:#E2F1DA,stroke:#3E7B2E,color:#234718;
+    classDef loop fill:#F0F0EE,stroke:#6B6B6B,color:#333333;
+    class QF,EX,DP spine
+    class RF rf
+    class ST st
+    class G gate
+    class RV,SH done
+    class WN,CP stop
+    class LL loop
+```
+
+*The whole flow runs on an **always-on layer** (a discipline card injected every session + a trigger router) that re-fires the right skill on every request. `analysis-craft` (minimal, surgical code) and `analysis-checkpoints` (the human-in-the-loop guardrail) run alongside every step; `project-organization` keeps the repo legible and tidies before commit.*
 
 ## The skills
 
@@ -47,21 +112,6 @@ reduced form, name what identifies each primitive, prove the estimator recovers
 truth before trusting it, and re-solve equilibrium for every counterfactual
 (`structural-estimation`). The target is a senior microeconomist's instincts —
 reduced-form *and* structural — not a careful RA's checklist.
-
-## Why a separate family
-
-In software the dangerous bug throws. In analysis it stays quiet: a join fans out
-and revenue triples; one `NA` poisons a mean; units are off by 100×; a timezone
-shifts every event into the wrong day; train/test overlap makes a metric a fantasy;
-an identification assumption fails and confounding masquerades as an effect. None
-raise an error. These skills assert everything *around* the answer that must hold
-regardless of the answer — and, for causal work, force the identification
-assumptions to be stated and tested before estimating. Structural work has its own
-silent failure: a misspecified model fits in-sample and lies confidently
-out-of-sample, or a non-identified parameter still gets a number from the
-optimizer — so `structural-estimation` fixes the model and its identification in
-an approved spec, and proves the estimator recovers known parameters before any
-counterfactual is trusted.
 
 ## Beyond skills: always-on layer + agents
 
@@ -238,7 +288,8 @@ a default, open an issue and make the case.
 
 Built on ideas from [superpowers](https://github.com/obra/superpowers),
 [Andrej Karpathy's notes](https://github.com/multica-ai/andrej-karpathy-skills),
-and [ECC](https://github.com/affaan-m/ecc).
+[ECC](https://github.com/affaan-m/ecc), and
+[planning-with-files](https://github.com/othmanadi/planning-with-files).
 
 ## License
 

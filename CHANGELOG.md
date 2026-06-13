@@ -2,6 +2,26 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.22.1 — README landing page + gateway jargon
+
+Docs-and-copy release. The one shipped-skill change is the gateway jargon fix.
+
+- **README rewritten as a landing page**: a three-feature highlight (economic
+  framing of mature, proven skills · grows into your data's domain · built for
+  day-to-day, resumable research), a Mermaid **flow diagram** of the discipline
+  (frame → fork to reduced-form / structural → approval gate → execute → verify →
+  ship, with the always-on layer, the human-in-the-loop guardrail, and the learn
+  loop), a **Motivation** section that credits the software-engineering lineage
+  ([superpowers](https://github.com/obra/superpowers),
+  [Karpathy](https://github.com/multica-ai/andrej-karpathy-skills),
+  [ECC](https://github.com/affaan-m/ecc),
+  [planning-with-files](https://github.com/othmanadi/planning-with-files)) and
+  states the name is a homage to superpowers, and prose tightened to an
+  applied-micro register. Dropped the redundant "Why a separate family" section.
+- **Gateway jargon fix** (`using-causal-powers`): "interactive viz" → "interactive
+  visualization" and "PAP" → "pre-analysis plan" in the family table — the only
+  change to a loaded skill (no description/trigger change; trigger CI unaffected).
+
 ## 0.22.0 — Recall, not fold (the two-layer learning model)
 
 Prompted by the user's question — *are lessons/memory used effectively, or
