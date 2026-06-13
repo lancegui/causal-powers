@@ -68,12 +68,15 @@ Say out loud what you expect, then let the tool enforce it:
 
 The row-count assertion around a join is the cheapest, highest-value check in all of data work. Write it every time.
 
+**Before a merge in an established project, consult the project's `docs/LESSONS.md`** (and your memory) for prior join failures in *this* data — a fan-out that bit last month, a vintage mismatch in this crosswalk, a key that wasn't as unique as it looked. The capture half of that loop lives in `result-verification`; this is the recall half — a logged join bug only stops recurring if you read it back at the moment you're about to repeat it.
+
 ## The invariant catalog — what to assert
 
 These are the things that hold regardless of the answer. Reach for the ones that fit your step:
 
 - **Cardinality / joins** — Did rows fan out or vanish? Assert the expected row count after every join (see above).
 - **Keys & nulls** — Join keys unique where they should be? No unexpected nulls in keys? Primary keys actually unique?
+- **Versioned / vintage keys** — when a join key gets *re-released* over time (geographies like CBSA/county-FIPS, industry or diagnosis codes, taxonomies, any crosswalk), assert **both sides use the same vintage**, not just the same key. A vintage mismatch doesn't error — it silently mismatches (a low match rate you might not notice) and drops or duplicates rows. Pin the vintage as part of the key contract.
 - **Ranges & domains** — Ages in `[0,120]`, proportions in `[0,1]`, no negative quantities, prices positive.
 - **Totals reconcile** — Parts sum to the known whole. Pre-aggregation total == post-aggregation total. This catches the majority of silent join/filter bugs.
 - **Categories** — The set of category levels matches expectations; no surprise new levels (`"N/A"`, `"unknown"`, mojibake, trailing-space duplicates).

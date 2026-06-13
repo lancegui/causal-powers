@@ -23,7 +23,7 @@ Run these before any result leaves your hands. Each maps to a real way final num
 
 3. **Confirm determinism.** Same input + same seed → same output, twice. If the number wiggles between runs, there's uncontrolled randomness or ordering dependence, and the figure you're about to report is one sample from a distribution you didn't mean to draw from.
 
-4. **Attack it with robustness.** Re-run the result under the alternatives you'd expect to leave it roughly unchanged: drop the top/bottom percentile of outliers, restrict to a clean subsample, try the obvious alternative specification or definition. If the headline swings wildly under a reasonable perturbation, it is fragile and you must say so. (For confirmatory work, run the suite you pre-committed in `pre-analysis-plan` — all of it.)
+4. **Attack it with robustness.** Re-run the result under the alternatives you'd expect to leave it roughly unchanged: drop the top/bottom percentile of outliers, restrict to a clean subsample, try the obvious alternative specification or definition. If the headline swings wildly under a reasonable perturbation, it is fragile and you must say so. **Confirm each variant actually moved something:** a robustness check that returns a number *identical* to the baseline didn't perturb anything — a "leave-one-out" that re-added the row, a subsample filter that matched everything, a flag never read — and is a silent no-op, not evidence of robustness. A check has to *bite* to count. (For confirmatory work, run the suite you pre-committed in `pre-analysis-plan` — all of it.)
 
 5. **Read it like an economist** — interpretable units, economic (not just statistical) significance, magnitude plausibility, mechanism, and a benchmark against known estimates. This is the heart of verification for any effect you'll interpret; the full discipline is below.
 
@@ -59,9 +59,15 @@ The failure mode is claiming completion you haven't verified — "the analysis i
 
 Once it passes, snapshot it as a golden output (see `data-contracts`). The verified number becomes the baseline that the next run is diffed against — so if a refactor or a data refresh silently changes it, you find out loudly instead of three weeks later in a meeting.
 
-## Capture what bit you
+## Consult — and capture — what bit you
 
-Before you close out, do a 60-second retro: **what silent failure actually bit this project** — the fan-out join, the leaked feature, the bad control, the implausible magnitude you almost shipped? Write it down in a `docs/LESSONS.md` (one line: the symptom, the cause, the check that would have caught it). This is the manual, no-machinery version of learning: a lesson recorded is a bug that won't recur silently. And when a lesson is *general* — it would bite any analysis, not just this one — it's worth folding into the relevant skill (a new red-flag, a sharper check) so the whole family gets better — but **editing the skill files is itself a change that needs sign-off**: propose it to the user (or leave the note in `docs/LESSONS.md`), don't silently rewrite the skill family mid-analysis. Lessons that stay in your head decay; lessons in `LESSONS.md` and the skills compound.
+**Consult first (at the start, and before you report).** An established project keeps its scar tissue in `docs/LESSONS.md` and in your memory — the silent failures that bit it before. **Read them when you pick up the analysis and again before reporting**, and check whether any apply here: a prior fan-out on these tables, a vintage mismatch in this geography, a figure-vs-note estimand trap. Recall is the half of the loop that makes a logged bug actually stop recurring — capture without consult is a write-only journal. (These are *recalled*, not folded wholesale into this skill: the lesson is domain-specific and lives in the project.)
+
+**Capture at the end.** Before you close out, do a 60-second retro: **what silent failure actually bit this project** — the fan-out join, the leaked feature, the bad control, the implausible magnitude you almost shipped? Write it down in `docs/LESSONS.md` (one line: symptom, cause, the check that would have caught it). A lesson recorded is a bug that won't recur silently.
+
+**Folding a lesson into the general skills is the rare exception, not the default.** Most lessons are domain-specific (this dataset, this geography) and belong *only* in the project — reached by the consult step above, never dragged into the shared family. Fold one upward **only** when the *pattern*, stripped of domain, would help a project that's never seen this data (e.g. "versioned join keys need a vintage assertion"); leave the instance in the project, and **skill edits need the user's sign-off** — propose, don't silently rewrite.
+
+**And keep the stores lean.** If, while consulting, you find `LESSONS.md` sprawling or a memory file grown into a document, *suggest* a consolidation/prune pass (the `consolidate-memory` skill for memory) — surface it, don't hoard, don't auto-run.
 
 ## Language cheat-sheet
 

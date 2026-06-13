@@ -2,6 +2,40 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.22.0 — Recall, not fold (the two-layer learning model)
+
+Prompted by the user's question — *are lessons/memory used effectively, or
+becoming bloat?* The audit: the card had re-bloated 970→1256 with no eviction
+rule; the project's `LESSONS.md` was rich but **write-only** (4 capture sites in
+the skills, 0 recall sites); one 22 KB memory file sat on a dormant project. The
+decision (user-driven): **lessons are domain-specific and stay in the project;
+the skills are *pointed to* them, not folded into them** — folding would bloat
+the shared family with one project's idiosyncrasies. Full rationale:
+`docs/2026-06-13-recall-not-fold.md`.
+
+- **Recall + consolidation-suggestion wiring** (the only permanent addition —
+  text in 3 existing files, no new skill): the **card** gains a "consult the
+  project's `LESSONS.md` + memory at start / before a join / before reporting;
+  recalled here, not folded; if bloated/stale while consulting, *suggest*
+  consolidation" rule; **`result-verification`**'s "Capture what bit you" becomes
+  **"Consult — and capture —"** (read the scar tissue first, capture at the end,
+  fold upward only as a rare pattern-only exception); **`data-contracts`** says
+  consult the project log before a merge. Recall is the half of the loop that
+  makes a logged bug actually stop recurring; consolidation-suggestion is
+  demand-driven (never scheduled, never auto-run).
+- **Two domain-free pattern folds** (pattern only; instance left in the project):
+  `data-contracts` — **versioned/vintage join keys** must assert the same vintage
+  on both sides, not just the same key; `result-verification` — a robustness
+  check returning a number **identical to baseline** is a silent no-op, not
+  evidence. (Generalize the project's CBSA-vintage and leave-one-out lessons.)
+- **Card re-diet + eviction rule**: 1256 → 1156 words *while adding* the recall
+  section (pre-existing prose compressed ~210 words); a top-of-file budget
+  comment now guards against creep (target ≤ ~1050).
+- **Memory consolidation** (via the `consolidate-memory` skill, on the
+  suggestion model): the 22 KB dormant-proxy memory file → **3 KB** (−86%) —
+  kept the orientation + the one durable conclusion + gotchas, dropped the
+  superseded narrative and re-derivable detail; refreshed the stale index line.
+
 ## 0.21.0 — Task-altitude planning (from real-session dogfood)
 
 Driven by reviewing the user's actual analysis sessions, which gave a sharper
