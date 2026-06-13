@@ -2,6 +2,24 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.22.2 — The flow picture, and a tidier repo
+
+Docs-and-presentation release; no skill or hook changes.
+
+- **Hand-laid flow SVG** replaces the Mermaid diagram in the README. GitHub's
+  Mermaid auto-layout scattered the cross-cutting side rails; the new
+  [`docs/flow.svg`](docs/flow.svg) is a self-contained, hand-laid graphic (inline
+  presentation attributes, no `<style>` block for the sanitizer to strip) showing
+  the same spine — frame → fork to reduced-form / structural → approval gate →
+  execute → verify → ship, with the always-on layer and the three side rails.
+- **Design specs hidden** from the public repo: `docs/specs/` is now gitignored
+  (kept on disk, untracked) so the landing page isn't cluttered with internal
+  working notes.
+- **`docs/LESSONS.md` ships as an empty template** — the example row is gone; the
+  log belongs to *your* project, not the plugin.
+- **GitHub About refreshed** to name the reduced-form *and* structural scope and
+  the superpowers homage.
+
 ## 0.22.1 — README landing page + gateway jargon
 
 Docs-and-copy release. The one shipped-skill change is the gateway jargon fix.
