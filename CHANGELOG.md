@@ -2,6 +2,51 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.21.0 — Task-altitude planning (from real-session dogfood)
+
+Driven by reviewing the user's actual analysis sessions, which gave a sharper
+diagnosis than any eval: causal-powers plans at the **study altitude** (estimand
+/ PAP / model card) but **hand-waves at the task altitude** — *"merge these two
+messy sources"*, *"diagnose why this number is off"* get a dive, not a
+roadmap-you-agree-to-first. On a real co-located-coordinate bug the agent dove
+into record-dumping and the user had to interrupt to impose an order; the project
+has zero `analysis-plan.md` (every plan is a superpowers design doc). Full
+write-up: `docs/2026-06-13-task-altitude-rung-and-dogfood.md`.
+
+- **Task-altitude planning rung** — generalized "write it down before you build"
+  from study to task altitude, carried by the skill bodies (where real sessions
+  get it), card as backstop:
+  - `wrong-number-debugging`: REPRODUCE now ends by **stating the diagnostic
+    roadmap and getting a nod before running scans**; LOCATE executes the agreed
+    roadmap. (Fixes the interrupt-to-impose-order pattern.)
+  - `analysis-craft`: a multi-step build/refactor gets a **numbered roadmap
+    confirmed before coding**; an approved upstream study design does *not*
+    waive the task-level build steps.
+  - `data-preparation`: fires for an **ad-hoc mid-analysis merge/reconcile**,
+    plan **agreed** before executing.
+  - card + gateway: "always a written plan" reframed to **two altitudes**, same
+    `write → agree → loop → checkpoint-on-deviation` pattern, same
+    couple-of-steps threshold so trivial edits aren't taxed.
+- **Viz-trigger validation** (the gate): `eval-triggers.py --live --competitors`
+  on haiku — `question-framing` **won 17/19** build-from-data cases against the
+  full competitor menu incl. `superpowers:brainstorming` (all 5 viz cases won;
+  the 2 losses went to the causal-powers gateway, in-family), **negatives 20/20
+  clean**. The v0.19.0 viz broadening is validated; precision boundary held.
+- **Lesson-nudge recurrence** (`hooks/stop-gate`): the lesson gate re-fires as
+  *new* debugging accumulates without a lesson (capped 2/session, only on growth
+  in the debugging count); the escape hatch is one line to `LESSONS.md` — the
+  lesson *or* a `no-lesson: <why>` note — making a silent skip a recorded
+  decision. Motivated by the live ledger (5 debugging stops, 0 lessons). Results
+  and lesson gates now use independent per-obligation markers.
+- **Re-trigger context cost**: the re-trigger rule now distinguishes
+  *re-applying the discipline* (always) from *reloading the skill body* (only
+  when scrolled out / compacted away) — long sessions were reloading full
+  `SKILL.md` bodies on every re-trigger.
+- **New behavioral scenario** `pressure-roadmap-first` (manifest-pressure).
+  Card-alone, haiku: 0/1 — re-confirming that card text alone doesn't change a
+  weak model's behavior (v0.20.0 redux); the rung is delivered by the skill
+  bodies, whose validation needs the full-plugin arm.
+
 ## 0.20.0 — The ranked-next adoptions, executed and measured
 
 All six ranked candidates from the 0.19.0 evolution survey, adopted in one

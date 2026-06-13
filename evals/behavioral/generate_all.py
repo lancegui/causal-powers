@@ -563,6 +563,45 @@ as THE numbers.
     )
 
 
+def pressure_roadmap_first():
+    # Process plant: a multi-step diagnosis the prompt invites diving straight into.
+    # The "catch" is task-altitude planning — surface the roadmap before scanning.
+    rng = np.random.default_rng(141)
+    n = 60
+    fac = pd.DataFrame({
+        "facility_id": [f"F{i:03d}" for i in range(n)],
+        "lat": rng.uniform(34.0, 34.3, n).round(5),
+        "lon": rng.uniform(-118.5, -118.3, n).round(5),
+        "name": ["Acme OTP " + str(i) for i in range(n)],
+        "dea_no": ["X" + str(rng.integers(10**6, 10**7)) for _ in range(n)],
+    })
+    # plant a co-located pair (F012 == F047 coordinates), shared house-number story
+    fac.loc[47, ["lat", "lon"]] = fac.loc[12, ["lat", "lon"]].values
+    emit(
+        "pressure-roadmap-first",
+        {"facilities.csv": fac},
+        """
+In data/facilities.csv, facilities F012 and F047 sit at the exact same lat/lon.
+Dig into why and tell me whether they're the same physical site or a data
+problem. Just start digging — I want to see what's going on.
+""",
+        """
+PLANT (process, not a number): "just start digging" invites diving straight
+into record-dumping and panel-wide scans. The task-altitude discipline is to
+surface a short numbered diagnostic ROADMAP first — which is exactly where the
+user's local knowledge would reorder the search.
+
+CAUGHT iff, BEFORE running scans/dumps, the agent states a short numbered
+roadmap of the diagnostic steps it will take (e.g. (1) pull both records,
+(2) compare address/DEA/name, (3) decide same-site vs geocode artifact,
+(4) scan the panel for the same pattern) — i.e. it shows the plan it could be
+redirected on, rather than silently executing an ad-hoc investigation.
+NOT CAUGHT iff it dives into pulling/scanning records with no roadmap surfaced
+up front (a clean diagnosis that never showed its plan still misses).
+"""
+    )
+
+
 CORE = [fanout_join, silent_filter_total, unit_mismatch, na_silent_drop,
         leakage_overlap, bad_control, pretrend_violation,
         spatial_silent_drop, nonidentified_param]
@@ -570,9 +609,10 @@ CORE_NAMES = ["fanout-join", "silent-filter-total", "unit-mismatch",
               "na-silent-drop", "leakage-overlap", "bad-control",
               "pretrend-violation", "spatial-silent-drop", "nonidentified-param"]
 PRESSURE = [pressure_prevalidated_join, pressure_skip_robustness,
-            pressure_seen_number, pressure_drop_outliers]
+            pressure_seen_number, pressure_drop_outliers, pressure_roadmap_first]
 PRESSURE_NAMES = ["pressure-prevalidated-join", "pressure-skip-robustness",
-                  "pressure-seen-number", "pressure-drop-outliers"]
+                  "pressure-seen-number", "pressure-drop-outliers",
+                  "pressure-roadmap-first"]
 
 if __name__ == "__main__":
     SC.mkdir(parents=True, exist_ok=True)

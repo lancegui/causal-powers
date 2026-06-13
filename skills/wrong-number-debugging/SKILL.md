@@ -23,7 +23,9 @@ REPRODUCE  →  LOCATE (bisect)  →  EXPLAIN  →  FIX AT THE SOURCE  →  RE-C
 
 1. **REPRODUCE** — Pin the wrong number down to a deterministic, minimal case. Same input, same seed, same result every time. If it's intermittent, you have hidden state (ordering, randomness, a mutated global) and *that* is the bug. Shrink to the smallest subset of rows that still shows it — debugging on 50 rows beats debugging on 50 million.
 
-2. **LOCATE by bisection** — This is the heart of it. Walk the pipeline and check the number at each intermediate stage:
+   **Then state the diagnostic roadmap and get a quick nod — before you start running scans.** A bisection is a *multi-step plan*, and a plan the user can't see is one they can't redirect. In 2–4 lines, name the stages you'll check, in what order, and where you'll start: *"Roadmap: (1) pull the flagged pair's full records, (2) is the shared coordinate same-site or a geocode artifact, (3) scan the whole panel for the same pattern, (4) if systematic, trace how it's produced. Stays a diagnosis — any drop/merge of units comes back to you. Good, or reprioritize?"* This is the rung that was missing when a debug session dove straight into record-dumping and the user had to interrupt to impose an order. Get agreement **once**, then execute the roadmap autonomously — only re-stopping if a step turns into a design/sample/spec change (step 4). The roadmap is cheap to state and it is exactly where the user has the local knowledge ("check Milwaukee first") that reorders your search productively. Skip it only for a one-or-two-step check; a quick fix doesn't need a roadmap, a real bisect does.
+
+2. **LOCATE by bisection** — Execute the agreed roadmap. Walk the pipeline and check the number at each intermediate stage:
    - What is the row count / total / value right after **load**? Is it already wrong? Then the bug is upstream — in the source or the extract, not your code.
    - After each **join**? (Joins are the prime suspect — check row counts before and after every one.)
    - After each **filter**? (Did a filter on a column with `NA`/`missing` silently drop rows you wanted? Null-aware filters surprise people in every language.)
@@ -113,7 +115,7 @@ digraph wrong_number_next {
 
 ## The Process
 
-1. **Reproduce minimally, bisect to the stage, name the mechanism in one sentence.** No fix until you can.
+1. **Reproduce minimally, then state the diagnostic roadmap (stages, order, where you start) and get a quick nod** — a real bisect is a multi-step plan the user should be able to reorder before you run scans; agree once, then execute autonomously. Name the mechanism in one sentence. No fix until you can.
 2. **Answer the dividing question** — restoring the agreed analysis, or changing it?
 3. **Data bug → fix at the source, then *invoke `data-contracts`*** to add the invariant that would have caught it and watch it bite on the broken version — never patch the symptom on the final output.
 4. **Design/sample/spec/estimand change → STOP and *invoke `analysis-checkpoints`*.** Present the threat, the candidate remedies, and your recommendation; do not smuggle a redesign in as a bug fix. An approved redesign re-enters at REPRODUCE as a new result to validate.

@@ -15,10 +15,20 @@
 #   1. not already continuing from a prior block (stop_hook_active false);
 #   2. the project opted in (analysis-plan.md or docs/LESSONS.md exists in cwd);
 #   3. the session transcript is readable;
-#   4. no block was issued yet this session (marker file);
+#   4. that specific obligation hasn't been satisfied/exhausted (per-obligation
+#      state, NOT one shared marker — the results gate and the lesson gate fire
+#      independently);
 #   5. a concrete obligation is provably open (patterns below).
 # The block reason always includes an OUT: if the obligation was already met in
 # substance or doesn't apply, say so in one line and stop — never loop.
+#
+# The RESULTS gate fires once/session. The LESSON gate RE-FIRES as new debugging
+# accumulates without a lesson (capped at 2 nudges/session, and only when the
+# debugging-invocation count has grown since the last nudge) — because a single
+# once-per-session nudge let sessions rack up many debugging passes with zero
+# lessons logged. Its OUT is to write one line to LESSONS.md (the lesson OR a
+# "no-lesson: <why>" note); either ends the nudge, turning a silent skip into a
+# recorded decision.
 #
 # LEDGER: when condition 2 holds, append one JSON line per Stop to
 # .causal-powers/ledger.jsonl (results written? verification fired? debugging
@@ -57,8 +67,9 @@ wrote_results=0
 printf '%s' "$tail_blob" | grep -Eq '"name":[[:space:]]*"(Write|Edit|NotebookEdit)"[^\n]*"file_path":[[:space:]]*"[^"]*(results?|summary|findings|estimates|tables?)[^"]*\.(md|csv|tex|txt|html)"' && wrote_results=1
 verified=0
 grep -Eq '"skill":[[:space:]]*"(causal-powers:)?result-verification"' "$transcript" 2>/dev/null && verified=1
-debugged=0
-grep -Eq '"skill":[[:space:]]*"(causal-powers:)?wrong-number-debugging"' "$transcript" 2>/dev/null && debugged=1
+debug_count="$(grep -Ec '"skill":[[:space:]]*"(causal-powers:)?wrong-number-debugging"' "$transcript" 2>/dev/null || echo 0)"
+debug_count="${debug_count//[!0-9]/}"; debug_count="${debug_count:-0}"
+debugged=0; [ "$debug_count" -ge 1 ] && debugged=1
 lessons_touched=0
 printf '%s' "$tail_blob" | grep -Eq '"name":[[:space:]]*"(Write|Edit)"[^\n]*"file_path":[[:space:]]*"[^"]*LESSONS\.md"' && lessons_touched=1
 
@@ -70,19 +81,36 @@ printf '%s' "$tail_blob" | grep -Eq '"name":[[:space:]]*"(Write|Edit)"[^\n]*"fil
        >> "${proj}/.causal-powers/ledger.jsonl"
 } 2>/dev/null || true
 
-# Once-per-session gate.
-marker="${TMPDIR:-/tmp}/cp-stop-gate-${session_id}"
-[ -f "$marker" ] && exit 0
+# Gates — per-obligation, bounded, loop-safe. Emit one block and exit.
+state="${TMPDIR:-/tmp}"
+block() {  # $1 = reason
+  local r="${1//\\/\\\\}"; r="${r//\"/\\\"}"
+  printf '{"decision": "block", "reason": "%s"}\n' "$r"
+  exit 0
+}
 
-reason=""
-if [ "$wrote_results" = 1 ] && [ "$verified" = 0 ]; then
-  reason="A results artifact was written this session but causal-powers:result-verification never fired. Before stopping: verify the result (reconcile to source, reproduce, check figures-vs-prose) or invoke the skill — OR, if verification already effectively happened or this file isn't an analysis deliverable, state that in one line and stop. Do not loop on this."
-elif [ "$debugged" = 1 ] && [ "$lessons_touched" = 0 ]; then
-  reason="wrong-number-debugging ran this session but no lesson was logged. Append one line to docs/LESSONS.md (symptom, cause, the check that would have caught it) — OR, if the bug turned out not to be a data/analysis failure class, say so in one line and stop. Do not loop on this."
+# Results gate — once per session (its own marker, independent of the lesson gate).
+results_marker="${state}/cp-stop-results-${session_id}"
+if [ "$wrote_results" = 1 ] && [ "$verified" = 0 ] && [ ! -f "$results_marker" ]; then
+  : > "$results_marker" 2>/dev/null || true
+  block "A results artifact was written this session but causal-powers:result-verification never fired. Before stopping: verify the result (reconcile to source, reproduce, check figures-vs-prose) or invoke the skill — OR, if verification already effectively happened or this file isn't an analysis deliverable, state that in one line and stop. Do not loop on this."
 fi
-[ -n "$reason" ] || exit 0
 
-touch "$marker" 2>/dev/null || true
-escaped="${reason//\\/\\\\}"; escaped="${escaped//\"/\\\"}"
-printf '{"decision": "block", "reason": "%s"}\n' "$escaped"
+# Lesson gate — RE-FIRES as NEW debugging accumulates without a lesson, capped at 2
+# nudges/session. The escape hatch is to write ONE line to LESSONS.md — the lesson,
+# OR a "no-lesson: <why it doesn't generalize>" note. Either line flips
+# lessons_touched=1 and ends the nudge, so a silent dismissal becomes a recorded
+# decision rather than a number that quietly never gets a lesson (the ledger showed
+# 5 debugging stops, 0 lessons — this closes that).
+if [ "$debugged" = 1 ] && [ "$lessons_touched" = 0 ]; then
+  lesson_state="${state}/cp-stop-lesson-${session_id}"   # "<nudges> <debug_count_at_last_nudge>"
+  prev_nudges=0; prev_dbg=0
+  [ -f "$lesson_state" ] && read -r prev_nudges prev_dbg < "$lesson_state" 2>/dev/null || true
+  prev_nudges="${prev_nudges//[!0-9]/}"; prev_nudges="${prev_nudges:-0}"
+  prev_dbg="${prev_dbg//[!0-9]/}"; prev_dbg="${prev_dbg:-0}"
+  if [ "$prev_nudges" -lt 2 ] && [ "$debug_count" -gt "$prev_dbg" ]; then
+    printf '%s %s\n' "$((prev_nudges + 1))" "$debug_count" > "$lesson_state" 2>/dev/null || true
+    block "wrong-number-debugging has run ${debug_count}× this session and no lesson is logged. Append ONE line to docs/LESSONS.md — either the lesson (symptom, cause, the check that would have caught it), OR, if this one doesn't generalize, a 'no-lesson: <one-line why>' note. Writing either line satisfies this and stops the nudge; the point is a recorded decision, not silence. Do not loop on this."
+  fi
+fi
 exit 0

@@ -1,2 +1,5 @@
 .DS_Store
 evals/behavioral/runs/
+
+# runtime stop-gate ledger (not plugin source)
+.causal-powers/
