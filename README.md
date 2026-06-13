@@ -40,38 +40,7 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 
 ## The flow
 
-```mermaid
-flowchart TD
-    A([any data, analysis, or figure request]) --> QF[question-framing<br/>estimand · unit · the decision]
-    QF --> FK{what does the<br/>decision need?}
-    FK -->|to measure an effect| RF[reduced-form<br/>causal-identification<br/>name + test the design]
-    FK -->|to simulate a counterfactual| ST[structural<br/>structural-estimation<br/>model card · prove recovery]
-    RF --> G{{write the plan — get approval<br/>pre-analysis plan · model card · everyday plan}}
-    ST --> G
-    G --> EX[executing-analysis-plans<br/>drive it · fan specs to subagents]
-    EX --> DP[data-preparation → data-contracts<br/>build · assert joins · reconcile totals]
-    DP --> RV[result-verification<br/>reconcile · reproduce · attack with robustness]
-    RV --> SH([analysis-review → ship])
-    DP -. number looks off .-> WN[wrong-number-debugging<br/>roadmap → bisect to the bad step]
-    WN -.-> DP
-    EX -. about to change the goal? .-> CP[analysis-checkpoints<br/>STOP: design / sample / spec / estimand]
-    LL["the learn loop — capture what bit you → docs/LESSONS.md → recall it before the next join or report"]
-
-    classDef spine fill:#E6F1FB,stroke:#0C447C,color:#042C53;
-    classDef gate fill:#FBEFD6,stroke:#9A5B00,color:#5A3600;
-    classDef rf fill:#D9F2EE,stroke:#0E6E5C,color:#06463A;
-    classDef st fill:#EEEDFE,stroke:#534AB7,color:#2E2870;
-    classDef stop fill:#FBE3E0,stroke:#B23A2E,color:#6E1E16;
-    classDef done fill:#E2F1DA,stroke:#3E7B2E,color:#234718;
-    classDef loop fill:#F0F0EE,stroke:#6B6B6B,color:#333333;
-    class QF,EX,DP spine
-    class RF rf
-    class ST st
-    class G gate
-    class RV,SH done
-    class WN,CP stop
-    class LL loop
-```
+![Causal Powers flow: any data, analysis, or figure request goes to question-framing, forks to reduced-form (causal-identification) or structural (structural-estimation), through a write-the-plan approval gate, then executing-analysis-plans, data-preparation and data-contracts, result-verification, and analysis-review to ship; analysis-craft, analysis-checkpoints, and wrong-number-debugging run alongside.](docs/flow.svg)
 
 *The whole flow runs on an **always-on layer** (a discipline card injected every session + a trigger router) that re-fires the right skill on every request. `analysis-craft` (minimal, surgical code) and `analysis-checkpoints` (the human-in-the-loop guardrail) run alongside every step; `project-organization` keeps the repo legible and tidies before commit.*
 
@@ -264,19 +233,11 @@ causal-powers/
 ├── hooks/         # Claude Code: always-on block + trigger router + skill-chain + plan resumability
 ├── evals/         # trigger/ (router CI corpus + baseline) · behavioral/ (planted-silent-failure benchmark)
 ├── scripts/       # eval-triggers.py (trigger CI) · run-behavioral-eval.py (benchmark) · install-codex.sh
-├── docs/          # design specs + LESSONS.md
+├── docs/          # LESSONS.md template + dated design & measurement notes
 ├── AGENTS.md      # always-on discipline for Codex / other agents (symlink → hooks/session-context.md)
 ├── .codex-plugin/   # Codex plugin manifest
 └── .claude-plugin/  # Claude Code plugin + marketplace manifests
 ```
-
-## Design notes
-
-The full design history lives in [`docs/specs/`](docs/specs/) — each version's
-rationale, from the initial family through economic judgment, the always-on hook,
-the "robustness is an argument" fix, the chain-enforcement layer (imperative
-handoffs + trigger router + skill-chain), and the phased, resumable execution plan
-with `data-preparation`.
 
 ## Contributing & feedback
 

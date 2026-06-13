@@ -1,0 +1,76 @@
+<svg width="680" height="636" viewBox="0 0 680 636" role="img" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" dominant-baseline="middle">
+<title>The Causal Powers discipline flow</title>
+<desc>Any data, analysis, or figure request enters question-framing, forks by what the decision needs into a reduced-form workflow (causal-identification, to measure an effect) or a structural workflow (structural-estimation, to simulate a counterfactual), passes a write-the-plan and get-approval gate, then executing-analysis-plans, data-preparation and data-contracts, result-verification, and analysis-review to ship. analysis-craft, analysis-checkpoints, and wrong-number-debugging run alongside.</desc>
+<defs>
+<marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
+</defs>
+<rect x="0" y="0" width="680" height="636" fill="#ffffff"/>
+
+<text x="340" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#2a2a28">the causal powers flow</text>
+
+<rect x="40" y="44" width="600" height="32" rx="8" fill="#F1F1EE" stroke="#BFBFB8" stroke-width="1.4"/>
+<text x="340" y="61" text-anchor="middle" font-size="11" fill="#666666">always-on layer · discipline card · trigger router · re-fires on every request</text>
+
+<rect x="250" y="92" width="180" height="32" rx="16" fill="#F1F1EE" stroke="#BFBFB8" stroke-width="1.4"/>
+<text x="340" y="108" text-anchor="middle" font-size="11" fill="#555555">any data, analysis, or figure</text>
+<path d="M340,124 L340,139" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+
+<rect x="248" y="140" width="184" height="46" rx="7" fill="#E6F1FB" stroke="#2563A8" stroke-width="1.4"/>
+<text x="340" y="159" text-anchor="middle" font-size="13" font-weight="600" fill="#0C447C">question-framing</text>
+<text x="340" y="175" text-anchor="middle" font-size="11" fill="#2c5c8c">estimand · unit · decision</text>
+
+<text x="340" y="207" text-anchor="middle" font-size="11" font-style="italic" fill="#6b6b6b">what does the decision need?</text>
+<path d="M306,189 C252,207 208,215 172,230" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+<path d="M374,189 C428,207 472,215 508,230" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="176" y="224" text-anchor="middle" font-size="11" fill="#6b6b6b">to measure an effect</text>
+<text x="512" y="224" text-anchor="middle" font-size="11" fill="#6b6b6b">to simulate a counterfactual</text>
+
+<rect x="54" y="232" width="232" height="52" rx="7" fill="#D9F2EE" stroke="#0E8C74" stroke-width="1.4"/>
+<text x="170" y="252" text-anchor="middle" font-size="13" font-weight="600" fill="#0E6E5C">reduced-form</text>
+<text x="170" y="269" text-anchor="middle" font-size="11" fill="#2a7a68">causal-identification</text>
+<rect x="394" y="232" width="232" height="52" rx="7" fill="#EEEDFE" stroke="#6E63D6" stroke-width="1.4"/>
+<text x="510" y="252" text-anchor="middle" font-size="13" font-weight="600" fill="#534AB7">structural</text>
+<text x="510" y="269" text-anchor="middle" font-size="11" fill="#5a52a8">structural-estimation</text>
+
+<path d="M170,284 C222,302 264,308 300,316" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+<path d="M510,284 C458,302 416,308 380,316" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+
+<rect x="235" y="318" width="210" height="56" rx="7" fill="#FBEFD6" stroke="#C08A2E" stroke-width="1.4"/>
+<text x="340" y="336" text-anchor="middle" font-size="13" font-weight="600" fill="#8A5B00">write the plan, get approval</text>
+<text x="340" y="353" text-anchor="middle" font-size="11" fill="#8a6a2e">pre-analysis plan · model card</text>
+<text x="340" y="367" text-anchor="middle" font-size="11" fill="#8a6a2e">or everyday plan</text>
+<path d="M340,374 L340,389" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+
+<rect x="240" y="390" width="200" height="46" rx="7" fill="#E6F1FB" stroke="#2563A8" stroke-width="1.4"/>
+<text x="340" y="409" text-anchor="middle" font-size="13" font-weight="600" fill="#0C447C">executing-analysis-plans</text>
+<text x="340" y="425" text-anchor="middle" font-size="11" fill="#2c5c8c">drive it · fan to subagents</text>
+<path d="M340,436 L340,451" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+
+<rect x="215" y="452" width="250" height="46" rx="7" fill="#E6F1FB" stroke="#2563A8" stroke-width="1.4"/>
+<text x="340" y="471" text-anchor="middle" font-size="13" font-weight="600" fill="#0C447C">data-preparation → data-contracts</text>
+<text x="340" y="487" text-anchor="middle" font-size="11" fill="#2c5c8c">build · assert joins · reconcile</text>
+<path d="M340,498 L340,513" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+
+<rect x="248" y="514" width="184" height="46" rx="7" fill="#E2F1DA" stroke="#5A9E45" stroke-width="1.4"/>
+<text x="340" y="533" text-anchor="middle" font-size="13" font-weight="600" fill="#3E7B2E">result-verification</text>
+<text x="340" y="549" text-anchor="middle" font-size="11" fill="#46743a">reconcile · reproduce · attack</text>
+<path d="M340,560 L340,575" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+
+<rect x="252" y="576" width="176" height="34" rx="17" fill="#E2F1DA" stroke="#5A9E45" stroke-width="1.4"/>
+<text x="340" y="593" text-anchor="middle" font-size="13" font-weight="600" fill="#3E7B2E">analysis-review → ship</text>
+
+<rect x="44" y="390" width="146" height="46" rx="7" fill="#F1F1EE" stroke="#BFBFB8" stroke-width="1.4"/>
+<text x="117" y="409" text-anchor="middle" font-size="13" font-weight="600" fill="#555555">analysis-craft</text>
+<text x="117" y="425" text-anchor="middle" font-size="11" fill="#666666">minimal, surgical</text>
+<path d="M190,413 L238,413" stroke="#8a8a8a" stroke-width="1.2" stroke-dasharray="3 3"/>
+
+<rect x="480" y="390" width="160" height="46" rx="7" fill="#FBE3E0" stroke="#D06A5C" stroke-width="1.4"/>
+<text x="560" y="409" text-anchor="middle" font-size="12.5" font-weight="600" fill="#B23A2E">analysis-checkpoints</text>
+<text x="560" y="425" text-anchor="middle" font-size="11" fill="#a84a3e">stop: design / sample</text>
+<path d="M442,413 L478,413" stroke="#8a8a8a" stroke-width="1.2" stroke-dasharray="3 3"/>
+
+<rect x="480" y="452" width="160" height="46" rx="7" fill="#FBE0DD" stroke="#C9483A" stroke-width="1.4"/>
+<text x="560" y="471" text-anchor="middle" font-size="12" font-weight="600" fill="#A8342A">wrong-number-debugging</text>
+<text x="560" y="487" text-anchor="middle" font-size="11" fill="#a8443a">number off → bisect</text>
+<path d="M466,475 L478,475" stroke="#8a8a8a" stroke-width="1.2" stroke-dasharray="3 3"/>
+</svg>
