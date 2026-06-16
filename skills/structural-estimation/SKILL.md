@@ -21,7 +21,7 @@ This is the fork. These questions decide which of the three arms you're in:
 
 Don't go structural for its own sake. If a quasi-experiment answers the question, it wins. Go structural only when the question genuinely lives *outside* the data.
 
-**First question** (the analog of "what's your experiment?"): *what counterfactual do you need, and which primitive must be policy-invariant for that counterfactual to be valid?* If you can't name the counterfactual, you don't need a structural model yet.
+**First question** (the analog of "what's your experiment?"): *what counterfactual do you need, and which primitive must be policy-invariant for that counterfactual to be valid?* This means **naming the target world** — "post-merger prices", "welfare with the entrant gone", "uptake if search cost were zero" — not *designing the scenarios* (that comes after the estimator is proven; see the pipeline). Naming is cheap and required: if you can't name the target counterfactual, you don't need a structural model yet. Designing it is expensive and runs last — don't let the gate pull it forward into the estimation stage.
 
 ## The discipline
 
@@ -76,7 +76,7 @@ The card states (its filled-in instance of the five modeling rows in `references
 - **Model** — utility/payoff, the equilibrium concept, the DGP mapping primitives → observables.
 - **Identification, per parameter** — what moves each, the shifter/instrument it leans on, the load-bearing untestable assumption. *The heart of the card; a blank here is a parameter not yet identified.*
 - **Estimation plan** — estimator (GMM/MoM, NLS, MSL…), moments/likelihood, instruments, and the Monte-Carlo-recovery design that validates it.
-- **Counterfactual design** — one scenario per mechanism, primitives changed vs. held fixed.
+- **Counterfactual design** — one scenario per mechanism, primitives changed vs. held fixed. *This is the one row that starts as a sketch and is completed after estimation* — the gate needs the **target** counterfactual (row 1), not the finished scenario set. Don't let designing scenarios block Monte-Carlo recovery or estimation; they come last in the pipeline, once the estimator is proven and the fit validated.
 
 **The card is living.** Every later change is an edit to it, not a note in your head — refining as you learn is the point. But editability is not a backdoor around the gate: a **load-bearing change** (conduct, the random-coefficient distribution, primitive-vs-fixed, the estimand) routes through `analysis-checkpoints` as the user's call. And every fix beyond a trivial edit gets a three-line mini-spec on the card first — *what's wrong, what changes, what "fixed" looks like* (recovers θ from a distant start; gradient matches finite differences) — before you touch code. Trivial = a rename/typo/one-liner with no estimand/spec/sample/model decision; that you just do (`analysis-craft`).
 
@@ -196,7 +196,7 @@ digraph structural_estimation_next {
 
 ## The Process
 
-1. **Get the model card written and approved** — primitives, per-parameter identification, estimand, estimation plan, counterfactual design. This gate is mandatory before any machinery.
+1. **Get the model card written and approved** — primitives, per-parameter identification, estimand (the **target** counterfactual + the decision it informs), and estimation plan. This gate is mandatory before any machinery. The *scenario design* is sketched here but **not** gated — finalize it at the counterfactual stage (step 3 territory), after recovery and fit are proven; requiring it before Monte-Carlo recovery front-loads a decision you haven't earned yet.
 2. **Card approved → invoke `executing-analysis-plans`** to carry it out — fan the recovery reps, starting values, and per-mechanism counterfactual scenarios out to parallel subagents. Don't run them as one slow serial loop.
 3. **Estimation + counterfactuals complete → invoke `result-verification`** before reporting — confirm fit out-of-sample and that equilibrium was *re-solved* (prices not held fixed). Never report a structural number unverified.
 4. **If a counterfactual comes out implausible → first invoke `wrong-number-debugging`** to rule out a data bug, *before* blaming the model.
