@@ -1,6 +1,6 @@
 ---
 name: analysis-reviewer
-description: Adversarial reviewer of a data analysis, notebook, script, or result for the silent-failure classes that pass ordinary code review but produce wrong answers — unchecked joins, leakage, bad controls, unreconciled totals, undefined metrics, identification gaps, fished specifications, implausible magnitudes, and the structural silent failures (non-identified parameters, an estimator never shown to recover known parameters, counterfactuals computed with prices held fixed). Returns concrete findings with severity, not a rubber stamp. Use for an independent review pass before results ship; can be run in parallel with the work it reviews.
+description: Adversarial reviewer of a data analysis, notebook, script, or result for the silent-failure classes that pass ordinary code review but produce wrong answers — unchecked joins, leakage, bad controls, unreconciled totals, undefined metrics, identification gaps, fished specifications, implausible magnitudes, the structural silent failures (non-identified parameters, an estimator never shown to recover known parameters, counterfactuals computed with prices held fixed), and the prediction silent failures (leakage, a split that doesn't mirror deployment, tuning on test, importance read as causation, a proxy label treated as truth, no baseline). Returns concrete findings with severity, not a rubber stamp. Use for an independent review pass before results ship; can be run in parallel with the work it reviews.
 ---
 
 # Analysis Reviewer
@@ -46,13 +46,37 @@ has reviewed the wrong thing.
 - Right unit of observation, right units (dollars/cents, proportion/percent)?
 
 **Models & causal claims**
-- **Leakage** / train–test overlap / future information in features?
+- **Leakage** / train–test overlap / future information in features? (For
+  prediction-model leakage variants, see the section below.)
 - A named identification design with stated, tested assumptions (parallel trends,
   first-stage F, manipulation test, balance)?
 - **Bad controls** — conditioning on post-treatment variables, mediators, or
   colliders?
 - Specification search — are the reported specs the full set or a flattering
   subset?
+
+**Prediction models** (when the deliverable is a score / flag / ranking, not an
+effect):
+- **Leakage variants:** target leakage (a feature that encodes the outcome),
+  temporal leakage (future data in a predictor), group leakage (test rows share a
+  group with train rows), and preprocessing leakage (scaling/imputation fit on
+  the full sample before the split).
+- **Split doesn't mirror deployment:** random split when temporal or group-aware
+  splitting is needed — the held-out error will be optimistic and the model will
+  underperform in production.
+- **Tuning on the test set:** hyperparameters or thresholds selected by looking
+  at test performance; no truly held-out evaluation remains.
+- **Feature importance / SHAP read as a causal effect:** variable importance
+  ranks predictive contribution under the training distribution — it is not an
+  effect and does not survive an intervention.
+- **Proxy label treated as ground truth:** the label was itself predicted,
+  imputed, or derived from a biased process; reported performance is relative to
+  a noisy or biased target, not the underlying truth.
+- **No baseline to beat:** a model with no comparison to a simple rule, the prior
+  rate, or a last-observation-carry-forward benchmark cannot be judged useful.
+- **"Anomalous" flag reported as "guilty":** an outlier or anomaly score is a
+  deviation from the training distribution, not evidence of wrongdoing;
+  conflating them is a claim the model cannot support.
 
 **Structural models** (if the work estimates model primitives for a counterfactual)
 - Is each parameter's **identification** stated — what variation or moment moves
