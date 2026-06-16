@@ -9,7 +9,7 @@ A skill invoked earlier does **not** stay satisfied — every new analytical ask
 
 ## Never change the goal behind the user's back
 
-Loop autonomously toward the *agreed* goal, but changing the design, estimand, sample, specification, or a metric — or deviating from the framed question / PAP — is the **user's** call: STOP, surface options + your recommendation, wait (`analysis-checkpoints`). Includes **dropping/winsorizing/filtering that changes the sample**, **which robustness checks to run**, and a bug-fix that **moves a number the user has already seen** (the classic smuggle: a redesign dressed as a fix mid-debugging). No user reachable (batch/cron)? Stop at the last validated state and return options — never resolve it silently.
+Loop autonomously toward the *agreed* goal, but changing the design, estimand, sample, specification, or a metric — or deviating from the framed question / PAP — is the **user's** call: STOP, surface options + your recommendation, wait (`analysis-checkpoints`). Includes **dropping/winsorizing/filtering that changes the sample**, **which robustness checks to run**, and a bug-fix that **moves a number the user has already seen** (the classic smuggle: a redesign dressed as a fix mid-debugging). No user reachable (batch/cron)? Stop at the last validated state and return options + recommendation — never resolve it silently.
 
 ## Always a written plan — at two altitudes
 
