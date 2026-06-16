@@ -26,7 +26,7 @@ The most carefully designed agent skills today are built for **software engineer
 - **Evolving** — skills that sharpen each time they run, recording what failed and folding it back in ([ECC](https://github.com/affaan-m/ecc)).
 - **Planning** — a written plan that persists across sessions and resumes cleanly, treating the disk as working memory ([planning-with-files](https://github.com/othmanadi/planning-with-files)).
 
-Each transfers naturally to **empirical microeconomics**, where the consequential failures are silent and the work divides into two pathways with distinct purposes: **reduced-form** analysis, which measures an effect present in the data, and **structural** estimation, which recovers the primitives needed to simulate a counterfactual the data does not contain.
+Each transfers naturally to **empirical microeconomics**, where the consequential failures are silent and the work divides into three pathways with distinct purposes: **reduced-form** analysis, which measures an effect present in the data; **structural** estimation, which recovers the primitives needed to simulate a counterfactual the data does not contain; and **predictive modeling**, which predicts, scores, ranks, or flags outcomes — with leakage-safe evaluation and a hard prediction-is-not-causation line.
 
 Causal Powers therefore introduces no new methodology. It reorganizes these well-developed practices and refocuses them on microeconomic analysis, then adds the discipline the domain demands: identification before estimation, recovery before trust, and economic, not merely statistical, judgment.
 
@@ -40,7 +40,7 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 
 ## The flow
 
-![Causal Powers flow: any data, analysis, or figure request goes to question-framing, forks to reduced-form (causal-identification) or structural (structural-estimation), through a write-the-plan approval gate, then executing-analysis-plans, data-preparation and data-contracts, result-verification, and analysis-review to ship; analysis-craft, analysis-checkpoints, and wrong-number-debugging run alongside.](docs/flow.svg)
+![Causal Powers flow: any data, analysis, or figure request goes to question-framing, forks to reduced-form (causal-identification), structural (structural-estimation), or predictive (predictive-modeling), through a write-the-plan approval gate, then executing-analysis-plans, data-preparation and data-contracts, result-verification, and analysis-review to ship; analysis-craft, analysis-checkpoints, and wrong-number-debugging run alongside.](docs/flow.svg)
 
 *The whole flow runs on an **always-on layer** (a discipline card injected every session + a trigger router) that re-fires the right skill on every request. `analysis-craft` (minimal, surgical code) and `analysis-checkpoints` (the human-in-the-loop guardrail) run alongside every step; `project-organization` keeps the repo legible and tidies before commit.*
 
@@ -60,6 +60,7 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 | `result-verification` | Reconcile, reproduce from clean state, attack with robustness, before reporting | `verification-before-completion` |
 | `causal-identification` | State & test identification assumptions; mandatory robustness for DiD/IV/RDD/etc. — the reduced-form workflow | (none — domain core) |
 | `structural-estimation` | Estimate model primitives for counterfactuals the data can't contain: write the model card and get approval, prove recovery by Monte Carlo, derive analytical gradients group-by-group, re-solve equilibrium one scenario per mechanism — the structural workflow | (none — domain core) |
+| `predictive-modeling` | Predict, score, rank, or flag outcomes: gated Prediction Spec, leakage-safe evaluation, deployment-matched splits, and a hard prediction-is-not-causation line — the predictive workflow | (none — domain core) |
 | `analysis-review` | Review an analysis for silent-failure classes; verify review feedback | `requesting`/`receiving-code-review` |
 | `project-organization` | Paper-centric research-repo structure (pipeline stages × subject subfolders, `data/{raw,intermediate,output}`), standardized naming, gitignore the scratch; enforced throughout and tidied before git | (none — research-specific) |
 
@@ -79,8 +80,11 @@ experiment?", watching for bad controls (`causal-identification`); and, when the
 question lives outside the data, go structural deliberately — justify it over
 reduced form, name what identifies each primitive, prove the estimator recovers
 truth before trusting it, and re-solve equilibrium for every counterfactual
-(`structural-estimation`). The target is a senior microeconomist's instincts —
-reduced-form *and* structural — not a careful RA's checklist.
+(`structural-estimation`); and, when the goal is to predict, score, rank, or
+flag, route to the predictive workflow — gated spec, leakage-safe eval,
+deployment-matched splits, and never claim causation from a predictive model
+(`predictive-modeling`). The target is a senior microeconomist's instincts —
+reduced-form, structural, *and* predictive — not a careful RA's checklist.
 
 ## Beyond skills: always-on layer + agents
 

@@ -2,6 +2,10 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.23.0 — predictive-modeling arm
+
+Added `predictive-modeling`, the third arm of the modeling fork — applied prediction (predict/score/rank/flag) with a gated Prediction Spec, an honest-evaluation (anti-leakage) proof, and a hard prediction-is-not-causation line. Routes by goal, not algorithm (ML used to estimate a causal effect stays in causal-identification). Covers clean-label, proxy, anomaly/no-label, and ranking regimes. Wired into the gateway, prompt-router, skill-chain, the always-on card (re-trimmed to budget), question-framing, analysis-review, and the analysis-reviewer agent.
+
 ## 0.22.2 — The flow picture, and a tidier repo
 
 Docs-and-presentation release; no skill or hook changes.
