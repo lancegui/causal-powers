@@ -1,6 +1,6 @@
 ---
 name: using-causal-powers
-description: Use when starting any data analysis, statistics, econometrics, or causal-inference task in R, Julia, or Python — establishes the Causal Powers discipline and routes to the right skill (question-framing, pre-analysis-plan, data-contracts, data-preparation, analysis-craft, analysis-checkpoints, executing-analysis-plans, wrong-number-debugging, result-verification, causal-identification, structural-estimation, analysis-review, project-organization). Invoke this whenever someone asks you to analyze data, compute a metric, clean or merge datasets, fit a model, estimate an effect or a structural model, simulate a counterfactual, check a number, or **build a deliverable from data — a figure, map, chart, dashboard, or interactive visualization** — even if they only say "analyze this", "what's the trend", "did it work", "estimate the model", or "plot/map/visualize this" — so the right discipline skill fires before you touch the data.
+description: Use when starting any data analysis, statistics, econometrics, or causal-inference task in R, Julia, or Python — establishes the Causal Powers discipline and routes to the right skill (question-framing, pre-analysis-plan, data-contracts, data-preparation, analysis-craft, analysis-checkpoints, executing-analysis-plans, wrong-number-debugging, result-verification, causal-identification, structural-estimation, predictive-modeling, analysis-review, project-organization). Invoke this whenever someone asks you to analyze data, compute a metric, clean or merge datasets, fit a model, estimate an effect or a structural model, simulate a counterfactual, check a number, or **build a deliverable from data — a figure, map, chart, dashboard, or interactive visualization** — even if they only say "analyze this", "what's the trend", "did it work", "estimate the model", or "plot/map/visualize this" — so the right discipline skill fires before you touch the data.
 ---
 
 # Using Causal Powers
@@ -35,32 +35,34 @@ And the rule that keeps the work from drifting: **always work from a plan you ag
 | **`result-verification`** | Before reporting, presenting, or calling it done — reconcile, reproduce from a clean state, attack with robustness, tie figures to prose. |
 | **`causal-identification`** | Any causal claim or design (DiD, event study, IV, RDD, matching, FE, synthetic control) — state and test the identification assumptions; run the mandatory robustness battery. The **reduced-form** workflow. |
 | **`structural-estimation`** | Estimating the *primitives* of an economic model (preferences, costs, information/consideration, search, conduct) or needing a counterfactual the data doesn't contain (merger, new product, welfare, equilibrium re-pricing) — BLP/demand, dynamic discrete choice, entry/games, auctions, consideration, search. The **structural** workflow. |
+| **`predictive-modeling`** | The GOAL is a prediction, not an effect — predict/score/rank/flag/classify/forecast/detect-anomalies units to drive an action. Write the Prediction Spec (label+regime, prediction-time, deployment-matched split, leakage audit, metric-to-decision, baseline) before fitting; prove the eval honest (permutation-null + deployment-mirroring holdout) before trusting a metric; never read importance as causation. The **prediction** workflow. |
 | **`analysis-review`** | Reviewing an analysis (yours or another's) for the silent-failure classes, or receiving review feedback and verifying it. |
 | **`analysis-craft`** | Whenever you write or edit analysis code — keep it the minimum that answers the question, edit existing notebooks surgically, surface approach tradeoffs instead of silently choosing. |
 | **`analysis-checkpoints`** | Throughout execution — to decide which calls are yours and which must STOP for the user (design/sample/spec/estimand changes, PAP deviations, dropping data). The human-in-the-loop guardrail. |
 | **`executing-analysis-plans`** | Once the plan is approved — drive execution step by step, validate each step, and fan independent pieces (robustness specs, designs, cuts) out to parallel subagents. |
 | **`project-organization`** | Setting up or tidying a research repo, and at the end of a workflow before committing — paper-centric structure (pipeline stages × subject subfolders, `data/{raw,intermediate,output}`), standardized naming, gitignore the scratch. Place files right *throughout*; tidy before git. |
 
-## The fork: reduced-form or structural?
+## The fork: why are you modeling?
 
-For any *causal or modeling* question, decide which of two workflows you're in before you estimate — they answer different questions and lean on different assumptions:
+For any *causal or modeling* question, decide which workflow you're in before you estimate — they answer different questions and lean on different assumptions:
 
 - **The decision lives inside the data** ("did the policy work?", "what was the effect of the price cut we ran?") → the **reduced-form** workflow. A well-identified DiD / IV / RDD answers it and is *more* credible for leaning on fewer assumptions → **`causal-identification`**.
 - **The decision needs a world you haven't observed, a welfare number, or a mechanism the data can't separate** ("what price would the merged firm set?", "how much of low uptake is taste vs. not knowing the product exists?", "what's the surplus from a new entrant?") → the **structural** workflow. The reduced-form relationship *shifts* when the policy changes (Lucas critique), so there's no coefficient to extrapolate → **`structural-estimation`**.
+- **The decision is a prediction to act on** ("which pharmacy should we investigate?", "which account is likely fraud?", "rank these by risk") → the **prediction** workflow. The deliverable is a score/flag/ranking, not an effect or a counterfactual — and it is *not* a causal claim. Route by GOAL, not algorithm: if the goal is a causal effect, it stays reduced-form even when ML does the work (double ML, causal forests) → **`predictive-modeling`**.
 
-Don't go structural for its own sake — if a quasi-experiment answers it, that wins. The two workflows are partners with genuinely different pipelines: reduced form for effects inside the data, structural for counterfactuals outside it.
+Don't go structural for its own sake — if a quasi-experiment answers it, that wins. The three arms are partners with genuinely different pipelines: reduced form for effects inside the data, structural for counterfactuals outside it, prediction for scoring units to drive an action. Three arms, one question — are you measuring an effect, simulating an unobserved world, or predicting an outcome to act on?
 
 ## The typical flow
 
 ```
 question-framing  →  [pre-analysis-plan if confirmatory / model card if structural / else extend the brief into the data+approach+deliverable plan]  →  (approval gate)
    →  executing-analysis-plans  →  data-preparation (build/clean/join PHASE) → data-contracts (validate each step)
-   →  [ causal-identification  if reduced-form  |  structural-estimation  if structural ]
+   →  [ causal-identification  if reduced-form  |  structural-estimation  if structural  |  predictive-modeling  if prediction ]
    →  [wrong-number-debugging when something's off]
    →  result-verification  →  [analysis-review + project-organization before it ships]
 ```
 
-After approval, **`executing-analysis-plans`** carries it out — running the dependent spine in order and fanning independent work (robustness specs, designs, cuts; or, structural, recovery reps and counterfactual scenarios) out to parallel subagents. Even when a task arrives as "just run the regression / estimate the model", route execution through it so the spine/fan-out and subagent dispatch actually happen.
+After approval, **`executing-analysis-plans`** carries it out — running the dependent spine in order and fanning independent work (robustness specs, designs, cuts; or, structural, recovery reps and counterfactual scenarios; or, prediction, CV folds, candidate models, and subsample cuts) out to parallel subagents. Even when a task arrives as "just run the regression / estimate the model", route execution through it so the spine/fan-out and subagent dispatch actually happen.
 
 `analysis-craft` and `analysis-checkpoints` run *alongside* this whole flow — `analysis-craft` every time you write or edit the code, `analysis-checkpoints` every time a decision would change the design, sample, spec, or estimand (STOP and ask).
 
