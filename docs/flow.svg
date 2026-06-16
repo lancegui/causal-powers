@@ -1,6 +1,6 @@
 <svg width="680" height="636" viewBox="0 0 680 636" role="img" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" dominant-baseline="middle">
 <title>The Causal Powers discipline flow</title>
-<desc>Any data, analysis, or figure request enters question-framing, forks by what the decision needs into a reduced-form workflow (causal-identification, to measure an effect) or a structural workflow (structural-estimation, to simulate a counterfactual), passes a write-the-plan and get-approval gate, then executing-analysis-plans, data-preparation and data-contracts, result-verification, and analysis-review to ship. analysis-craft, analysis-checkpoints, and wrong-number-debugging run alongside.</desc>
+<desc>Any data, analysis, or figure request enters question-framing, forks by what the decision needs into a reduced-form workflow (causal-identification, to measure an effect), a predictive workflow (predictive-modeling, to predict an outcome to act on), or a structural workflow (structural-estimation, to simulate a counterfactual), passes a write-the-plan and get-approval gate, then executing-analysis-plans, data-preparation and data-contracts, result-verification, and analysis-review to ship. analysis-craft, analysis-checkpoints, and wrong-number-debugging run alongside.</desc>
 <defs>
 <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
 </defs>
@@ -19,21 +19,27 @@
 <text x="340" y="159" text-anchor="middle" font-size="13" font-weight="600" fill="#0C447C">question-framing</text>
 <text x="340" y="175" text-anchor="middle" font-size="11" fill="#2c5c8c">estimand · unit · decision</text>
 
-<text x="340" y="207" text-anchor="middle" font-size="11" font-style="italic" fill="#6b6b6b">what does the decision need?</text>
-<path d="M306,189 C252,207 208,215 172,230" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
-<path d="M374,189 C428,207 472,215 508,230" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
-<text x="176" y="224" text-anchor="middle" font-size="11" fill="#6b6b6b">to measure an effect</text>
-<text x="512" y="224" text-anchor="middle" font-size="11" fill="#6b6b6b">to simulate a counterfactual</text>
+<text x="340" y="206" text-anchor="middle" font-size="11" font-style="italic" fill="#6b6b6b">what does the decision need?</text>
+<path d="M312,189 C236,206 178,214 140,228" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+<path d="M340,189 L340,228" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+<path d="M368,189 C444,206 502,214 540,228" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+<text x="133" y="223" text-anchor="middle" font-size="11" fill="#6b6b6b">measure an effect</text>
+<text x="340" y="223" text-anchor="middle" font-size="11" fill="#6b6b6b">predict an outcome</text>
+<text x="547" y="223" text-anchor="middle" font-size="11" fill="#6b6b6b">simulate a counterfactual</text>
 
-<rect x="54" y="232" width="232" height="52" rx="7" fill="#D9F2EE" stroke="#0E8C74" stroke-width="1.4"/>
-<text x="170" y="252" text-anchor="middle" font-size="13" font-weight="600" fill="#0E6E5C">reduced-form</text>
-<text x="170" y="269" text-anchor="middle" font-size="11" fill="#2a7a68">causal-identification</text>
-<rect x="394" y="232" width="232" height="52" rx="7" fill="#EEEDFE" stroke="#6E63D6" stroke-width="1.4"/>
-<text x="510" y="252" text-anchor="middle" font-size="13" font-weight="600" fill="#534AB7">structural</text>
-<text x="510" y="269" text-anchor="middle" font-size="11" fill="#5a52a8">structural-estimation</text>
+<rect x="40" y="232" width="186" height="52" rx="7" fill="#D9F2EE" stroke="#0E8C74" stroke-width="1.4"/>
+<text x="133" y="252" text-anchor="middle" font-size="13" font-weight="600" fill="#0E6E5C">reduced-form</text>
+<text x="133" y="269" text-anchor="middle" font-size="11" fill="#2a7a68">causal-identification</text>
+<rect x="247" y="232" width="186" height="52" rx="7" fill="#F4E3F1" stroke="#B05CA8" stroke-width="1.4"/>
+<text x="340" y="252" text-anchor="middle" font-size="13" font-weight="600" fill="#8E3E86">predictive</text>
+<text x="340" y="269" text-anchor="middle" font-size="11" fill="#9a5492">predictive-modeling</text>
+<rect x="454" y="232" width="186" height="52" rx="7" fill="#EEEDFE" stroke="#6E63D6" stroke-width="1.4"/>
+<text x="547" y="252" text-anchor="middle" font-size="13" font-weight="600" fill="#534AB7">structural</text>
+<text x="547" y="269" text-anchor="middle" font-size="11" fill="#5a52a8">structural-estimation</text>
 
-<path d="M170,284 C222,302 264,308 300,316" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
-<path d="M510,284 C458,302 416,308 380,316" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+<path d="M133,284 C198,300 252,308 300,316" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+<path d="M340,284 L340,316" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
+<path d="M547,284 C482,300 428,308 380,316" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#ah)"/>
 
 <rect x="235" y="318" width="210" height="56" rx="7" fill="#FBEFD6" stroke="#C08A2E" stroke-width="1.4"/>
 <text x="340" y="336" text-anchor="middle" font-size="13" font-weight="600" fill="#8A5B00">write the plan, get approval</text>
