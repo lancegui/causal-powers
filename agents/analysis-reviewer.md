@@ -56,7 +56,7 @@ has reviewed the wrong thing.
   subset?
 
 **Prediction models** (when the deliverable is a score / flag / ranking, not an
-effect):
+effect — the `predictive-modeling` arm):
 - **Leakage variants:** target leakage (a feature that encodes the outcome),
   temporal leakage (future data in a predictor), group leakage (test rows share a
   group with train rows), and preprocessing leakage (scaling/imputation fit on

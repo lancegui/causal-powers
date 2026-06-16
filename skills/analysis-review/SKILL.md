@@ -33,7 +33,7 @@ Work down from the conclusion to the data. Each item is a class of silent error 
 - **Specification search:** were the reported specs chosen before or after seeing results? Are the robustness checks the complete set, or a flattering subset? (See `pre-analysis-plan`.)
 - **Structural models:** is each parameter's identification stated — what variation or moment moves it? Was the estimator shown to recover known parameters (a Monte-Carlo recovery test), or is a converged optimizer being taken as proof of identification? Is any counterfactual computed by *re-solving equilibrium* rather than holding prices fixed? Is the conduct/distribution assumption flagged as load-bearing and untestable? (Hand off to `structural-estimation`.)
 
-**Prediction models** (when the deliverable is a score / flag / ranking, not an effect):
+**Prediction models** (when the deliverable is a score / flag / ranking, not an effect — the `predictive-modeling` arm):
 - **Leakage variants:** target leakage (a feature that encodes the outcome), temporal leakage (future data in a predictor), group leakage (test rows share a group with train rows), and preprocessing leakage (scaling/imputation fit on the full sample before the split).
 - **Split doesn't mirror deployment:** random split when temporal or group-aware splitting is needed — the held-out error will be optimistic and the model will underperform in production.
 - **Tuning on the test set:** hyperparameters or thresholds selected by looking at test performance; no truly held-out evaluation remains.
