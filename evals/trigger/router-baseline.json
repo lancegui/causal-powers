@@ -74,6 +74,21 @@
     ],
     "violations": []
   },
+  "predictive-modeling": {
+    "hits": [
+      "build a model to predict which customers will churn next month so we can target retention",
+      "forecast which stores are at risk of stockout next week from the sales history",
+      "how should i split train and test for a model that has to predict new pharmacies it's never seen",
+      "i have no labels \u2014 just detect which accounts look anomalous from their transaction patterns",
+      "i want to flag which pharmacies are likely diverting opioids from their monthly shipment patterns",
+      "my churn model gets 0.99 AUC on the holdout \u2014 is that too good to be true",
+      "rank these insurance claims by audit risk so the investigators hit the worst ones first",
+      "score every loan application for default likelihood and pick a threshold to act on",
+      "train a classifier on this labeled fraud dataset, make sure nothing leaks the outcome",
+      "what metric should i use to evaluate a risk-scoring model with very few positives"
+    ],
+    "violations": []
+  },
   "question-framing": {
     "hits": [
       "can you make a figure of treatment vs control facilities on a map so i can sanity-check that the treated ones actually cluster where i think",

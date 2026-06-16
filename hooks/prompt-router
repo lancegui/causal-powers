@@ -69,6 +69,9 @@ m "report this|\bfinal\b|the answer is|put this in|send this to|in the (deck|sli
 m "\bblp\b|demand estimation|counterfactual|structural (model|estimat)|merger sim|discrete choice|\bgmm\b|equilibrium|recover( the)? parameters" \
   "causal-powers:structural-estimation — write/confirm the model card (per-parameter identification + recovery test) before estimating."
 
+m "\bpredict(ion|ive)?\b|forecast|classif(y|ier)|risk[ -]scor|\banomal\w*|flag (the |which )|rank (these|by )|churn|which .*(likely|at risk)|train.*(model|classifier)|train[/ ]test split|\bscore\b" \
+  "causal-powers:predictive-modeling — write/confirm the Prediction Spec (label+regime, prediction-time, deployment-matched split, leakage audit, metric-to-decision) before fitting; prove the eval is honest; importance is not causation."
+
 m "review (this|my) (analysis|notebook|script|model)|check my (notebook|analysis)|before i (send|ship|publish)|is this analysis" \
   "causal-powers:analysis-review — hunt the silent-failure classes (unchecked joins, leakage, fished specs, undefined metrics)."
 
