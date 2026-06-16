@@ -13,10 +13,11 @@ Reduced form measures a relationship that *held in the data*. Structural estimat
 
 ## Reduced form or structural? — choose the workflow before you model
 
-This is the fork. Two questions decide which family you're in, and they lead to two different workflows:
+This is the fork. These questions decide which of the three arms you're in:
 
 - **Does the decision live inside the support of the data?** "What was the effect of the price cut we ran?" "Did the policy work?" → **reduced form.** A well-identified DiD / IV / RDD answers it and is *more* credible precisely because it leans on fewer assumptions. Use the reduced-form workflow → **`causal-identification`**.
 - **Does the decision require a world you haven't observed, a welfare number, or a mechanism the data can't separate?** "What price would the merged firm set?" "How much of low uptake is taste vs. not knowing the product exists?" "What's the consumer surplus from a new entrant?" → **structural.** The relationship you'd estimate in reduced form *shifts* when the policy changes (the Lucas critique), so there is no reduced-form coefficient to extrapolate. Use this skill's workflow.
+- **Is the goal a prediction to act on, not an effect at all?** ("which unit to flag / score / rank") → neither causal arm — use the **prediction** workflow → **`predictive-modeling`**. (Route by goal, not algorithm: ML used to *estimate an effect* still belongs to the causal arms.)
 
 Don't go structural for its own sake. If a quasi-experiment answers the question, it wins. Go structural only when the question genuinely lives *outside* the data.
 

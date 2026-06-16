@@ -31,6 +31,8 @@ For a **causal** question, add three more and hand off to `causal-identification
 
 **If the decision needs a world the data doesn't contain** — a counterfactual you never observe (a merger, a new product, a tax, a removed friction), a welfare or consumer-surplus figure, or an equilibrium response where prices and behavior re-optimize — then the estimand is **not** an effect you can read off a comparison in the data; it's a *structural counterfactual*. Framing it means naming that counterfactual, the primitive that must stay invariant for it to be valid, and the mechanism it runs through — then handing off to `structural-estimation`. This reduced-form-vs-structural choice is a **framing decision, made here by what the decision needs**, not a modeling preference discovered later: if a comparison inside the data answers the question, frame a reduced-form estimand and stop; reach for structural only when the question genuinely lives outside the data.
 
+**If the deliverable is a prediction / score / ranking / flag to drive an action** (not a descriptive metric or a causal estimate), framing still pins the unit, the target/label, and the decision — then route to `predictive-modeling` for the Prediction Spec.
+
 **Is this confirmatory? Decide it now.** If the result will drive or defend a decision, you (or the requester) have a stake in how it comes out, the question is causal, or the work will be scrutinized — it is **confirmatory**, and it needs a locked `pre-analysis-plan` *before outcomes are seen*. This determination is a framing step, not a silent judgment to make later: settle it here, and if confirmatory hand off to `pre-analysis-plan` before touching outcome data.
 
 ## The plan: data, approach, deliverable (general/exploratory work)

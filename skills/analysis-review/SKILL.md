@@ -33,6 +33,15 @@ Work down from the conclusion to the data. Each item is a class of silent error 
 - **Specification search:** were the reported specs chosen before or after seeing results? Are the robustness checks the complete set, or a flattering subset? (See `pre-analysis-plan`.)
 - **Structural models:** is each parameter's identification stated — what variation or moment moves it? Was the estimator shown to recover known parameters (a Monte-Carlo recovery test), or is a converged optimizer being taken as proof of identification? Is any counterfactual computed by *re-solving equilibrium* rather than holding prices fixed? Is the conduct/distribution assumption flagged as load-bearing and untestable? (Hand off to `structural-estimation`.)
 
+**Prediction models** (when the deliverable is a score / flag / ranking, not an effect):
+- **Leakage variants:** target leakage (a feature that encodes the outcome), temporal leakage (future data in a predictor), group leakage (test rows share a group with train rows), and preprocessing leakage (scaling/imputation fit on the full sample before the split).
+- **Split doesn't mirror deployment:** random split when temporal or group-aware splitting is needed — the held-out error will be optimistic and the model will underperform in production.
+- **Tuning on the test set:** hyperparameters or thresholds selected by looking at test performance; no truly held-out evaluation remains.
+- **Feature importance / SHAP read as a causal effect:** variable importance ranks predictive contribution under the training distribution — it is not an effect and does not survive an intervention.
+- **Proxy label treated as ground truth:** the label was itself predicted, imputed, or derived from a biased process; reported performance is relative to a noisy or biased target, not the underlying truth.
+- **No baseline to beat:** a model with no comparison to a simple rule, the prior rate, or a last-observation-carry-forward benchmark cannot be judged useful.
+- **"Anomalous" flag reported as "guilty":** an outlier or anomaly score is a deviation from the training distribution, not evidence of wrongdoing; conflating them is a claim the model cannot support.
+
 **Reproducibility**
 - Does it **reproduce from a clean state** with a fixed seed, or only inside the author's live session?
 - Do the **numbers in the prose/figures match** what the code actually produces now?
