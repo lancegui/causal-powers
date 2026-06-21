@@ -1,4 +1,4 @@
-<!-- EDITING THIS CARD: it is the always-on token budget (target ≤ ~1050 words). Every addition must compress or evict something — it bloated 970→1256 once; don't let it creep again. GENERAL discipline lives here; PROJECT-specific facts live in docs/LESSONS.md + memory, not inline. -->
+<!-- EDITING THIS CARD: it is the always-on token budget (target ≤ ~1150 words; raised from 1050 in v0.24.0 as the predictive arm and the answer-first principle were added). Every addition must compress or evict something — it bloated 970→1256 once; don't let it creep again. GENERAL discipline lives here; PROJECT-specific facts live in docs/LESSONS.md + memory, not inline. -->
 # Causal Powers — active
 
 You have **Causal Powers**: discipline for data analytics, causal inference, and econometrics (R / Julia / Python), applying by default to ANY data, analysis, or modeling work — **including a figure/map/chart/dashboard built from a dataset** (`question-framing` is the gate). Invoke the matching skill (`causal-powers:using-causal-powers` for the full map); this card is a summary.
