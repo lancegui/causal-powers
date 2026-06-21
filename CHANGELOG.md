@@ -2,6 +2,28 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.24.0 — answer-first reporting + OpenCode
+
+Two changes, both about how the discipline reaches you.
+
+- **`Report answer-first` added to the always-on card.** Lead with the conclusion
+  and the decision it forces in the first 1–3 sentences; keep crucial details
+  beneath, not in front; don't recite a skill's checklist back as prose; prefer one
+  recommended next step to a menu. The skills were thorough about *what to check*
+  but silent on *how to write the result back* — so a verified finding arrived as a
+  wall of text the reader had to mine for the headline. The card was re-trimmed
+  (Re-trigger tail, plan-section head, two redundant "user's call" tails) to hold
+  the budget.
+- **OpenCode compatibility.** OpenCode auto-discovers `SKILL.md` skills and reads
+  `AGENTS.md` natively, so the skills work with no new manifest — they live in the
+  same `.agents/skills` / `.claude/skills` paths the installer already uses. The
+  `install-codex.sh` installer now takes `--opencode` (the only difference is the
+  user-scope `AGENTS.md` path: `~/.config/opencode/AGENTS.md`). Adds an
+  [`opencode-tools.md`](skills/using-causal-powers/references/opencode-tools.md) tool
+  map (`Task`→`task`, `Skill`→`skill` tool, subagent `todowrite` caveat), a README
+  *On OpenCode* section, and a platform-note mention in the card. No skill-content
+  changes for OpenCode — it was already format-compatible.
+
 ## 0.23.0 — predictive-modeling arm
 
 Added `predictive-modeling`, the third arm of the modeling fork — applied prediction (predict/score/rank/flag) with a gated Prediction Spec, an honest-evaluation (anti-leakage) proof, and a hard prediction-is-not-causation line. Routes by goal, not algorithm (ML used to estimate a causal effect stays in causal-identification). Covers clean-label, proxy, anomaly/no-label, and ranking regimes. Wired into the gateway, prompt-router, skill-chain, the always-on card (re-trimmed to budget), question-framing, analysis-review, and the analysis-reviewer agent.

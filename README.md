@@ -145,8 +145,9 @@ discipline present, makes the chain *fire* reliably, and makes long work resumab
 ## Requirements
 
 - [Claude Code](https://docs.claude.com/en/docs/claude-code) with plugin support —
-  or **[Codex](https://developers.openai.com/codex/skills)** / any agent that reads
-  `SKILL.md` skills + `AGENTS.md` (see [On Codex](#on-codex-and-other-agents) below).
+  or **[Codex](https://developers.openai.com/codex/skills)** / **[OpenCode](https://opencode.ai)** /
+  any agent that reads `SKILL.md` skills + `AGENTS.md` (see [On Codex](#on-codex-and-other-agents)
+  and [On OpenCode](#on-opencode) below).
 - The hooks (the always-on block, the trigger router / skill-chain, and the
   `analysis-plan.md` resumability hook) need **Claude Code v2.1+**, which auto-loads
   `hooks/hooks.json` from installed plugins. Everything else (skills, agents) works
@@ -227,6 +228,35 @@ the subagent fan-out uses `spawn_agent` (or degrades to inline — enable
 `[features] multi_agent = true` in `~/.codex/config.toml`), and you maintain the
 living `analysis-plan.md` yourself (flush it before compacting). Full mapping in
 [`codex-tools.md`](skills/using-causal-powers/references/codex-tools.md).
+
+## On OpenCode
+
+[OpenCode](https://opencode.ai) auto-discovers `SKILL.md` skills and reads
+`AGENTS.md` natively, so Causal Powers works with **no new manifest** — it scans
+`.agents/skills/`, `.claude/skills/`, and `.opencode/skills/` (plus their `~/`
+globals), which is exactly where the installer below puts the skills, and it loads
+the always-on discipline from the repo-root `AGENTS.md` or the global
+`~/.config/opencode/AGENTS.md` ([OpenCode skills](https://opencode.ai/docs/skills/) ·
+[rules](https://opencode.ai/docs/rules/)).
+
+The same installer serves OpenCode — pass `--opencode` (the only difference from
+Codex is the user-scope `AGENTS.md` path):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/lancegui/causal-powers/main/scripts/install-codex.sh | bash -s -- --opencode
+```
+
+Project scope is **agent-agnostic** — `--project .` installs skills to
+`<repo>/.agents/skills` and the discipline to the repo-root `AGENTS.md`, both of
+which OpenCode reads, so the plain `--project` command above works for OpenCode
+too. Re-run to update; `--uninstall --opencode` cleanly removes it.
+
+**What changes on OpenCode:** like Codex, the `hooks/` are Claude-Code-only — the
+discipline lives in `AGENTS.md`, skills trigger off their descriptions natively
+(exposed through OpenCode's `skill` tool), the subagent fan-out uses the `task`
+tool (or degrades to inline), and you maintain the living `analysis-plan.md`
+yourself. Full mapping in
+[`opencode-tools.md`](skills/using-causal-powers/references/opencode-tools.md).
 
 ## How it's organized
 
