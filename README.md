@@ -104,6 +104,14 @@ discipline present, makes the chain *fire* reliably, and makes long work resumab
   frame→approve→execute→verify spine, and a silent-failure + economist red-lines
   card — so the discipline is present by default, not contingent on a skill
   triggering.
+- **A configurable language profile** (in that same always-on block) — sets the
+  default language *by task*, correcting the LLM's reflex to reach for Python:
+  **R** for analysis (cleaning with tidyverse/`dplyr`, descriptive evidence,
+  reduced-form/causal, visualization with `ggplot2`, prediction), **Python** for
+  web scraping, tooling, and deep learning (transformers/PyTorch), **Julia** for
+  structural models. A default, not a rule — stated in the plan so you can
+  redirect, never silently switched, and overridable per project
+  (`docs/LESSONS.md`) or per user (memory).
 - **Trigger + chain-enforcement hooks** that turn the family from a *map* into a
   *flow that propels*. Every skill ends with an imperative `When to Use` decision
   graph + `The Process` that invokes the next skill; the hooks back that up — a

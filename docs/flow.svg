@@ -1,6 +1,6 @@
 <svg width="680" height="636" viewBox="0 0 680 636" role="img" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" dominant-baseline="middle">
 <title>The Causal Powers discipline flow</title>
-<desc>Any data, analysis, or figure request enters question-framing, which forks by what the decision needs into describing what is in the data (descriptive-evidence — stylized facts, trends, summary statistics, distributions, maps; often the whole deliverable), measuring an effect (reduced-form causal-identification), predicting an outcome to act on (predictive-modeling), or simulating a counterfactual (structural-estimation), passes a write-the-plan and get-approval gate, then executing-analysis-plans, data-preparation and data-contracts, result-verification, and analysis-review to ship. analysis-craft, analysis-checkpoints, and wrong-number-debugging run alongside.</desc>
+<desc>Any data, analysis, or figure request enters question-framing, which forks by what the decision needs into describing what is in the data (descriptive-evidence — stylized facts, trends, summary statistics, distributions, maps; often the whole deliverable), measuring an effect (reduced-form causal-identification), predicting an outcome to act on (predictive-modeling), or simulating a counterfactual (structural-estimation), passes a write-the-plan and get-approval gate, then executing-analysis-plans, data-preparation and data-contracts, result-verification, and analysis-review to ship. analysis-craft, analysis-checkpoints, and wrong-number-debugging run alongside. An always-on language profile sets the default language by task — R for analysis (cleaning, descriptive, causal, visualization, prediction), Python for web scraping, tooling, and deep learning, Julia for structural models.</desc>
 <defs>
 <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a8a8a"/></marker>
 </defs>
@@ -8,8 +8,9 @@
 
 <text x="340" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#2a2a28">the causal powers flow</text>
 
-<rect x="40" y="44" width="600" height="32" rx="8" fill="#F1F1EE" stroke="#BFBFB8" stroke-width="1.4"/>
-<text x="340" y="61" text-anchor="middle" font-size="11" fill="#666666">always-on layer · discipline card · trigger router · re-fires on every request</text>
+<rect x="40" y="44" width="600" height="44" rx="8" fill="#F1F1EE" stroke="#BFBFB8" stroke-width="1.4"/>
+<text x="340" y="58" text-anchor="middle" font-size="11" fill="#666666">always-on layer · discipline card · trigger router · re-fires on every request</text>
+<text x="340" y="74" text-anchor="middle" font-size="11" fill="#666666">language profile · R: analysis · Python: scraping, deep-learning · Julia: structural</text>
 
 <rect x="250" y="92" width="180" height="32" rx="16" fill="#F1F1EE" stroke="#BFBFB8" stroke-width="1.4"/>
 <text x="340" y="108" text-anchor="middle" font-size="11" fill="#555555">any data, analysis, or figure</text>
