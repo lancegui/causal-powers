@@ -3,9 +3,9 @@
 # install-codex.sh — install Causal Powers into Codex or OpenCode.
 #
 # Both agents load `SKILL.md` skills and an `AGENTS.md` discipline file, so one
-# installer serves both. It copies the skills into a directory the agent scans
-# (`~/.agents/skills`, which Codex AND OpenCode both read) and installs the
-# always-on discipline as a managed block in the agent's AGENTS.md. Idempotent:
+# installer serves both. It copies the skills into the directory the agent scans
+# (Codex: `~/.agents/skills` · OpenCode >=1.x: `~/.config/opencode/skills`) and
+# installs the always-on discipline as a managed block in AGENTS.md. Idempotent:
 # re-run any time to update (it git-pulls the cached clone and re-copies). Works
 # from a clone or piped straight from the web.
 #
@@ -70,17 +70,20 @@ fi
 [ -d "$SRC/skills" ] || die "skills/ not found in $SRC"
 
 # --- resolve target dirs ------------------------------------------------------
-# Skills live in `.agents/skills` (project) or `~/.agents/skills` (user) — both
-# Codex and OpenCode scan these. Only the user-scope AGENTS.md path is agent-
-# specific (Codex: ~/.codex · OpenCode: ~/.config/opencode). Project scope writes
-# the repo-root AGENTS.md, which both agents read, so it's agent-agnostic.
+# User-scope skills: Codex scans `~/.agents/skills`; OpenCode (>=1.x) scans
+# `~/.config/opencode/skills`. Project scope writes `.agents/skills`. The user-
+# scope AGENTS.md path is also agent-specific (Codex: ~/.codex · OpenCode:
+# ~/.config/opencode). Project scope writes the repo-root AGENTS.md, read by both.
 if [ "$SCOPE" = "project" ]; then
   [ -n "$PROJECT_DIR" ] || PROJECT_DIR="$PWD"
   PROJECT_DIR="$(cd "$PROJECT_DIR" && pwd)"
   SKILLS_DIR="$PROJECT_DIR/.agents/skills"
   AGENTS_FILE="$PROJECT_DIR/AGENTS.md"
 elif [ "$AGENT" = "opencode" ]; then
-  SKILLS_DIR="$HOME/.agents/skills"
+  # OpenCode (>=1.x) auto-discovers USER skills from ~/.config/opencode/skills —
+  # NOT ~/.agents/skills (which it no longer scans). Installing to the wrong dir
+  # is why a prior install left stale skills behind.
+  SKILLS_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/skills"
   AGENTS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/AGENTS.md"
 else
   SKILLS_DIR="$HOME/.agents/skills"
