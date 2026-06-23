@@ -1,6 +1,6 @@
 ---
 name: analysis-craft
-description: Use when WRITING or EDITING analysis code, notebooks, or data pipelines in R, Julia, or Python — to keep the code minimal, surgical, and legible rather than over-engineered. Enforces the simplest analysis that answers the question (no speculative pipeline, no premature abstraction, no unrequested config), and surgical edits to existing notebooks/scripts (touch only what the task needs, don't refactor a colleague's working analysis, keep diffs traceable). Use whenever you're about to add a class/framework to a one-off script, refactor a working pipeline you were only asked to tweak, build configurability nobody requested, or rewrite someone's analysis while making an unrelated change — even if the user just says "add a column", "tweak this notebook", or "clean up this script".
+description: Use when WRITING or EDITING analysis code, notebooks, or data pipelines in R, Julia, or Python — to keep the code minimal, surgical, and legible rather than over-engineered. Enforces the simplest analysis that answers the question (no speculative pipeline, no premature abstraction, no unrequested config), and surgical edits to existing notebooks/scripts (touch only what the task needs, don't refactor a colleague's working analysis, keep diffs traceable). Use whenever you're about to add a class/framework to a one-off script, refactor a working pipeline you were only asked to tweak, build configurability nobody requested, or rewrite someone's analysis while making an unrelated change — even if the user just says "add a column", "tweak this notebook", or "clean up this script". Also use when asked to make analysis code readable, annotate it for a replication package or a referee, or document WHY a step was done (a sample restriction, a winsorize threshold, a cluster level) — keep the remaining logic legible, not golfed.
 ---
 
 # Analysis Craft
@@ -79,6 +79,8 @@ Test: **"Could the owner of this notebook review my diff in two minutes and agre
 - Diving into a non-trivial change — or starting at the step the user pointed you to mid-task — without writing a short plan first.
 - Wrote the plan but started coding before the user responded — the plan needs *confirmation*, not just authorship.
 - A 200-line cell doing what 50 readable lines would.
+- Collapsing a join + a winsorize + a collapse into one slick pipe — a referee can't see the three decisions.
+- An analytical decision (a winsorize, a sample cut, a deflator, a cluster level) sitting in the code with no `# why:` at its site.
 
 ## Common rationalizations
 
@@ -91,6 +93,7 @@ Test: **"Could the owner of this notebook review my diff in two minutes and agre
 | "I picked the better method to save a round-trip." | If the tradeoff is real, the choice is the user's. Surfacing it costs one sentence; the wrong silent choice costs the analysis. |
 | "More error handling is safer." | Handling impossible inputs is noise that hides the checks that matter. Assert the real invariants (`data-contracts`); skip the rest. |
 | "It's faster to just start coding." | For anything past a quick fix, three lines of plan first is faster than rewriting code built on the wrong approach. Plan, confirm, then code. |
+| "I made it a tight one-liner." | You hid a join/winsorization a referee now can't review. One conceptual step per line; lines spent on the real logic are never the over-engineering — machinery is. |
 
 ## When to Use → where this hands off
 
