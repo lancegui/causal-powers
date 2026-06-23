@@ -51,6 +51,32 @@
     ],
     "violations": []
   },
+  "descriptive-evidence": {
+    "hits": [
+      "before i get into the regressions i want a couple of stylized facts about how ACA marketplace enrollment changed after 2014 \u2014 just descriptive trends, nothing causal yet",
+      "build me an interactive leaflet map of all the treatment facilities, colored by ownership type, with popups showing the acquisition date",
+      "can you describe what's actually going on with these counties over time \u2014 entries, exits, the raw patterns \u2014 before i commit to framing a specific question?",
+      "give me the headline numbers describing this dataset for the methods section \u2014 n patients, payer mix, average length of stay, that sort of thing",
+      "i need a figure showing how the share of generic vs brand-name prescriptions shifted from 2008 to 2018, for the descriptive part of the paper",
+      "i've got a panel of county-level overdose deaths 2010-2022 in deaths_panel.parquet \u2014 can you show me how the death RATE has trended over the period? need a chart for my job-market paper's intro",
+      "make me a summary stats table for my analysis sample, treatment vs control, with age income education and prior_utilization. it's going in the data section of the paper",
+      "our average claim size jumped ~30% from 2021 to 2023 in claims.dta. can you confirm that's real and make a quick chart? want to be sure before i put it in the board deck",
+      "plot median household income by census tract over the last decade from acs_pull.csv \u2014 i want to see if the gap between the richest and poorest tracts is widening",
+      "we keep saying opioid scripts 'exploded' in the 2000s \u2014 can you actually pull the growth trend from the ARCOS extract and show me what it looked like? casual but i need it to be right",
+      "what does the distribution of firm markups look like in markups_2019.csv? i suspect it's really right-skewed"
+    ],
+    "violations": [
+      "did the medicaid expansion actually raise insurance coverage? i've got a diff-in-diff setup with treated and control states in coverage.dta",
+      "forecast next quarter's prescription volume by region so we can plan inventory",
+      "help me write the pre-analysis plan for our RCT before we unblind \u2014 hypotheses, primary outcome, the specs",
+      "i need to estimate what prices the merged firm would set after the merger \u2014 i've got the demand system data",
+      "i want to nail down the right way to define 'active prescriber' before i compute anything \u2014 what should the metric even be?",
+      "merge these three messy claims extracts into one clean patient-month panel and dedupe the overlapping records",
+      "this revenue figure looks wrong \u2014 it tripled right after i joined the two tables, that can't be right. can you work out what happened?",
+      "what's the effect of the 2016 minimum-wage hike on teen employment in the bordering counties?",
+      "which of these ~4,000 pharmacies should we prioritize for a DEA audit based on their shipment patterns? rank them by diversion risk"
+    ]
+  },
   "executing-analysis-plans": {
     "hits": [
       "do the robustness checks we locked in \u2014 drop the 2016 recording-jump cities, the donut RD, and the Oster delta \u2014 and dispatch each to its own subagent",

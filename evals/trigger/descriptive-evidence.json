@@ -1,0 +1,82 @@
+[
+  {
+    "query": "i've got a panel of county-level overdose deaths 2010-2022 in deaths_panel.parquet — can you show me how the death RATE has trended over the period? need a chart for my job-market paper's intro",
+    "should_trigger": true
+  },
+  {
+    "query": "make me a summary stats table for my analysis sample, treatment vs control, with age income education and prior_utilization. it's going in the data section of the paper",
+    "should_trigger": true
+  },
+  {
+    "query": "what does the distribution of firm markups look like in markups_2019.csv? i suspect it's really right-skewed",
+    "should_trigger": true
+  },
+  {
+    "query": "before i get into the regressions i want a couple of stylized facts about how ACA marketplace enrollment changed after 2014 — just descriptive trends, nothing causal yet",
+    "should_trigger": true
+  },
+  {
+    "query": "our average claim size jumped ~30% from 2021 to 2023 in claims.dta. can you confirm that's real and make a quick chart? want to be sure before i put it in the board deck",
+    "should_trigger": true
+  },
+  {
+    "query": "plot median household income by census tract over the last decade from acs_pull.csv — i want to see if the gap between the richest and poorest tracts is widening",
+    "should_trigger": true
+  },
+  {
+    "query": "give me the headline numbers describing this dataset for the methods section — n patients, payer mix, average length of stay, that sort of thing",
+    "should_trigger": true
+  },
+  {
+    "query": "we keep saying opioid scripts 'exploded' in the 2000s — can you actually pull the growth trend from the ARCOS extract and show me what it looked like? casual but i need it to be right",
+    "should_trigger": true
+  },
+  {
+    "query": "i need a figure showing how the share of generic vs brand-name prescriptions shifted from 2008 to 2018, for the descriptive part of the paper",
+    "should_trigger": true
+  },
+  {
+    "query": "can you describe what's actually going on with these counties over time — entries, exits, the raw patterns — before i commit to framing a specific question?",
+    "should_trigger": true
+  },
+  {
+    "query": "did the medicaid expansion actually raise insurance coverage? i've got a diff-in-diff setup with treated and control states in coverage.dta",
+    "should_trigger": false
+  },
+  {
+    "query": "which of these ~4,000 pharmacies should we prioritize for a DEA audit based on their shipment patterns? rank them by diversion risk",
+    "should_trigger": false
+  },
+  {
+    "query": "i need to estimate what prices the merged firm would set after the merger — i've got the demand system data",
+    "should_trigger": false
+  },
+  {
+    "query": "merge these three messy claims extracts into one clean patient-month panel and dedupe the overlapping records",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the effect of the 2016 minimum-wage hike on teen employment in the bordering counties?",
+    "should_trigger": false
+  },
+  {
+    "query": "build me an interactive leaflet map of all the treatment facilities, colored by ownership type, with popups showing the acquisition date",
+    "should_trigger": true
+  },
+  {
+    "query": "this revenue figure looks wrong — it tripled right after i joined the two tables, that can't be right. can you work out what happened?",
+    "should_trigger": false
+  },
+  {
+    "query": "help me write the pre-analysis plan for our RCT before we unblind — hypotheses, primary outcome, the specs",
+    "should_trigger": false
+  },
+  {
+    "query": "forecast next quarter's prescription volume by region so we can plan inventory",
+    "should_trigger": false
+  },
+  {
+    "query": "i want to nail down the right way to define 'active prescriber' before i compute anything — what should the metric even be?",
+    "should_trigger": false
+  }
+]

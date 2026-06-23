@@ -1,0 +1,29 @@
+{
+  "skill_name": "descriptive-evidence",
+  "evals": [
+    {
+      "id": 0,
+      "name": "deflation-selection-heavytail",
+      "prompt": "I have a panel of US hospitals 2008-2022 (hospitals.parquet) with annual total charges. Make me a chart of average charges over time for a talk - has it gone up?",
+      "expected_output": "A trend chart, but with the discipline applied: charges deflated to a real (constant-dollar) basis with a stated base year; the changing composition of hospitals in the sample over time (entry/exit) checked or flagged; mean-vs-median acknowledged for a heavy-tailed charge variable; descriptive verbs only (no 'charges rose because...').",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 1,
+      "name": "composition-simpson",
+      "prompt": "admissions.csv has patient outcomes by year. Our overall mortality rate dropped from 2015 to 2022 - can you confirm that and make a figure showing the decline?",
+      "expected_output": "The aggregate trend confirmed, BUT a composition check run: within-vs-between decomposition or subgroup (e.g. by severity/case-mix) breakdown to test whether the aggregate decline is a real within-group improvement or a Simpson's-paradox artifact of changing case mix. Descriptive framing, not causal.",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 2,
+      "name": "summary-stats-table",
+      "prompt": "Make me a Table 1 for survey_2021.dta by treatment vs control - income, age, education, employment. It's for the descriptive section of my paper.",
+      "expected_output": "A by-group summary-statistics table with sample size and unit stated; survey weighting considered/applied (or its absence flagged); income (heavy-tailed) reported with median/percentiles, not mean alone; comparability choices noted; no causal language.",
+      "files": [],
+      "assertions": []
+    }
+  ]
+}

@@ -28,6 +28,7 @@ And the rule that keeps the work from drifting: **always work from a plan you ag
 | Skill | Use it when… |
 |---|---|
 | **`question-framing`** | Before any analysis **or any deliverable built from data — a number, table, *or a figure/map/chart/dashboard/interactive visualization*** — to pin the estimand/metric (for a visualization, what each mark encodes), population, unit (what each mark represents), the data sources + joins, and the decision it informs. The "what are we actually measuring / building" skill — the brainstorm-before-you-build gate for data work, so it fires on "plot/map/visualize this", not only "estimate this." For general/exploratory work it also **owns the everyday plan** — data sources, approach/spec, deliverable — written to the same file and signed off before building (no pre-analysis plan or model card on that branch). |
+| **`descriptive-evidence`** | The deliverable is a **description** of what's in the data, not an effect/counterfactual/prediction — a trend, distribution, summary-stats table (Table 1), stylized fact, or map. Fix the comparability choices (denominator, real-vs-nominal, per-capita, weighting) before plotting; run the **composition check** (within-vs-between — the signature artifact is a mix shift faking a within-group change; a raw-count choropleth just maps population); show the distribution, not just the mean; keep the verb descriptive (a stylized fact *motivates* the causal question, it doesn't answer it). The **descriptive** layer beneath the fork. |
 | **`pre-analysis-plan`** | Before a *confirmatory* study (experiment readout, policy eval, anything with stakes) — lock hypotheses, primary spec, and robustness suite before seeing outcomes. |
 | **`data-contracts`** | Whenever you load, transform, clean, **join/merge**, aggregate, or model — assert invariants and join cardinality, reconcile totals, freeze baselines. The everyday workhorse (the **checker**). |
 | **`data-preparation`** | The data ingest & cleaning **phase** (not a one-off check) — decompose ingest→clean→join→dedup→recode→reconcile into a checkboxed plan with a decisions log that survives `/clear`; the **doer/planner** that *calls* `data-contracts` per step and routes consequential cleaning decisions to `analysis-checkpoints`. Delegated from `executing-analysis-plans`' build step. |
@@ -44,7 +45,7 @@ And the rule that keeps the work from drifting: **always work from a plan you ag
 
 ## The fork: why are you modeling?
 
-For any *causal or modeling* question, decide which workflow you're in before you estimate — they answer different questions and lean on different assumptions:
+**Before the fork sits description.** If the deliverable is just a faithful picture of the data — a trend, distribution, summary-stats table, or map — that's `descriptive-evidence`, not a modeling arm at all. It's often the whole job; and when it isn't, a stylized fact is what *motivates* the question below (it never *answers* it). Then, for a *causal or modeling* question, decide which workflow you're in before you estimate — they answer different questions and lean on different assumptions:
 
 - **The decision lives inside the data** ("did the policy work?", "what was the effect of the price cut we ran?") → the **reduced-form** workflow. A well-identified DiD / IV / RDD answers it and is *more* credible for leaning on fewer assumptions → **`causal-identification`**.
 - **The decision needs a world you haven't observed, a welfare number, or a mechanism the data can't separate** ("what price would the merged firm set?", "how much of low uptake is taste vs. not knowing the product exists?", "what's the surplus from a new entrant?") → the **structural** workflow. The reduced-form relationship *shifts* when the policy changes (Lucas critique), so there's no coefficient to extrapolate → **`structural-estimation`**.
@@ -57,7 +58,7 @@ Don't go structural for its own sake — if a quasi-experiment answers it, that 
 ```
 question-framing  →  [pre-analysis-plan if confirmatory / model card if structural / else extend the brief into the data+approach+deliverable plan]  →  (approval gate)
    →  executing-analysis-plans  →  data-preparation (build/clean/join PHASE) → data-contracts (validate each step)
-   →  [ causal-identification  if reduced-form  |  structural-estimation  if structural  |  predictive-modeling  if prediction ]
+   →  [ descriptive-evidence  if the deliverable is a description  |  causal-identification  if reduced-form  |  structural-estimation  if structural  |  predictive-modeling  if prediction ]
    →  [wrong-number-debugging when something's off]
    →  result-verification  →  [analysis-review + project-organization before it ships]
 ```
@@ -76,6 +77,28 @@ Rigor keeps you from being *wrong*; craft keeps the analysis *legible and cheap 
 - **Think before coding.** Don't assume the metric or the method. Surface tradeoffs, state your assumptions, and name confusion instead of quietly guessing and building on the guess.
 
 The simplicity-first and surgical-edit halves of that lineage live in **`analysis-craft`**.
+
+## Language profile (which language for which task)
+
+LLMs reach for Python by reflex. This discipline is **R-first for analysis**; pick the language by the *kind* of task, not by habit:
+
+| Task | Language |
+|---|---|
+| Data cleaning / wrangling | **R** — tidyverse / `dplyr` |
+| Descriptive evidence, summary stats, Table 1 | **R** |
+| Reduced-form & causal analysis (regressions, DiD, IV, RD, event study) | **R** |
+| Visualization (figures, maps, charts) | **R** — `ggplot2` + `ggthemes` (Paul-Tol palettes) |
+| Prediction / ML | **R** — *unless* it's deep learning (transformers, neural nets) where **PyTorch** is the natural fit → **Python** |
+| Web scraping, tooling, software-engineering tasks | **Python** |
+| Structural estimation / structural models | **Julia** |
+
+This is a **default preference, not a rule.** State the chosen language in the task plan/roadmap so the user can redirect early, and **never silently switch** languages mid-task. **Instruction priority holds:** a direct user request or a project's `CLAUDE.md`/`AGENTS.md` wins over this profile.
+
+**Overriding the default.** The profile is configurable at two tiers (same pattern as the rest of the project's scar tissue):
+- **Per project** — record the override in the project's `docs/LESSONS.md` (travels with the repo; collaborators and future sessions see it). Use this for a repo that is, e.g., Python-only.
+- **Per user** — record it in your memory for a default that follows you across projects.
+
+When a project or user override exists, it replaces the matching rows of the table above for that scope.
 
 ## Running on Codex / other agents
 

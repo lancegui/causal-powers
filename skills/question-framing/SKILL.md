@@ -33,6 +33,8 @@ For a **causal** question, add three more and hand off to `causal-identification
 
 **If the deliverable is a prediction / score / ranking / flag to drive an action** (not a descriptive metric or a causal estimate), framing still pins the unit, the target/label, and the decision — then route to `predictive-modeling` for the Prediction Spec.
 
+**If the deliverable is a *description* of the data — a trend, distribution, summary-stats table, stylized fact, or map** (not an effect, a counterfactual, or a prediction), framing still pins the unit and, for a visualization, what each mark encodes — then route to `descriptive-evidence`, which fixes the comparability choices (denominator, real-vs-nominal, per-capita, weighting) and runs the composition check that keeps a trend from being an artifact of a shifting denominator, deflator, or sample. A striking descriptive fact *motivates* a causal question; it does not answer it.
+
 **Is this confirmatory? Decide it now.** If the result will drive or defend a decision, you (or the requester) have a stake in how it comes out, the question is causal, or the work will be scrutinized — it is **confirmatory**, and it needs a locked `pre-analysis-plan` *before outcomes are seen*. This determination is a framing step, not a silent judgment to make later: settle it here, and if confirmatory hand off to `pre-analysis-plan` before touching outcome data.
 
 ## The plan: data, approach, deliverable (general/exploratory work)

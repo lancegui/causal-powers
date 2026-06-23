@@ -40,7 +40,7 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 
 ## The flow
 
-![Causal Powers flow: any data, analysis, or figure request goes to question-framing, forks to reduced-form (causal-identification), structural (structural-estimation), or predictive (predictive-modeling), through a write-the-plan approval gate, then executing-analysis-plans, data-preparation and data-contracts, result-verification, and analysis-review to ship; analysis-craft, analysis-checkpoints, and wrong-number-debugging run alongside.](docs/flow.svg)
+![Causal Powers flow: any data, analysis, or figure request goes to question-framing, which forks to descriptive (descriptive-evidence), reduced-form (causal-identification), structural (structural-estimation), or predictive (predictive-modeling), through a write-the-plan approval gate, then executing-analysis-plans, data-preparation and data-contracts, result-verification, and analysis-review to ship; analysis-craft, analysis-checkpoints, and wrong-number-debugging run alongside.](docs/flow.svg)
 
 *The whole flow runs on an **always-on layer** (a discipline card injected every session + a trigger router) that re-fires the right skill on every request. `analysis-craft` (minimal, surgical code) and `analysis-checkpoints` (the human-in-the-loop guardrail) run alongside every step; `project-organization` keeps the repo legible and tidies before commit.*
 
@@ -50,6 +50,7 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 |---|---|---|
 | `using-causal-powers` | Gateway: the creed, the map, and routing to the right skill | `using-superpowers` |
 | `question-framing` | Pin the estimand/metric, population, unit, and the decision — before code | `brainstorming` |
+| `descriptive-evidence` | Stylized facts, trends, summary-stats tables, distributions, and maps done honestly: fix comparability (real-vs-nominal, per-capita, weighting), run the composition check (a mix shift faking a within-group change; a count choropleth just maps population), show the distribution, keep the verb descriptive — the descriptive layer beneath the fork | (none — domain core) |
 | `pre-analysis-plan` | Lock hypotheses, primary spec, and robustness suite before seeing outcomes | spec-driven dev / `writing-plans` |
 | `data-contracts` | Invariants, join-cardinality checks, totals reconciliation, frozen baselines — the **checker** | `test-driven-development` |
 | `data-preparation` | Owns the data ingest & cleaning **phase** (the heaviest one): ingest→clean→join→dedup→recode→reconcile as a phased, checkboxed plan with a decisions log; the **doer** that *calls* `data-contracts` per step and routes consequential cleaning choices to `analysis-checkpoints` | `writing-plans` (for the cleaning phase) |
@@ -83,8 +84,12 @@ truth before trusting it, and re-solve equilibrium for every counterfactual
 (`structural-estimation`); and, when the goal is to predict, score, rank, or
 flag, route to the predictive workflow — gated spec, leakage-safe eval,
 deployment-matched splits, and never claim causation from a predictive model
-(`predictive-modeling`). The target is a senior microeconomist's instincts —
-reduced-form, structural, *and* predictive — not a careful RA's checklist.
+(`predictive-modeling`); and, when the deliverable is simply a faithful picture
+of the data, describe it honestly — deflate before comparing, decompose a moving
+aggregate into within-vs-between, map rates not raw counts, and let a stylized
+fact *motivate* the causal question rather than answer it (`descriptive-evidence`).
+The target is a senior microeconomist's instincts — descriptive, reduced-form,
+structural, *and* predictive — not a careful RA's checklist.
 
 ## Beyond skills: always-on layer + agents
 

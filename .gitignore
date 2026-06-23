@@ -6,3 +6,6 @@ evals/behavioral/runs/
 
 # design specs kept locally, not published
 docs/specs/
+
+# skill-creator eval workspaces (dev scratch: eval runs, synthetic data, viewer/loop logs)
+skills/*-workspace/

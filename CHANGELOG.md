@@ -2,6 +2,54 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.27.0 — language profile (R-first, configurable)
+
+New **language profile**: a configurable default for *which language fits which task*, correcting the
+LLM's reflex to reach for Python. The discipline is now **R-first for analysis** — data cleaning
+(tidyverse/`dplyr`), descriptive evidence, reduced-form/causal work, visualization (`ggplot2` +
+`ggthemes` / Paul-Tol palettes), and prediction/ML all default to **R**; **Python** owns web scraping,
+tooling/software-engineering, and deep learning (transformers / where PyTorch is the natural fit);
+**Julia** owns structural models.
+
+- **Always-on routing.** A compact `Language profile` block in the session card (`hooks/session-context.md`,
+  doubling as `AGENTS.md`) so the default actually fires instead of living in a file the agent might skip.
+  Card budget raised +5 words to ~1215, offset by compressing the memory section.
+- **A default, not a rule.** The chosen language is stated in the task plan so the user can redirect early,
+  and the agent never silently switches mid-task. Instruction priority holds: a direct request or a
+  project's `CLAUDE.md`/`AGENTS.md` wins over the profile.
+- **Configurable at two tiers** (same pattern as the project's other scar tissue): override **per project**
+  in `docs/LESSONS.md` (travels with the repo) or **per user** in memory. Full mapping, the PyTorch
+  exception, and the override mechanism documented in `using-causal-powers`.
+
+## 0.26.0 — descriptive-evidence (the descriptive arm)
+
+New skill **`descriptive-evidence`**: the descriptive layer *beneath* the modeling fork — stylized
+facts, raw and indexed trends, summary-statistics tables (Table 1), distributions, and maps, done with
+the same rigor the other arms get. It fills the gap where the discipline rushed straight to a causal
+frame when the real deliverable was just an honest picture of the data — it is often the whole job, and
+when it isn't, a stylized fact is what *motivates* the causal/structural/predictive question.
+
+- **Signature failure made loud — composition / aggregation artifacts.** The descriptive analog of
+  leakage: a trend or gap that's really a shifting denominator, deflator, or sample (Simpson's paradox,
+  nominal-not-real growth, a mix shift). The headline discipline is the **composition check**
+  (within-vs-between / standardization, plot the subgroups, rule out selection into the sample) — run it
+  the moment a number surprises you.
+- **Comparability choices fixed before plotting** — denominator, real-vs-nominal + base year, per-capita,
+  weighting, unit, window, aggregation — the deliberately *lighter* spec-analog, so "just show me a
+  trend" stays cheap.
+- **Robust-or-it-isn't-stylized**, distribution-not-just-the-mean (heavy-tailed econ data), and a **causal
+  firewall** — descriptive verbs only ("rose alongside", never "raised").
+- **Descriptive maps as first-class** — choropleth rate-not-count (the spatial denominator), MAUP (the
+  spatial aggregation choice), color-break honesty, and the point-in-polygon join that *silently drops*
+  features.
+
+Wired through the ecosystem like the other arms: `using-causal-powers` (family table, the fork, the
+typical-flow), the `question-framing` hand-off, the **prompt-router** (a high-precision rule that
+co-fires with question-framing — 100% precision and recall on the trigger eval; plus a data-deliverable
+exemption so "Table 1 for the descriptive section of my paper" is no longer suppressed as a writing
+task) and **skill-chain**, the always-on card (+46 words, offset by compressing the structural/
+answer-first red-lines; card budget raised 1150→~1210), README, and `evals/trigger`.
+
 ## 0.25.0 — analysis-craft legibility axis (the ponytail layer)
 
 `analysis-craft` previously governed only code *minimalism* — remove machinery, smallest
