@@ -2,6 +2,30 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.25.0 — analysis-craft legibility axis (the ponytail layer)
+
+`analysis-craft` previously governed only code *minimalism* — remove machinery, smallest
+diff. It now also governs *legibility*: the code that remains must be readable by a
+referee, a replication-package reviewer, or a coauthor.
+
+- **New `## Legibility` section.** Name intermediates in economic units; one conceptual
+  step per line (decompose chains that hide a join / filter / winsorize); the referee
+  test — can someone follow what each block computes *and why* in one pass, without
+  running it?
+- **The `# why:` convention.** Every analytical decision (sample restriction, winsorize
+  threshold, deflator/base year, fixed effect, cluster level) gets
+  `# why: <decision> — <reason>` at the code site — the code-level echo of
+  `data-preparation`'s decisions log.
+- **Reconciliation note** so the two axes don't read as contradictory: minimalism cuts
+  *machinery*; legibility keeps *annotated logic*; a one-liner-vs-named-steps choice is
+  purely legibility, so legibility wins.
+- New red-flag and rationalization rows (the slick pipe that hides three decisions; "I
+  made it a tight one-liner") plus three legibility trigger-eval cases; the description
+  now also fires on "annotate this" / "make it readable for the replication package".
+
+Adapted from [ponytail](https://github.com/DietrichGebert/ponytail)'s "don't write code
+you don't need" ladder, inverting its fewest-lines goal to readability.
+
 ## 0.24.0 — answer-first reporting + OpenCode
 
 Two changes, both about how the discipline reaches you.
