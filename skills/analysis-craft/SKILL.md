@@ -11,6 +11,8 @@ The rigor skills in this family keep you from being **wrong**. This skill keeps 
 
 **Core principle:** the minimum analysis that answers the question, edited with the smallest diff that does the job. Restraint, not cleverness.
 
+**Minimalism and legibility don't fight — they act on different things.** Minimalism governs *machinery*: frameworks, classes, config systems, speculative pipelines — cut them. Legibility governs *logic*: the named intermediate and the `# why:` comment a reader needs — keep them. "One-liner vs. named steps" is never a minimum-code question (both compute the same thing), so it is purely legibility, and legibility wins. Lines spent naming and annotating the real logic are never the over-engineering; machinery always is.
+
 These principles are adapted from Andrej Karpathy's observations on how LLMs over-assume, overcomplicate, and over-edit — translated to data work.
 
 ## Simplicity First — the minimum analysis that answers the question
@@ -26,6 +28,24 @@ Analysis code has a strong pull toward over-engineering, because the tools make 
 Test: **"Would a senior analyst call this overcomplicated?"** If yes, cut it. If a 200-line notebook cell could be 50 lines, rewrite it.
 
 *Note on the statistical side:* "simplicity" also has a modeling face — don't kitchen-sink controls, don't search specifications. That belongs to **`causal-identification`** (specification stability) and **`pre-analysis-plan`** (forking paths), not here. This skill is about the *code*.
+
+## Legibility — the code that remains is annotated for a referee
+
+The other sections of this skill *remove* code. This one governs the code that stays. Econ analysis has readers the line-count never sees — a **referee**, a **replication-package reviewer**, a **coauthor**, **future-you in 18 months** — and for them a clever one-liner that folds a join into a winsorize into a collapse is a defect, not an achievement. The remaining logic must be readable in one pass.
+
+- **Name in economic units.** `wage_real_2015usd`, `emp_per_1k`, `mortality_per_100k` — not `x`, `tmp`, `df2`. The name carries the unit and the transform, so a reader never reconstructs what a column *means* from how it was built.
+- **One conceptual step per line.** Decompose any chain that hides a join, a filter, or a winsorization — each is an analytical *decision* and must be independently reviewable. A pipe that merges, trims the top 1%, and collapses to the month is three decisions wearing one line's clothing.
+- **Annotate the WHY, never the what.** Comment the reason for a choice, not a paraphrase of the syntax. `# why: winsorized at p99 — 3 plants report > $1M/worker, implausible` earns its place; `# loop over rows` does not.
+
+Test: **"Can a referee follow what each block computes *and why* in one pass, without running it?"** If a block needs you, in the room, to explain it — annotate or decompose it until it doesn't.
+
+### The `# why:` convention — the code-level echo of the decisions log
+
+`data-preparation` already makes you keep a **decisions log** of every consequential cleaning/spec choice with its rationale. The `# why:` comment is that log echoed at the site where the decision lives in code. The rule: **a decision that earns a line in the log earns a `# why:` where it happens.** Sample restrictions, trim/winsorize thresholds, the deflator and base year, the choice of fixed effect, the cluster level, a recode mapping — each gets:
+
+`# why: <decision> — <reason/evidence>`
+
+The log gives a reader the narrative; the `# why:` gives them the same reason without leaving the code.
 
 ## Surgical Changes — touch only what the task needs
 
