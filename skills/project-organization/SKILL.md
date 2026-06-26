@@ -1,6 +1,6 @@
 ---
 name: project-organization
-description: Use when finishing a piece of analysis and about to commit or push, when a project directory has accreted intermediate or diagnostic files and it's unclear what is a deliverable versus scratch, when setting up or reorganizing a research repository, or when asked to clean up the directory, organize the repo, standardize naming, make a project reproducible for collaborators, or decide what folder structure to use. Also fires throughout the work — when creating a new script, dataset, table, or figure, place and name it per the project's structure instead of dumping it in the root or a flat folder to sort out later. For empirical and structural economics research projects across R, Julia, Python, and Stata, organized around the paper they produce. Triggers on "clean up the repo", "organize the project", "what should the folder structure be", "before I push this", "standardize the naming", or "make this reproducible for a collaborator".
+description: Use when finishing a piece of analysis and about to commit or push, when a project directory has accreted intermediate or diagnostic files and it's unclear what is a deliverable versus scratch, when setting up or reorganizing a research repository, or when asked to clean up the directory, organize the repo, standardize naming, make a project reproducible for collaborators, or decide what folder structure to use. Also fires throughout the work — when creating a new script, dataset, table, or figure, place and name it per the project's structure instead of dumping it in the root or a flat folder to sort out later, and at phase boundaries (plan agreed, a clean dataset built, a result validated) to commit a local checkpoint so the work is durable. For empirical and structural economics research projects across R, Julia, Python, and Stata, organized around the paper they produce. Triggers on "clean up the repo", "organize the project", "what should the folder structure be", "before I push this", "standardize the naming", "make this reproducible for a collaborator", "commit a checkpoint", or "I haven't committed in a while".
 ---
 
 # Project Organization
@@ -62,6 +62,15 @@ The repo a collaborator sees should be code + manuscript + results + the shareab
 - **Track:** `code/`, `paper/` (incl. final tables/figures), `docs/`, `README`, the `archive/` folders (old runs are kept, so they're tracked — subject to the same shareable/size rule), and the `data/` and `results/` that are shareable and under the size limit.
 - **Gitignore:** secrets (`.env`, keys) **always**; sensitive data; oversized files (after trying to shrink them); `results/diagnostics/`, `sandbox/`, caches, logs.
 - **One-command reproduction:** a master script / `Makefile` that runs the pipeline in order (data → … → paper). It's the replication standard and the proof the structure is real.
+
+## Checkpoint as you go — commit locally in phases
+
+A multi-hour analysis sitting at **zero commits** is a failure mode, not caution. `analysis-plan.md` and your validated intermediates are only durable as *disk-as-RAM* if they're checkpointed — otherwise one stray `git switch`, `reset`, or editor mishap loses the whole uncommitted tree, and a fresh session can't resume from work that was never saved. So **commit locally at phase boundaries, proactively, without being asked** — "only commit when the user asks" is wrong for a research repo.
+
+- **When to checkpoint:** the plan is written and agreed; a `data-preparation` phase produces a clean dataset; a result is validated and frozen (`data-contracts` golden output); a debugging session lands a fix. Each is a natural restore point — close it with a commit.
+- **Commit ≠ push.** A **local commit** on your working branch is cheap, private, and reversible — that's the checkpoint, and you do it on your own. **Pushing** (or opening a PR) is outward and shared — *that* stays the user's explicit call (`analysis-checkpoints`). The conservative "only when asked" default governs **push**, never the local checkpoint.
+- **Name the milestone:** say what phase closed — `data: clean panel assembled, 1:1 join asserted`, `did: primary spec estimated + verified`, `plan: PAP signed off` — so the history reads as the pipeline's progress and is recoverable at any step. Label work-in-progress `wip:` so a half-done state isn't mistaken for a validated one.
+- **Don't checkpoint junk:** the Track/Gitignore rule above still holds — never commit secrets, `raw/` data, or oversized files, even at a checkpoint.
 
 ## Enforce throughout, tidy before git
 

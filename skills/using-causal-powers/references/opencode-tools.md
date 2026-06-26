@@ -40,6 +40,33 @@ time in the current session, still bounded to ~3, still each validated with the
 data-contracts checks. This is the *inline* arm of the execution-mode choice
 `executing-analysis-plans` already presents.
 
+## Re-apply, don't reload (skills don't dedup on OpenCode)
+
+Causal Powers is built to **re-fire per analytical request** — a new spec, a new
+cut, a re-run all re-trigger the relevant skill. That re-triggering is correct and
+deliberate; it is the guard against "I already have the context."
+
+But on OpenCode there is **no harness bookkeeping of what's already in context**.
+Claude Code tracks the loaded skill bodies and makes re-application free; OpenCode
+does not, so the `skill` tool will happily re-inject a skill's **full body** every
+time you call it. The failure mode (seen in real sessions): the orchestrator
+reloads `causal-identification` / `executing-analysis-plans` **a dozen-plus times
+in one session**, each call re-injecting text that was already on screen — pure
+token churn dressed up as discipline.
+
+The rule:
+
+- **Body still in context?** Don't call the `skill` tool. **Narrate** the
+  re-application instead — "re-applying `causal-identification` (still loaded)" —
+  and proceed. The discipline re-fires; the file does not.
+- **Body scrolled out** (long session, post-compact, or you genuinely can't see
+  it)? *Then* re-invoke the `skill` tool to reload it.
+- A batch of skills loaded once at the top of a turn is fine; re-loading that same
+  batch on **every** subsequent turn is the anti-pattern.
+
+This is the OpenCode-specific enforcement of the *re-apply-don't-reload* line in
+the always-on discipline block (`AGENTS.md`).
+
 ## What does NOT carry over from Claude Code (and what replaces it)
 
 The plugin's `hooks/` are Claude-Code-only. On OpenCode:
