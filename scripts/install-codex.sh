@@ -24,6 +24,7 @@
 # From a local clone:
 #   ./scripts/install-codex.sh                    # Codex, user scope
 #   ./scripts/install-codex.sh --opencode         # OpenCode, user scope
+#   ./scripts/install-codex.sh --opencode --symlink  # symlink skills (live, never stale) + discipline
 #   ./scripts/install-codex.sh --project /path/to/repo
 #   ./scripts/install-codex.sh --uninstall        # add --opencode to remove from OpenCode's AGENTS.md
 #
@@ -36,13 +37,14 @@ CACHE="${CAUSAL_POWERS_HOME:-$HOME/.causal-powers}"
 BEGIN="<!-- causal-powers:begin (managed by install-codex.sh — do not edit between markers) -->"
 END="<!-- causal-powers:end -->"
 
-SCOPE="user"; PROJECT_DIR=""; UNINSTALL=0; AGENT="codex"
+SCOPE="user"; PROJECT_DIR=""; UNINSTALL=0; AGENT="codex"; LINK=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --project)    SCOPE="project"; PROJECT_DIR="${2:-$PWD}"; shift 2 ;;
     --project=*)  SCOPE="project"; PROJECT_DIR="${1#*=}"; shift ;;
     --opencode)   AGENT="opencode"; shift ;;
     --codex)      AGENT="codex"; shift ;;
+    --symlink)    LINK=1; shift ;;
     --uninstall)  UNINSTALL=1; shift ;;
     -h|--help)    sed -n '3,36p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "unknown arg: $1" >&2; exit 2 ;;
@@ -106,16 +108,23 @@ PY
   exit 0
 fi
 
-# --- copy skills (robust; no symlink-following assumptions) -------------------
+# --- install skills: copy (default, robust for piped/web installs) or, with
+# --symlink, link each skill back to the source so local edits stay live and
+# never drift (best from a local clone; matches just-enough's installer). The
+# AGENTS.md discipline block below is installed either way. ------------------
 mkdir -p "$SKILLS_DIR" "$(dirname "$AGENTS_FILE")"
 n=0
 for d in "$SRC/skills"/*/; do
   name="$(basename "$d")"
   rm -rf "$SKILLS_DIR/$name"
-  cp -R "$d" "$SKILLS_DIR/$name"
+  if [ "$LINK" -eq 1 ]; then
+    ln -s "${d%/}" "$SKILLS_DIR/$name"
+  else
+    cp -R "$d" "$SKILLS_DIR/$name"
+  fi
   n=$((n+1))
 done
-echo "Installed $n skills -> $SKILLS_DIR"
+echo "$([ "$LINK" -eq 1 ] && echo Symlinked || echo Installed) $n skills -> $SKILLS_DIR"
 
 # --- install/refresh the always-on discipline as a managed block (idempotent) -
 python3 - "$AGENTS_FILE" "$SRC/hooks/session-context.md" "$BEGIN" "$END" <<'PY'
