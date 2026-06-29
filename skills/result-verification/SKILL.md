@@ -35,6 +35,18 @@ Run these before any result leaves your hands. Each maps to a real way final num
 
 9. **Get an independent pass, then tidy — before you report.** Dispatch the **`analysis-reviewer`** agent for a fresh-context review of your *own* work (it catches what you rationalized), and tidy the workspace so what ships is deliverables, not scratch (**`project-organization`**). These are steps of verification, not optional extras the user has to ask for.
 
+## Reliability is not validity — verify the number *means* what you think
+
+Reconcile, reproduce, determinism, robustness establish **reliability** — the number is computed correctly from the data. They do not establish **validity** — that the quantity measures the construct you named. A figure can tie out to source, reproduce from a clean session, and survive every robustness re-cut, and still be a precise measure of the *wrong thing*: a count of *visible traces* reported as a count of *the underlying behavior*, a proxy label treated as the truth, a coverage-limited slice named as the whole. Every internal check passes; the number is reliable and wrong. "It's internally consistent" is exactly how a reliable measure of the wrong quantity ships.
+
+Validity is checked against something *outside* the dataset, and at least one such check belongs in verification whenever the number's **level** (not just its precision) carries the claim — for a descriptive count or rate as much as for an estimated effect:
+
+- **A known shock that should move it** — does the series respond, at the right time and sign, to an event that should change it? (The descriptive analog of a placebo.)
+- **An external benchmark** — does the level sit in a defensible range next to an independent estimate of the same quantity? An order-of-magnitude gap is a finding to explain with a mechanism, not to report flat.
+- **Alternative-construct coverage** — expand the definition along the dimension you suspect is missing and see how far the level moves; a level that is an artifact of *where you looked* is a coverage limit, not a fact.
+
+The deep validity craft for a descriptive count lives in `descriptive-evidence` (plausibility triangulation); for an effect it's the magnitude / mechanism / benchmark pass below. A number that clears every reliability check but no validity check is **submitted, not verified**.
+
 ## A check failed — stop, don't ship behind a caveat
 
 If a check here fails and you cannot resolve it — a total won't reconcile, the estimate swings wildly under a reasonable perturbation, the magnitude is absurd — **stop and bring the failure to the user as a decision.** Do not report the result anyway with the problem buried in a caveat; "evidence before assertion" means a failed check blocks the claim, not footnotes it. (Where the fix is a data bug, route to `wrong-number-debugging`; where it's a design/sample/spec change, to `analysis-checkpoints`.)
@@ -85,6 +97,7 @@ Once it passes, snapshot it as a golden output (see `data-contracts`). The verif
 - A figure or table number that you haven't confirmed matches the current run's output.
 - Reporting a point estimate with no idea whether it survives dropping a few outliers.
 - A magnitude you haven't sanity-checked against anything external.
+- A level that surprised you (too high or too low) and you've checked against the data but never against an external anchor — a known shock, a benchmark, or a wider definition.
 - Writing "the numbers check out" instead of showing the output that checks them out.
 
 ## Common rationalizations
@@ -95,6 +108,7 @@ Once it passes, snapshot it as a golden output (see `data-contracts`). The verif
 | "It reproduces — I just ran it." | Re-running in the same session with cached state isn't reproduction. Restart and run from raw. |
 | "Robustness is overkill for an internal number." | The internal number drives the decision. Fragile-but-unchecked is how a bad decision gets made confidently. |
 | "I already eyeballed the figures." | Eyeballing doesn't catch a stale number copied from last week's version. Tie each one to this run's output. |
+| "Every check passed, the number's solid." | Those checks prove it's computed right (reliability), not that it measures what you named (validity). Anchor the level to something outside the data. |
 | "The deadline is now." | A wrong number presented on time is worse than a right one presented late, and far worse than a caveated one on time. |
 
 ## When to Use → where this hands off
