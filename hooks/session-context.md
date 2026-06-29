@@ -5,7 +5,7 @@ You have **Causal Powers**: discipline for data analytics, causal inference, and
 
 ## Re-trigger per request
 
-A skill invoked earlier does **not** stay satisfied — every new analytical ask re-fires the relevant skill, even on a locked, reviewed design (a re-run/new cut still fires `executing-analysis-plans` + `result-verification` **before any result is written to a file**). "I already have the context" is the rationalization that skips the gate. *Re-fire the discipline, not the file:* while its body is still in context, **re-apply it and say so** ("re-applying `causal-identification`"); reload via the Skill tool only once it has scrolled out — re-injecting text already on screen burns tokens, not rigor.
+A skill invoked earlier does **not** stay satisfied — every new analytical ask re-fires the relevant skill, even on a locked, reviewed design (a re-run/new cut still fires `executing-analysis-plans` + `result-verification` **before any result is written to a file**). "I already have the context" is the rationalization that skips the gate. *Re-fire the discipline, not the file:* while its body is still in context, **re-apply it and say so** ("re-applying `causal-identification`"); reload via the Skill tool only once it has scrolled out — re-injecting text already on screen burns tokens, not rigor (on OpenCode a plugin suppressor stubs a duplicate load automatically; on hookless runtimes this stays prompt discipline).
 
 ## Never change the goal behind the user's back
 
