@@ -32,7 +32,35 @@ def sh(cmd, **kw):
     return subprocess.run(cmd, capture_output=True, text=True, **kw)
 
 
-def isolated_config() -> tuple[dict, bool]:
+def seed_plugin(cfg: pathlib.Path) -> None:
+    """Install THIS repo as the causal-powers plugin inside an isolated config dir,
+    replicating the real installed layout (installed_plugins.json v2 +
+    cache/<marketplace>/<plugin>/<version>/ + enabledPlugins in settings.json) so
+    the plugin arm exercises the actual product: hooks, skills, agents, card."""
+    version = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text()).get("version", "0.0.0")
+    dest = cfg / "plugins" / "cache" / "causal-powers" / "causal-powers" / version
+    dest.mkdir(parents=True)
+    ignore = shutil.ignore_patterns(".git", "descriptive-evidence-workspace", "runs", "__pycache__")
+    for part in (".claude-plugin", "hooks", "skills", "agents"):
+        src = ROOT / part
+        if src.exists():
+            shutil.copytree(src, dest / part, ignore=ignore, symlinks=False)
+    (cfg / "plugins" / "installed_plugins.json").write_text(json.dumps({
+        "version": 2,
+        "plugins": {"causal-powers@causal-powers": [{
+            "scope": "user", "installPath": str(dest), "version": version,
+            "installedAt": "2026-01-01T00:00:00.000Z", "lastUpdated": "2026-01-01T00:00:00.000Z",
+        }]},
+    }, indent=1))
+    (cfg / "plugins" / "known_marketplaces.json").write_text(json.dumps({
+        "causal-powers": {"source": {"source": "github", "repo": "lancegui/causal-powers"},
+                          "installLocation": str(dest), "lastUpdated": "2026-01-01T00:00:00.000Z"},
+    }, indent=1))
+    (cfg / "settings.json").write_text(json.dumps(
+        {"enabledPlugins": {"causal-powers@causal-powers": True}}, indent=1))
+
+
+def isolated_config(with_plugin: bool = False) -> tuple[dict, bool]:
     """Fresh CLAUDE_CONFIG_DIR (copying credentials if file-based). Returns (env, isolated)."""
     import os
     cfg = pathlib.Path(tempfile.mkdtemp(prefix="cp-eval-config-"))
@@ -45,13 +73,17 @@ def isolated_config() -> tuple[dict, bool]:
             (cfg / ".credentials.json").write_text(kc.stdout)
     if (cfg / ".credentials.json").exists():
         (cfg / ".credentials.json").chmod(0o600)
+    if with_plugin:
+        seed_plugin(cfg)
     env = dict(os.environ, CLAUDE_CONFIG_DIR=str(cfg))
     env.pop("CLAUDECODE", None)  # allow nesting inside a Claude Code session
     probe = sh(["claude", "-p", "reply with exactly: ok", "--model", "claude-haiku-4-5"],
                env=env, timeout=120)
     if probe.returncode == 0 and "ok" in probe.stdout.lower():
         return env, True
-    print(f"WARNING: isolated config probe failed ({probe.stderr.strip()[:200]}); "
+    detail = (probe.stderr.strip() or probe.stdout.strip())[:200]
+    hint = " (CLI auth: run `claude /login` in a terminal)" if "not logged in" in detail.lower() else ""
+    print(f"WARNING: isolated config probe failed ({detail}){hint}; "
           "falling back to user config — baseline may be contaminated by installed plugins.")
     env = dict(os.environ)
     env.pop("CLAUDECODE", None)
@@ -82,6 +114,15 @@ def run_arm(scenario: pathlib.Path, arm: str, model: str, max_turns: int, env: d
         "cost_usd": payload.get("total_cost_usd"),
         "num_turns": payload.get("num_turns"),
     }
+    if arm == "plugin":
+        # Wiring proof: the session transcript must show the SessionStart card and
+        # (when the task tripped a trigger) the router injection. Transcripts live
+        # under CLAUDE_CONFIG_DIR/projects/<cwd-slug>/.
+        cfg = pathlib.Path(env["CLAUDE_CONFIG_DIR"])
+        tr = sorted(cfg.glob("projects/*/*.jsonl"), key=lambda p: p.stat().st_mtime)
+        blob = tr[-1].read_text() if tr else ""
+        rec["plugin_card_injected"] = "Causal Powers — active" in blob
+        rec["plugin_router_fired"] = "Causal Powers trigger detected" in blob
     d = outdir / scenario.name
     d.mkdir(parents=True, exist_ok=True)
     (d / f"{arm}.json").write_text(json.dumps(rec, indent=2))
@@ -133,6 +174,13 @@ def main():
         assert (s / "task.md").exists(), f"missing scenario: {s}"
 
     env, isolated = isolated_config()
+    envs = {arm: env for arm in a.arms}
+    if "plugin" in a.arms:
+        penv, pisolated = isolated_config(with_plugin=True)
+        if not pisolated:
+            sys.exit("plugin arm requires a working isolated config (would otherwise "
+                     "double-install against the user's real plugins)")
+        envs["plugin"] = penv
     ts = time.strftime("%Y%m%d-%H%M%S")
     outdir = BEH / "runs" / ts
     outdir.mkdir(parents=True)
@@ -142,7 +190,7 @@ def main():
     print(f"run {ts}: {len(jobs)} arms ({a.model}), isolated={isolated}, out={outdir.relative_to(ROOT)}")
     recs = []
     with cf.ThreadPoolExecutor(a.jobs) as ex:
-        futs = {ex.submit(run_arm, s, arm, a.model, a.max_turns, env, outdir): (s.name, arm)
+        futs = {ex.submit(run_arm, s, arm, a.model, a.max_turns, envs[arm], outdir): (s.name, arm)
                 for s, arm in jobs}
         for f in cf.as_completed(futs):
             rec = f.result()
