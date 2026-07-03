@@ -89,6 +89,15 @@ checkpoint, or a pre-trend test as robustness to stall it.
 - **Load-bearing assumption:** no anticipation, and the treated unit's counterfactual lies in the convex hull of the donor pool (a donor pool of genuinely comparable, untreated units). Good pre-period fit is necessary but **does not guarantee** the post-period counterfactual.
 - **Inference:** placebo/permutation across donor units (the RMSPE ratio), not a naïve p-value; report how extreme the treated unit's gap is in the placebo distribution.
 
+### ML in service of a causal effect (double/debiased ML, causal forests, ML propensity)
+When ML estimates the nuisances of a causal estimand, this arm still governs — the estimator changed, not the assumptions:
+- **Cross-fitting is mandatory:** nuisance models (outcome, propensity) fit on folds disjoint from where their predictions enter the moment condition — a full-sample nuisance fit leaks the bias back in.
+- **Overlap/positivity checked and reported** — ML propensities pushed to 0/1 are a design failure, not a modeling detail.
+- **Orthogonalized moment, never a plug-in:** the estimate comes from the debiased/orthogonal score, not from reading a coefficient off the ML fit.
+- **Nuisance diagnostics reported** (fit quality, propensity distribution), not just the final θ and its SE.
+- **CATE heterogeneity is not a targeting license** — deploying scores from a causal forest needs the same unconfoundedness argument as the average effect, plus `predictive-modeling`'s deployment-matched evaluation.
+- **The Design Card applies unchanged** — unconfoundedness/exclusion still carries the estimate; ML can't repair a design.
+
 ## Bad controls — the quiet killer of reduced-form work
 
 Adding a control can *create* bias as easily as remove it. The rule: only condition on variables determined **before** treatment. A control that is itself an outcome of the treatment reopens the very confounding you're trying to close.
