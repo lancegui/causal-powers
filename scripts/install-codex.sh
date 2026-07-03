@@ -113,9 +113,18 @@ fi
 # never drift (best from a local clone; matches just-enough's installer). The
 # AGENTS.md discipline block below is installed either way. ------------------
 mkdir -p "$SKILLS_DIR" "$(dirname "$AGENTS_FILE")"
+VERSION="$(sed -nE 's/.*"version":[[:space:]]*"([^"]+)".*/\1/p' "$SRC/.claude-plugin/plugin.json" 2>/dev/null | head -1)"
+VERSION="${VERSION:-unknown}"
 n=0
 for d in "$SRC/skills"/*/; do
   name="$(basename "$d")"
+  # Only real skills install (a SKILL.md marks one). Anything else — eval
+  # workspaces, scratch — is skipped, and a stale copy from an older,
+  # unfiltered install is pruned from the target.
+  if [ ! -f "$d/SKILL.md" ]; then
+    rm -rf "$SKILLS_DIR/$name"
+    continue
+  fi
   rm -rf "$SKILLS_DIR/$name"
   if [ "$LINK" -eq 1 ]; then
     ln -s "${d%/}" "$SKILLS_DIR/$name"
@@ -127,11 +136,11 @@ done
 echo "$([ "$LINK" -eq 1 ] && echo Symlinked || echo Installed) $n skills -> $SKILLS_DIR"
 
 # --- install/refresh the always-on discipline as a managed block (idempotent) -
-python3 - "$AGENTS_FILE" "$SRC/hooks/session-context.md" "$BEGIN" "$END" <<'PY'
+python3 - "$AGENTS_FILE" "$SRC/hooks/session-context.md" "$BEGIN" "$END" "$VERSION" <<'PY'
 import sys
-agents, src, begin, end = sys.argv[1:5]
+agents, src, begin, end, version = sys.argv[1:6]
 block = open(src).read().rstrip("\n")
-managed = f"{begin}\n{block}\n{end}\n"
+managed = f"{begin}\n<!-- causal-powers:v{version} -->\n{block}\n{end}\n"
 try: cur = open(agents).read()
 except FileNotFoundError: cur = ""
 if begin in cur and end in cur:
