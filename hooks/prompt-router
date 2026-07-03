@@ -22,11 +22,23 @@ set -uo pipefail
 case ",${CAUSAL_POWERS_DISABLED_HOOKS:-}," in *",prompt-router,"*) exit 0 ;; esac
 
 
-# Read the whole UserPromptSubmit payload. The prompt text lives in .prompt; we
-# grep the raw blob (lowercased) to stay dependency-free. The payload is just
-# session_id / prompt / cwd, so false matches on other fields are not a concern.
+# Read the UserPromptSubmit payload and match ONLY the .prompt field. Matching
+# the raw blob false-fired in production: cwd / transcript_path carry analysis-y
+# path fragments (drop-shipping-app, merge-session.jsonl) that nudged on every
+# prompt in such projects. Extraction is sed-only to stay dependency-free; the
+# JSON-escaped text (\n as two chars) is fine for keyword matching — don't
+# unescape.
 payload="$(cat 2>/dev/null || true)"
-low="$(printf '%s' "$payload" | tr '[:upper:]' '[:lower:]')"
+prompt="$(printf '%s' "$payload" \
+  | sed -nE 's/.*"prompt"[[:space:]]*:[[:space:]]*"(([^"\\]|\\.)*)".*/\1/p' | head -1)"
+
+# Harness-injected prompt shapes are not user asks — task notifications (agent
+# results: 42% of production false fires), IDE events, command/system wrappers,
+# and empty prompts. Skip them before any keyword matching.
+[ -z "$prompt" ] && exit 0
+printf '%s' "$prompt" | grep -Eq '^([[:space:]]|\\n|\\r|\\t)*<(task-notification|ide_[a-z_]+|system-reminder|local-command|command-[a-z-]+)' && exit 0
+
+low="$(printf '%s' "$prompt" | tr '[:upper:]' '[:lower:]')"
 
 # Suppression guard. This hook is a HIGH-PRECISION backstop for blatant literal
 # triggers, not a semantic classifier (regex tops out ~22% recall on the eval

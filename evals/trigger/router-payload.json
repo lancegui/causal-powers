@@ -1,0 +1,9 @@
+[
+  {"payload": {"cwd": "/Users/x/dev/drop-shipping-app", "prompt": "hello, what files are here?"}, "should_trigger": false},
+  {"payload": {"cwd": "/Users/x/proj", "transcript_path": "/tmp/merge-session.jsonl", "prompt": "list the files"}, "should_trigger": false},
+  {"payload": {"cwd": "/Users/x/final-merge-tools", "prompt": ""}, "should_trigger": false},
+  {"payload": {"cwd": "/Users/x/proj", "prompt": "<task-notification>\nAgent finished. It built the merge of claims to enrollment, and the estimated effect of the reform on mortality is 0.05; robustness checks pending.\n</task-notification>"}, "should_trigger": false},
+  {"payload": {"cwd": "/Users/x/proj", "prompt": "<ide_opened_file>The user opened the file /Users/x/proj/notes/should i drop the outliers.md in the IDE. This may or may not be related to the current task.</ide_opened_file>"}, "should_trigger": false},
+  {"payload": {"cwd": "/Users/x/webapp", "prompt": "merge these two csv files into one dataset on customer_id"}, "should_trigger": true},
+  {"payload": {"cwd": "/Users/x/proj", "prompt": "why is this number so high? the total doesn't match the source extract"}, "should_trigger": true}
+]

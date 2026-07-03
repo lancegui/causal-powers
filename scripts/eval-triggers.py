@@ -57,6 +57,22 @@ def route(query: str) -> set[str]:
     return set(SKILL_RE.findall(out.stdout))
 
 
+# Payload-shaped cases exercise the router on the FULL UserPromptSubmit payload
+# (cwd, transcript_path, harness-injected prompt shapes) — the class of false
+# fire that {"prompt": query} cases structurally cannot catch. Encoded in the
+# case list as "PAYLOAD::<json>" so baseline keys stay plain strings.
+PAYLOAD_PREFIX = "PAYLOAD::"
+
+
+def route_payload(obj: dict) -> set[str]:
+    """Feed a raw UserPromptSubmit payload object through the real router."""
+    out = subprocess.run(
+        [str(ROUTER)], input=json.dumps(obj),
+        capture_output=True, text=True, timeout=10,
+    )
+    return set(SKILL_RE.findall(out.stdout))
+
+
 def load_evals(only_skill=None):
     cases = []  # (skill, query, should_trigger)
     for f in sorted(EVALS.glob("*.json")):
@@ -66,19 +82,28 @@ def load_evals(only_skill=None):
         if only_skill and skill != only_skill:
             continue
         for e in json.loads(f.read_text()):
-            cases.append((skill, e["query"], bool(e["should_trigger"])))
+            if "payload" in e:
+                q = PAYLOAD_PREFIX + json.dumps(e["payload"], sort_keys=True)
+            else:
+                q = e["query"]
+            cases.append((skill, q, bool(e["should_trigger"])))
     return cases
 
 
 def part_a(cases, update_baseline: bool) -> int:
     per = {}
     for skill, query, should in cases:
-        fired = route(query)
+        if query.startswith(PAYLOAD_PREFIX):
+            fired = route_payload(json.loads(query[len(PAYLOAD_PREFIX):]))
+            hit = bool(fired)  # payload cases: ANY family fire counts (shape test)
+        else:
+            fired = route(query)
+            hit = skill in fired
         s = per.setdefault(skill, {"hits": [], "misses": [], "violations": [], "neg_ok": 0})
         if should:
-            (s["hits"] if skill in fired else s["misses"]).append(query)
+            (s["hits"] if hit else s["misses"]).append(query)
         else:
-            if skill in fired:
+            if hit:
                 s["violations"].append(query)
             else:
                 s["neg_ok"] += 1
@@ -145,6 +170,8 @@ def part_b(cases, model, sample, competitors) -> int:
     menu = "\n\n".join(f"### {k}\n{v}" for k, v in descs.items())
     by_skill = {}
     for skill, q, should in cases:
+        if q.startswith(PAYLOAD_PREFIX):
+            continue  # payload cases test the router artifact, not description matching
         by_skill.setdefault(skill, []).append((q, should))
     wins = losses = viol = neg_ok = 0
     for skill, qs in sorted(by_skill.items()):
