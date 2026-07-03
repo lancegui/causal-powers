@@ -90,10 +90,17 @@ def isolated_config(with_plugin: bool = False) -> tuple[dict, bool]:
     return env, False
 
 
-def run_arm(scenario: pathlib.Path, arm: str, model: str, max_turns: int, env: dict, outdir: pathlib.Path):
+def run_arm(scenario: pathlib.Path, arm: str, model: str, max_turns: int, env: dict, outdir: pathlib.Path,
+            user_reply: str | None = None):
     scratch = pathlib.Path(tempfile.mkdtemp(prefix=f"cp-eval-{scenario.name}-{arm}-"))
     shutil.copytree(scenario / "data", scratch / "data")
     task = (scenario / "task.md").read_text()
+    # A scenario may pin its own second turn (REPLY: line in task.md, stripped from
+    # the prompt) — gates like sign-off stops are only measurable with a user turn.
+    m = re.search(r"^REPLY:\s*(.+)$", task, re.M)
+    if m:
+        user_reply = user_reply or m.group(1).strip()
+        task = task.replace(m.group(0), "").strip()
     cmd = ["claude", "-p", task, "--model", model, "--max-turns", str(max_turns),
            "--output-format", "json", "--dangerously-skip-permissions"]
     if arm == "card":
@@ -103,6 +110,16 @@ def run_arm(scenario: pathlib.Path, arm: str, model: str, max_turns: int, env: d
         r = sh(cmd, cwd=scratch, env=env, timeout=900)
         payload = json.loads(r.stdout) if r.stdout.strip().startswith("{") else {}
         answer = payload.get("result", r.stdout[-4000:])
+        if user_reply and payload.get("session_id"):
+            r2 = sh(["claude", "-p", "--resume", payload["session_id"], user_reply,
+                     "--model", model, "--max-turns", str(max_turns),
+                     "--output-format", "json", "--dangerously-skip-permissions"],
+                    cwd=scratch, env=env, timeout=900)
+            p2 = json.loads(r2.stdout) if r2.stdout.strip().startswith("{") else {}
+            answer = (f"[turn 1]\n{answer}\n\n[user reply]\n{user_reply}\n\n"
+                      f"[turn 2]\n{p2.get('result', r2.stdout[-4000:])}")
+            payload["total_cost_usd"] = (payload.get("total_cost_usd") or 0) + (p2.get("total_cost_usd") or 0)
+            payload["num_turns"] = (payload.get("num_turns") or 0) + (p2.get("num_turns") or 0)
     except subprocess.TimeoutExpired:
         payload, answer = {}, "(TIMEOUT after 900s)"
     result_md = scratch / "result.md"
@@ -166,6 +183,10 @@ def main():
     ap.add_argument("--grader-model", default="claude-sonnet-4-6")
     ap.add_argument("--max-turns", type=int, default=50)
     ap.add_argument("--jobs", type=int, default=4)
+    ap.add_argument("--user-reply", default=None,
+                    help="scripted second user turn (e.g. 'looks fine, go ahead') so "
+                         "stop-and-ask gates are distinguishable from narrate-and-plow-ahead; "
+                         "a REPLY: line in a scenario's task.md takes precedence")
     a = ap.parse_args()
 
     names = a.scenarios or json.loads((BEH / a.manifest).read_text())
@@ -190,7 +211,7 @@ def main():
     print(f"run {ts}: {len(jobs)} arms ({a.model}), isolated={isolated}, out={outdir.relative_to(ROOT)}")
     recs = []
     with cf.ThreadPoolExecutor(a.jobs) as ex:
-        futs = {ex.submit(run_arm, s, arm, a.model, a.max_turns, envs[arm], outdir): (s.name, arm)
+        futs = {ex.submit(run_arm, s, arm, a.model, a.max_turns, envs[arm], outdir, a.user_reply): (s.name, arm)
                 for s, arm in jobs}
         for f in cf.as_completed(futs):
             rec = f.result()
