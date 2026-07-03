@@ -32,7 +32,7 @@ logs, file trees, release notes), not assumed; links inline.
 > flagship skills (originals won held-out; `scripts/optimize-description.sh`),
 > the pressure suite shipped and produced the haiku-under-pressure finding,
 > the subagent value test ran (see
-> `docs/2026-06-12-pressure-descopt-subagent-tests.md`), the Stop-gate +
+> `docs/pressure-descopt-subagent-tests.md`), the Stop-gate +
 > JSONL ledger shipped (`hooks/stop-gate`, five-condition loop safety), the
 > plan-resume injection surface was hardened (capped sanitized excerpts), and
 > every hook gained the `CAUSAL_POWERS_DISABLED_HOOKS` kill-switch.

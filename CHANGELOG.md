@@ -147,7 +147,7 @@ the skills, 0 recall sites); one 22 KB memory file sat on a dormant project. The
 decision (user-driven): **lessons are domain-specific and stay in the project;
 the skills are *pointed to* them, not folded into them** — folding would bloat
 the shared family with one project's idiosyncrasies. Full rationale:
-`docs/2026-06-13-recall-not-fold.md`.
+`docs/recall-not-fold.md`.
 
 - **Recall + consolidation-suggestion wiring** (the only permanent addition —
   text in 3 existing files, no new skill): the **card** gains a "consult the
@@ -181,7 +181,7 @@ messy sources"*, *"diagnose why this number is off"* get a dive, not a
 roadmap-you-agree-to-first. On a real co-located-coordinate bug the agent dove
 into record-dumping and the user had to interrupt to impose an order; the project
 has zero `analysis-plan.md` (every plan is a superpowers design doc). Full
-write-up: `docs/2026-06-13-task-altitude-rung-and-dogfood.md`.
+write-up: `docs/task-altitude-rung-and-dogfood.md`.
 
 - **Task-altitude planning rung** — generalized "write it down before you build"
   from study to task altitude, carried by the skill bodies (where real sessions
@@ -221,7 +221,7 @@ write-up: `docs/2026-06-13-task-altitude-rung-and-dogfood.md`.
 
 All six ranked candidates from the 0.19.0 evolution survey, adopted in one
 pass — with the measurements run (haiku as the cheap subject model), not just
-the machinery built. Results: `docs/2026-06-12-pressure-descopt-subagent-tests.md`.
+the machinery built. Results: `docs/pressure-descopt-subagent-tests.md`.
 
 - **Pressure suite** (`evals/behavioral/manifest-pressure.json`, 4 scenarios;
   runner gains `--manifest`): the plant is in the *prompt* — "the join was
@@ -290,7 +290,7 @@ card paid down its accretion debt.
   least-salient plant (train/test overlap, caught only with the card); the v0
   scenarios need pressure framings + pipeline embedding before the headline
   number discriminates. Full analysis + v1 hardening plan:
-  `docs/2026-06-12-behavioral-benchmark-v0.md`.
+  `docs/behavioral-benchmark.md`.
 - **NEW: trigger CI** (`scripts/eval-triggers.py`). Part A pipes every
   `evals/trigger/*.json` query through the *real* `hooks/prompt-router` and
   scores it against a committed baseline
@@ -330,7 +330,7 @@ card paid down its accretion debt.
   body, gateway, always-on card, router + trigger eval (9 new cases). Fixes
   the real-session miss where "build a leaflet map of my treatment facilities"
   fired only superpowers:brainstorming.
-- **Evolution survey**: `docs/2026-06-12-evolution-candidates.md` — a sourced
+- **Evolution survey**: `docs/evolution-candidates.md` — a sourced
   survey of superpowers / anthropics-skills / ecc / planning-with-files and the
   broader ecosystem, with ranked adoption candidates for future releases.
 
@@ -445,7 +445,7 @@ spine step / fan-out assembly) write the decisions + insight + concrete
 POST-COMPACT next steps into it and **offer to compact**, so a long, fix-heavy
 session resumes on a clean slate from the document alone.
 
-**Family audit pass (Tiers 1–3) — see `docs/2026-06-09-family-audit-and-map.md`.**
+**Family audit pass (Tiers 1–3) — see `docs/family-audit-and-map.md`.**
 A six-auditor review across fluff, LLM-workflow clarity, HITL triggering, and
 pipeline holes, with every finding fixed:
 - **HITL gates moved onto the always-on card** (the only reliably-loaded surface):
