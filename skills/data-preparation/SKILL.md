@@ -26,7 +26,7 @@ The division is clean: `data-preparation` decides *what cleaning steps happen an
 
 ## Phase 1 of the living analysis plan
 
-This skill produces and maintains **Phase 1 — Data ingest & cleaning** of the file-persisted `analysis-plan.md` that `question-framing`/`pre-analysis-plan`/`executing-analysis-plans` share. (If no plan file exists yet, create `docs/analysis-plan.md` and record its path in your todos.) Phase 1 carries its own sub-checklist plus a decisions log:
+This skill produces and maintains **Phase 1 — Data ingest & cleaning** of the file-persisted `analysis-plan.md` that `question-framing`/`pre-analysis-plan`/`executing-analysis-plans` share. (If no plan file exists yet, create `analysis-plan.md` at the project root — legacy projects may carry it at `docs/analysis-plan.md` — and record its path in your todos.) Phase 1 carries its own sub-checklist plus a decisions log:
 
 **Lay out the sub-checklist as a roadmap and get a nod before you execute it** — this is task-altitude planning, and it fires for an **ad-hoc mid-analysis merge or reconcile** ("just join these two sources", "reconcile these totals") just as much as for a from-scratch panel build, not only when someone says the words "clean the data". A merge is a multi-step plan whose cardinality can silently reshape the sample; the user should see the steps (which keys, which side is unique, what you do with unmatched rows) and be able to redirect *before* rows move, not after. Agree once, then work the checklist autonomously — surfacing only the consequential cleaning decisions below.
 

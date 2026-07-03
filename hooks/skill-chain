@@ -35,7 +35,7 @@ skill="${skill##*:}"
 case "$skill" in
   question-framing)
     msg="Spine transition — framing is NOT the last step. Before you touch data or estimate anything, the discipline REQUIRES a written plan and an approval gate:
-- Write the framing brief to a file (estimand/metric, population, unit, the decision, what would flip it).
+- Write the framing brief into the Phase-0 section of root analysis-plan.md (estimand/metric, population, unit, the decision, what would flip it).
 - If the study is confirmatory (experiment readout, policy eval, anything with stakes): invoke causal-powers:pre-analysis-plan and lock it BEFORE seeing outcomes.
 - If the estimand is a counterfactual OUTSIDE the data (welfare, merger price, equilibrium response): invoke causal-powers:structural-estimation and write the model card instead.
 - If the GOAL is a prediction rather than an effect (predict/score/rank/flag/classify/forecast/detect-anomalies units to drive an action): invoke causal-powers:predictive-modeling and write the Prediction Spec instead — route by GOAL not algorithm (ML used to estimate a causal effect, e.g. double ML / causal forests, stays in causal-identification).

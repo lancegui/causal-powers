@@ -31,6 +31,7 @@ project-root/
 │   └── lib/              # shared functions
 ├── results/              # generated artifacts — tables/ figures/ (canonical) · diagnostics/ (scratch) · archive/ (old runs, kept)
 ├── docs/                 # MODEL_CARD.md · pre-analysis-plan.md · LESSONS.md
+├── analysis-plan.md      # the LIVE working plan (root, not docs/ — the stop-gate and resume hook key on it)
 ├── sandbox/              # exploratory throwaway, clearly not a deliverable
 └── .gitignore
 ```

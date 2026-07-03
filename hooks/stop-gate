@@ -57,7 +57,7 @@ transcript="$(field transcript_path)"
 proj="$(field cwd)"; proj="${proj:-${PWD:-.}}"
 
 # Opt-in surface: only analysis projects under the discipline.
-[ -f "${proj}/analysis-plan.md" ] || [ -f "${proj}/docs/LESSONS.md" ] || exit 0
+[ -f "${proj}/analysis-plan.md" ] || [ -f "${proj}/docs/analysis-plan.md" ] || [ -f "${proj}/docs/LESSONS.md" ] || exit 0
 [ -n "$transcript" ] && [ -r "$transcript" ] || exit 0
 
 # Signals, from the session transcript (JSONL; one entry per line). Deliverable
