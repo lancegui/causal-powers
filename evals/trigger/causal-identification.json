@@ -98,5 +98,9 @@
  {
   "query": "create a new branch on writing based on this. how should i write for this. Hi Nicole, hope this email finds you well",
   "should_trigger": false
+ },
+ {
+  "query": "polish the intro of my paper, then re-run the DiD with the corrected sample and report the new effect of the reform",
+  "should_trigger": true
  }
 ]

@@ -50,7 +50,7 @@ low="$(printf '%s' "$prompt" | tr '[:upper:]' '[:lower:]')"
 # false-fires. Suppress them outright; recall is intentionally traded for
 # precision here.
 if printf '%s' "$low" | grep -Eq "tighten|rephrase|reword|\bpolish\b|proofread|rewrite (the|my)|referee response|reviewer response|make (a )?slide|slide (that|to)|format (this|the|my)|latex table|significance stars|syntax for|what'?s the .*(argument|function)|difference between (an? )?(inner|left|right|outer|full)|computationally singular|explain .*(to (non-?technical|execs|a layperson)|the difference)|(intro|introduction|abstract|empirics? section) of (my|the) paper|section of (my|the) paper" \
-   && ! printf '%s' "$low" | grep -Eq "\btable 1\b|summary stat(s|istic)|distribution of|what'?s the trend|the trend (in|of)|choropleth|stylized fact|describe (the|this|my|our) (data|dataset|sample|panel)"; then
+   && ! printf '%s' "$low" | grep -Eq "\btable 1\b|summary stat(s|istic)|distribution of|what'?s the trend|the trend (in|of)|choropleth|stylized fact|describe (the|this|my|our) (data|dataset|sample|panel)|re-?run (the|it|with)|re-?estimate|corrected sample|new (effect|estimate|coefficient)|robustness (check|suite|spec)|estimate the|run the (did|regression|spec|model)"; then
   # Suppress writing/formatting/teaching prompts that merely NAME a method —
   # UNLESS the prompt also carries a concrete descriptive-DATA deliverable
   # (a Table 1, summary stats, a distribution, a trend). "Make a Table 1 for
