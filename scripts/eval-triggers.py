@@ -152,6 +152,22 @@ def part_a(cases, update_baseline: bool) -> int:
     return 0
 
 
+def frontmatter_cap_check(cap: int = 1024) -> int:
+    """agentskills.io caps SKILL.md frontmatter at 1024 chars; Claude Code's own
+    live skill listing truncates long descriptions mid-trigger-list (observed at
+    ~1536 chars). Anything over the cap is trigger text no platform will see."""
+    bad = 0
+    for f in sorted((ROOT / "skills").glob("*/SKILL.md")):
+        parts = f.read_text().split("---")
+        if len(parts) < 3:
+            continue
+        n = len(parts[1]) + 8  # + the two --- fences and their newlines
+        if n > cap:
+            print(f"FRONTMATTER OVER CAP: {f.parent.name} ({n} > {cap} chars)")
+            bad += 1
+    return bad
+
+
 def skill_descriptions():
     descs = {}
     for f in sorted((ROOT / "skills").glob("*/SKILL.md")):
@@ -218,7 +234,9 @@ if __name__ == "__main__":
     cases = load_evals(a.skill)
     if not cases:
         sys.exit("no eval cases found")
+    over = frontmatter_cap_check()
     rc = part_a(cases, a.update_baseline)
+    rc = max(rc, 1 if over else 0)
     if a.live:
         rc = max(rc, part_b(cases, a.model, a.sample, a.competitors))
     sys.exit(rc)
