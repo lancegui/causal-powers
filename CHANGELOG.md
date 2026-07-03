@@ -2,6 +2,57 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.28.0 — the adversarial-review release
+
+A five-reviewer adversarial fan-out over the whole family, cross-checked against
+three weeks of real Claude Code + OpenCode usage, then every accepted finding
+landed as an independently tested diff (31 commits). Highlights by layer:
+
+- **Router precision.** Matches the `.prompt` field only and skips
+  harness-injected shapes (task notifications — 42% of production false fires —
+  IDE events, empty prompts); an ops/git suppressor plus anchored atoms end the
+  merge-conflict/regression-test/docker/lighthouse false-fire classes; mixed
+  writing+analysis prompts escape the writing suppressor; `project-organization`
+  and `analysis-craft` gain rules + corpora; `resume` sessions get `plan-resume`;
+  `predictive-modeling` and `wrong-number-debugging` gain skill-chain gates.
+  Part A now runs payload-shaped cases through the real router.
+- **Stop-gate actually fires.** Root cause of the 0/62 production
+  `wrote_results`: hooks run in the C locale, where BSD grep reads `[^\n]` as
+  "not backslash, not n" — UTF-8 dev shells masked it. Detectors rewritten,
+  artifact pattern matches real deliverables (output/figures/report paths),
+  `verified=1` needs post-invocation execution evidence, opt-in surface
+  disclosed in the card, and a locale-scrubbed harness
+  (`scripts/test-stop-gate.sh`) guards it.
+- **Descriptions under the 1024-char cap** (six were over; Claude Code's own
+  listing truncated the longest mid-trigger-list), workflow summaries returned
+  to the bodies, contested phrases given owners, Stata added to the checker
+  skills, CI enforces the cap — ~680 always-on tokens saved per session.
+- **The eval tests the product.** New `plugin` arm installs the real hooks +
+  skills into an isolated config; `--user-reply`/`REPLY:` two-turn mode makes
+  sign-off gates measurable; the composition-Simpson scenario (verified plant)
+  joins the core suite.
+- **Seams closed.** One canonical plan artifact (root `analysis-plan.md`);
+  template regenerated from its source checklists; own-work pre-ship review
+  requires the `analysis-reviewer` subagent; the causal arm gets a **Design
+  Card** sign-off gate mirroring the model card / Prediction Spec; association
+  tables, DML/cross-fitting, and CATE-targeting have explicit owners; the
+  unsigned-PAP graph edge, restoring-fix citation rule, and
+  wrong-number-vs-systematic-debugging routing line are fixed.
+- **Econ content.** Pre-treatment-necessary-not-sufficient (M-bias), recovery
+  tests cover the full θ (shrink N, never dimension), automatic differentiation
+  first-class in the gradients guidance, permutation probe within the split
+  structure (+ no-label analog), one MC pass criterion in MC-SE units;
+  checkpoint calibration (seen-number materiality, approval bundling,
+  additive-sample stops) micro-tested to convergence on haiku.
+- **Truth in packaging.** The card and `opencode-tools.md` claim only shipped
+  machinery (the duplicate-load suppressor and spine gate live in
+  causal-conductor — pointed to, not claimed); `install-codex.sh` installs only
+  `SKILL.md` dirs, prunes stale junk, and version-stamps the managed block;
+  `AGENTS.md` is a real file with a CI sync check (symlinks break Windows/ZIP
+  checkouts); dated doc filenames renamed per the family's own naming rule;
+  both READMEs regenerated against manifests/plants, including disclosure of
+  the session-start update check.
+
 ## 0.27.0 — language profile (R-first, configurable)
 
 New **language profile**: a configurable default for *which language fits which task*, correcting the
