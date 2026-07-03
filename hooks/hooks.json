@@ -15,6 +15,16 @@
             "async": false
           }
         ]
+      },
+      {
+        "matcher": "resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/plan-resume\"",
+            "async": false
+          }
+        ]
       }
     ],
     "PreCompact": [
