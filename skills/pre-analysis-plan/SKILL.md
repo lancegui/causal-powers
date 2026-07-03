@@ -76,7 +76,8 @@ digraph pre_analysis_plan_next {
     "Outcomes surprise you / departure tempting?" [shape=diamond];
     "invoke analysis-checkpoints — bring the deviation to the user" [shape=box style=filled fillcolor=lightgreen];
     "PAP written to a file AND signed off (still blind)?" -> "Structural / counterfactual estimation?" [label="yes"];
-    "PAP written to a file AND signed off (still blind)?" -> "invoke executing-analysis-plans — carry out the locked plan" [label="not yet — keep locking, don't touch outcomes"];
+    "keep locking — do NOT execute or touch outcomes" [shape=box];
+    "PAP written to a file AND signed off (still blind)?" -> "keep locking — do NOT execute or touch outcomes" [label="not yet"];
     "Structural / counterfactual estimation?" -> "invoke structural-estimation — lock the model card instead" [label="yes"];
     "Structural / counterfactual estimation?" -> "invoke executing-analysis-plans — carry out the locked plan" [label="no — reduced-form"];
     "Outcomes surprise you / departure tempting?" -> "invoke analysis-checkpoints — bring the deviation to the user" [label="any time"];

@@ -7,7 +7,9 @@ description: Use the moment a computed result looks wrong, surprising, suspiciou
 
 ## Overview
 
-A surprising number is data trying to tell you something. The instinct is to patch it — add a `dropna`, a `distinct`, a filter — until it looks reasonable. That instinct is how a symptom gets hidden and the real bug ships. The discipline here is the same as systematic debugging in software: **find the step where the number went bad before you change anything.**
+A surprising number is data trying to tell you something. The instinct is to patch it — add a `dropna`, a `distinct`, a filter — until it looks reasonable. That instinct is how a symptom gets hidden and the real bug ships. **Routing:** code THROWS or a test fails → `superpowers:systematic-debugging`. Code runs CLEAN but the number is wrong → this skill. Either way, a remedy that changes design/sample/spec is `analysis-checkpoints` territory, not a fix.
+
+The discipline here is the same as systematic debugging in software: **find the step where the number went bad before you change anything.**
 
 **Core principle:** Locate the bug by bisecting the pipeline, not by guessing at fixes. The number is wrong *somewhere specific* — find where, then you'll know why.
 

@@ -29,7 +29,7 @@ The test is simple — **does this change what is being estimated, on what data,
 - **Any number the user has already seen** that your change would move.
 
 ### Decisions you may make autonomously — note it, don't ask
-- **Mechanical data-bug fixes that *restore* the intended computation** — dedup a key that was always meant to be unique, correct a wrong join type, fix a units error, repair a broken date parse. These return the analysis to what was already agreed; they don't change the design. Always **report** what you fixed. **Tiebreaker:** a restoring fix that nonetheless *moves a number the user has already seen* is still a checkpoint — apply it, but surface the moved number (old → new, and why) before building anything further on it.
+- **Mechanical data-bug fixes that *restore* the intended computation** — dedup a key that was always meant to be unique, correct a wrong join type, fix a units error, repair a broken date parse. These return the analysis to what was already agreed; they don't change the design. Always **report** what you fixed. A "restoring" claim must **cite the written line** (brief / PAP / decisions log) that establishes the intended behavior — no citation, no "restore": it's a design choice, STOP. During `data-preparation`'s Phase 1 its stricter rule wins: any beyond-trivial dedup is a checkpoint. **Tiebreaker:** a restoring fix that nonetheless *moves a number the user has already seen* is still a checkpoint — apply it, but surface the moved number (old → new, and why) before building anything further on it.
 - **Code-craft choices** — variable names, how a transform is written, plot styling. (See `analysis-craft`.)
 
 The dividing question between a fix and a redesign: *"Am I restoring the analysis we agreed on, or changing it?"* Restoring → proceed and report. Changing → checkpoint.
@@ -101,7 +101,9 @@ digraph analysis_checkpoints_next {
 3. **Once the user decides**, absorb the change before resuming — route to exactly one next step and *invoke that skill*:
    - **Estimand / question changed → invoke `question-framing`** to re-frame, then re-derive the brief.
    - **Deviation from the locked plan → invoke `pre-analysis-plan`** to record the deviation and re-lock before any further estimation.
-4. **Then return to the skill you interrupted** (`wrong-number-debugging`, `executing-analysis-plans`, `structural-estimation`) and continue from the now-approved state — never resume on the silent change.## The bottom line
+4. **Then return to the skill you interrupted** (`wrong-number-debugging`, `executing-analysis-plans`, `structural-estimation`) and continue from the now-approved state — never resume on the silent change.
+
+## The bottom line
 
 ```
 Executing well  →  loop autonomously toward the agreed goal; stop and ask before changing the design, sample, spec, estimand, or any number already seen
