@@ -46,15 +46,22 @@ Causal Powers is built to **re-fire per analytical request** — a new spec, a n
 cut, a re-run all re-trigger the relevant skill. That re-triggering is correct and
 deliberate; it is the guard against "I already have the context."
 
-But on OpenCode there is **no harness bookkeeping of what's already in context**.
-Claude Code tracks the loaded skill bodies and makes re-application free; OpenCode
-does not, so the `skill` tool will happily re-inject a skill's **full body** every
-time you call it. The failure mode (seen in real sessions): the orchestrator
-reloads `causal-identification` / `executing-analysis-plans` **a dozen-plus times
-in one session**, each call re-injecting text that was already on screen — pure
-token churn dressed up as discipline.
+But **no harness dedups skill loads for you by default** — on OpenCode (as on
+Claude Code) the `skill` tool will happily re-inject a skill's **full body** every
+time you call it. The failure mode (measured in real sessions): the orchestrator
+reloads `using-causal-powers` / `question-framing` **15–19 times in one session**,
+~1–2% of total input tokens re-injecting text already on screen — pure token churn
+dressed up as discipline.
 
-The rule:
+One optional machine layer exists: the **causal-conductor** OpenCode plugin
+(separate repo) rewrites messages in flight via
+`experimental.chat.messages.transform`, keeping the first `<skill_content>` load
+per skill and stubbing later duplicates. If it's installed, duplicates cost ~a
+line instead of a body; set `CAUSAL_CONDUCTOR_DEBUG=1` to observe it (it is
+silent otherwise, and the session DB stores pre-transform bodies, so don't look
+there for proof). Do not rely on it being present.
+
+The rule (with or without the suppressor):
 
 - **Body still in context?** Don't call the `skill` tool. **Narrate** the
   re-application instead — "re-applying `causal-identification` (still loaded)" —
@@ -82,3 +89,9 @@ The plugin's `hooks/` are Claude-Code-only. On OpenCode:
 - **`analysis-plan.md` resumability hook** (SessionStart/PreCompact) → you maintain
   the living plan yourself: keep `analysis-plan.md` current and **flush it before
   you compact**, so a fresh OpenCode session resumes from the file (disk-as-RAM).
+- **Stop-gate** (the Stop hook that blocks an unverified results-write) → no hook
+  equivalent ships here. The **causal-conductor** spine plugin, if installed,
+  gates mutating tools behind an approved contract (`tool.execute.before` throws
+  until a `<spine_contract>` is approved) — a stricter gate than Claude Code's.
+  Without it, *result-verification before reporting* is pure discipline: treat it
+  as the gate.
