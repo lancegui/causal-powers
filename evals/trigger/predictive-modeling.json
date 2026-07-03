@@ -1,20 +1,78 @@
 [
-  {"query": "i want to flag which pharmacies are likely diverting opioids from their monthly shipment patterns", "should_trigger": true},
-  {"query": "build a model to predict which customers will churn next month so we can target retention", "should_trigger": true},
-  {"query": "rank these insurance claims by audit risk so the investigators hit the worst ones first", "should_trigger": true},
-  {"query": "train a classifier on this labeled fraud dataset, make sure nothing leaks the outcome", "should_trigger": true},
-  {"query": "i have no labels — just detect which accounts look anomalous from their transaction patterns", "should_trigger": true},
-  {"query": "forecast which stores are at risk of stockout next week from the sales history", "should_trigger": true},
-  {"query": "score every loan application for default likelihood and pick a threshold to act on", "should_trigger": true},
-  {"query": "how should i split train and test for a model that has to predict new pharmacies it's never seen", "should_trigger": true},
-  {"query": "what metric should i use to evaluate a risk-scoring model with very few positives", "should_trigger": true},
-  {"query": "my churn model gets 0.99 AUC on the holdout — is that too good to be true", "should_trigger": true},
-  {"query": "estimate the effect of the price cut we ran on units sold", "should_trigger": false},
-  {"query": "simulate what price the merged firm would set", "should_trigger": false},
-  {"query": "did the medicaid expansion reduce uninsurance — set up the diff-in-diff", "should_trigger": false},
-  {"query": "use double machine learning to get the treatment effect with a random forest first stage", "should_trigger": false},
-  {"query": "merge these two csvs on member_id and check the join cardinality", "should_trigger": false},
-  {"query": "what's the scikit-learn syntax for train_test_split again", "should_trigger": false},
-  {"query": "explain the bias-variance tradeoff with a small example", "should_trigger": false},
-  {"query": "install xgboost and lightgbm in a fresh venv for me", "should_trigger": false}
+ {
+  "query": "i want to flag which pharmacies are likely diverting opioids from their monthly shipment patterns",
+  "should_trigger": true
+ },
+ {
+  "query": "build a model to predict which customers will churn next month so we can target retention",
+  "should_trigger": true
+ },
+ {
+  "query": "rank these insurance claims by audit risk so the investigators hit the worst ones first",
+  "should_trigger": true
+ },
+ {
+  "query": "train a classifier on this labeled fraud dataset, make sure nothing leaks the outcome",
+  "should_trigger": true
+ },
+ {
+  "query": "i have no labels \u2014 just detect which accounts look anomalous from their transaction patterns",
+  "should_trigger": true
+ },
+ {
+  "query": "forecast which stores are at risk of stockout next week from the sales history",
+  "should_trigger": true
+ },
+ {
+  "query": "score every loan application for default likelihood and pick a threshold to act on",
+  "should_trigger": true
+ },
+ {
+  "query": "how should i split train and test for a model that has to predict new pharmacies it's never seen",
+  "should_trigger": true
+ },
+ {
+  "query": "what metric should i use to evaluate a risk-scoring model with very few positives",
+  "should_trigger": true
+ },
+ {
+  "query": "my churn model gets 0.99 AUC on the holdout \u2014 is that too good to be true",
+  "should_trigger": true
+ },
+ {
+  "query": "estimate the effect of the price cut we ran on units sold",
+  "should_trigger": false
+ },
+ {
+  "query": "simulate what price the merged firm would set",
+  "should_trigger": false
+ },
+ {
+  "query": "did the medicaid expansion reduce uninsurance \u2014 set up the diff-in-diff",
+  "should_trigger": false
+ },
+ {
+  "query": "use double machine learning to get the treatment effect with a random forest first stage",
+  "should_trigger": false
+ },
+ {
+  "query": "merge these two csvs on member_id and check the join cardinality",
+  "should_trigger": false
+ },
+ {
+  "query": "what's the scikit-learn syntax for train_test_split again",
+  "should_trigger": false
+ },
+ {
+  "query": "explain the bias-variance tradeoff with a small example",
+  "should_trigger": false
+ },
+ {
+  "query": "install xgboost and lightgbm in a fresh venv for me",
+  "should_trigger": false
+ },
+ {
+  "query": "why is our lighthouse score so low",
+  "should_trigger": false
+ }
 ]

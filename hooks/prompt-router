@@ -58,6 +58,15 @@ if printf '%s' "$low" | grep -Eq "tighten|rephrase|reword|\bpolish\b|proofread|r
   exit 0
 fi
 
+# Ops/software suppressor: git, CI, docker, web-perf, and module-refactor
+# prompts use merge/drop/score/regression in their SOFTWARE senses — all
+# observed production false fires. Suppress unless the prompt also carries a
+# data-object cue (dataset, csv, panel, join-on, cardinality, …).
+if printf '%s' "$low" | grep -Eq "merge conflict|merge (it|this|that|the branch) (back )?(in)?to (main|master)|\bgit\b|\brebase\b|cherry.?pick|pull request|push to (github|origin|main|master)|docker|\bci\b (pipeline|run|job)|(unit|integration|regression) tests?|lighthouse|api (handler|endpoint|route)|separate module|refactor (the|this) (module|class|function|component)" \
+   && ! printf '%s' "$low" | grep -Eq "data ?set|data ?frame|\bcsv\b|parquet|\bpanel\b|\bsurvey\b|claims data|join .{0,24}\bon\b|cardinality|rows (multiply|fan)|summary stat|regression (spec|coefficient|estimate|table|results)"; then
+  exit 0
+fi
+
 # Collect matched skills (one line each). Each family is high-precision so normal
 # conversation does not trip it; matching is intentionally biased toward the
 # moments where the discipline is most often skipped.
@@ -68,25 +77,25 @@ m() {  # m <regex> <nudge-line>
   fi
 }
 
-m "doesn'?t match|don'?t match|didn'?t match|do not match|too high|too low|off by|can'?t be right|cannot be right|that can'?t be|doesn'?t converge|wouldn'?t converge|didn'?t converge|not converg|unexpected|suspicious|totals? (are|is) off|this number|looks wrong|wrong sign|surprising|why is (this|it) so" \
+m "doesn'?t match|don'?t match|didn'?t match|do not match|too high|too low|off by|can'?t be right|cannot be right|that can'?t be|doesn'?t converge|wouldn'?t converge|didn'?t converge|not converg|unexpected (value|number|result|total|count|mean|sign|magnitude|jump|spike)|suspicious|totals? (are|is) off|this number|looks wrong|wrong sign|surprising|why is (this|it) so" \
   "causal-powers:wrong-number-debugging — a result looks wrong; bisect the pipeline to the bad step, do NOT guess-and-patch."
 
 m "\bmerge\b|\bjoin\b|\bgroup by\b|\bgroupby\b|aggregate|\breshape\b|combine (these|the)|cardinality|row counts?" \
   "causal-powers:data-contracts — assert join cardinality + row counts and reconcile totals BEFORE trusting the merged result."
 
-m "effect of|did it work|impact of|\bregress|\bcaused\b|because we (did|ran)|did (the |this )?(policy|program|intervention|treatment|law|reform|mandate|expansion|rollout|ban|subsidy|tax)|(policy|program|intervention|treatment|law|reform|mandate|expansion) (raise|lower|increase|reduce|cause|affect|change|move|boost|cut)|treatment (effect|increased|raised)|difference.?in.?difference|event study|\biv\b|instrument|regression discontinuity|\brdd\b|synthetic control|parallel trends" \
+m "effect of|did it work|impact of|\bregress(ing)? .{0,28}\bon\b|regression (of|on|coefficient|model|spec|output|estimate|table|results?)|run (a |the )?regression|\bcaused\b|because we (did|ran)|did (the |this )?(policy|program|intervention|treatment|law|reform|mandate|expansion|rollout|ban|subsidy|tax)|(policy|program|intervention|treatment|law|reform|mandate|expansion) (raise|lower|increase|reduce|cause|affect|change|move|boost|cut)|treatment (effect|increased|raised)|difference.?in.?difference|event study|\biv\b|instrumental variable|\binstrument for\b|(weak|valid|strong) instrument|regression discontinuity|\brdd\b|synthetic control|parallel trends" \
   "causal-powers:causal-identification — name the design + test its assumptions before reading a coefficient as an effect."
 
-m "\bdrop\b|winsoriz|trim the|remove (the )?outlier|exclude (the|these|those)|\bfilter out\b|should i drop|change the (spec|sample|definition)|redefine|rebuild|re-?run with" \
+m "drop (them|those)\b|drop (the |these |those |all |any )?((two|three|four|[0-9]+) )?(weakest |strongest |extreme )?(outlier|row|observation|obs\b|missing|na\b|nan|duplicate|extreme|top|bottom|instrument|control|covariate|variable|firm|unit|group|state|count(y|ies)|year)|drop .{0,24}from the (sample|panel|dataset|data)|winsoriz|trim the|remove (the )?outlier|exclude (the|these|those)|\bfilter out\b|should i drop|change the (spec|sample|definition)|redefine|re-?run with" \
   "causal-powers:analysis-checkpoints — this changes sample/spec/a seen number; STOP and surface options, don't decide it silently."
 
-m "report this|\bfinal\b|the answer is|put this in|send this to|in the (deck|slide|paper|table)|sanity.?check|does this look right|looks right|i'?m done|ready to ship" \
+m "report this|final (number|result|estimate|figure|table|answer)|final .{0,10}check|the answer is|put(ting)? (it|this|these|that|the (number|result|estimate|figure|table)) in (the |a )?([a-z]+ )?(deck|slide|paper|report|memo)|send this to|in the (deck|slide|paper|table)|sanity.?check|does this look right|looks right|i'?m done|ready to ship" \
   "causal-powers:result-verification — reconcile to source + reproduce from a clean seed before this number leaves the room."
 
 m "\bblp\b|demand estimation|counterfactual|structural (model|estimat)|merger sim|discrete choice|\bgmm\b|equilibrium|recover( the)? parameters" \
   "causal-powers:structural-estimation — write/confirm the model card (per-parameter identification + recovery test) before estimating."
 
-m "\bpredict(ion|ive)?\b|forecast|classif(y|ier)|risk[ -]scor|\banomal\w*|flag (the |which )|rank (these|by )|churn|which .*(likely|at risk)|train.*(model|classifier)|train[/ ]test split|\bscore\b" \
+m "\bpredict(ion|ive)?\b|forecast|classif(y|ier)|risk[ -]scor|\banomal\w*|flag (the |which ).{0,24}(outlier|anomal|suspicious|risk|fraud|divert|churn)|rank (these|by )|churn|which .*(likely|at risk)|train.*(model|classifier)|train[/ ]test split|scor(e|ing) (each|the|these|every|all)" \
   "causal-powers:predictive-modeling — write/confirm the Prediction Spec (label+regime, prediction-time, deployment-matched split, leakage audit, metric-to-decision) before fitting; prove the eval is honest; importance is not causation."
 
 m "review (this|my) (analysis|notebook|script|model)|check my (notebook|analysis)|before i (send|ship|publish)|is this analysis" \

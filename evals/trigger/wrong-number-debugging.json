@@ -1,22 +1,86 @@
 [
-  {"query": "my total revenue jumped from 4.1M to 12.3M right after i joined the product table in, that can't be right — what happened", "should_trigger": true},
-  {"query": "the monthly churn i computed is 0.4% but the finance team says it's around 5%, where's the discrepancy coming from", "should_trigger": true},
-  {"query": "after my groupby the row counts don't add back up to the original frame, it's like some rows vanished and i don't know why", "should_trigger": true},
-  {"query": "average order value is coming out around $4,800 which is roughly 10x what i'd expect, help me track down why", "should_trigger": true},
-  {"query": "two of our dashboards report different DAU for the same day and i can't figure out which one is wrong", "should_trigger": true},
-  {"query": "the coefficient on price flipped from negative to positive after i added the brand control and i don't trust it, walk me through what's going on", "should_trigger": true},
-  {"query": "my reconciliation failed — the segment revenues don't sum to the grand total i started with, off by about 3%", "should_trigger": true},
-  {"query": "the counts look fine until i apply the date filter and then half the rows disappear, why would a date filter drop that many", "should_trigger": true},
-  {"query": "my model's holdout accuracy is 99.8% which feels way too good to be real, something must be off", "should_trigger": true},
-  {"query": "my python script throws a KeyError on line 42 when it reads the config yaml, can you fix it", "should_trigger": false},
-  {"query": "the unit tests for my auth middleware are failing after i refactored the session handling", "should_trigger": false},
-  {"query": "set up assertions to check the join cardinality before i run the merge so it can't silently fan out", "should_trigger": false},
-  {"query": "our REST API returns a 500 intermittently under load, help me debug the server", "should_trigger": false},
-  {"query": "write a validation rule that ages must be between 0 and 120 and flags violations", "should_trigger": false},
-  {"query": "explain why floating-point summation isn't associative, i hit a tiny mismatch in a test", "should_trigger": false},
-  {"query": "my R Markdown won't knit, pandoc exits with code 99, how do i fix the toolchain", "should_trigger": false},
-  {"query": "the build passes locally but fails on CI with a module-not-found, what's different", "should_trigger": false},
-  {"query": "i want to add timing logs to find which function in my ETL is the slow one", "should_trigger": false},
-  {"query": "rename the columns in this dataframe to snake_case and drop the unnamed index column", "should_trigger": false},
-  {"query": "git merge gave me a conflict in three files, walk me through resolving it", "should_trigger": false}
+ {
+  "query": "my total revenue jumped from 4.1M to 12.3M right after i joined the product table in, that can't be right \u2014 what happened",
+  "should_trigger": true
+ },
+ {
+  "query": "the monthly churn i computed is 0.4% but the finance team says it's around 5%, where's the discrepancy coming from",
+  "should_trigger": true
+ },
+ {
+  "query": "after my groupby the row counts don't add back up to the original frame, it's like some rows vanished and i don't know why",
+  "should_trigger": true
+ },
+ {
+  "query": "average order value is coming out around $4,800 which is roughly 10x what i'd expect, help me track down why",
+  "should_trigger": true
+ },
+ {
+  "query": "two of our dashboards report different DAU for the same day and i can't figure out which one is wrong",
+  "should_trigger": true
+ },
+ {
+  "query": "the coefficient on price flipped from negative to positive after i added the brand control and i don't trust it, walk me through what's going on",
+  "should_trigger": true
+ },
+ {
+  "query": "my reconciliation failed \u2014 the segment revenues don't sum to the grand total i started with, off by about 3%",
+  "should_trigger": true
+ },
+ {
+  "query": "the counts look fine until i apply the date filter and then half the rows disappear, why would a date filter drop that many",
+  "should_trigger": true
+ },
+ {
+  "query": "my model's holdout accuracy is 99.8% which feels way too good to be real, something must be off",
+  "should_trigger": true
+ },
+ {
+  "query": "my python script throws a KeyError on line 42 when it reads the config yaml, can you fix it",
+  "should_trigger": false
+ },
+ {
+  "query": "the unit tests for my auth middleware are failing after i refactored the session handling",
+  "should_trigger": false
+ },
+ {
+  "query": "set up assertions to check the join cardinality before i run the merge so it can't silently fan out",
+  "should_trigger": false
+ },
+ {
+  "query": "our REST API returns a 500 intermittently under load, help me debug the server",
+  "should_trigger": false
+ },
+ {
+  "query": "write a validation rule that ages must be between 0 and 120 and flags violations",
+  "should_trigger": false
+ },
+ {
+  "query": "explain why floating-point summation isn't associative, i hit a tiny mismatch in a test",
+  "should_trigger": false
+ },
+ {
+  "query": "my R Markdown won't knit, pandoc exits with code 99, how do i fix the toolchain",
+  "should_trigger": false
+ },
+ {
+  "query": "the build passes locally but fails on CI with a module-not-found, what's different",
+  "should_trigger": false
+ },
+ {
+  "query": "i want to add timing logs to find which function in my ETL is the slow one",
+  "should_trigger": false
+ },
+ {
+  "query": "rename the columns in this dataframe to snake_case and drop the unnamed index column",
+  "should_trigger": false
+ },
+ {
+  "query": "git merge gave me a conflict in three files, walk me through resolving it",
+  "should_trigger": false
+ },
+ {
+  "query": "the regression tests are failing unexpectedly",
+  "should_trigger": false
+ }
 ]

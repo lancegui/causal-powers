@@ -1,25 +1,102 @@
 [
-  {"query": "i've got panel data on 200 hospitals from 2008-2019 and a subset adopted an EHR mandate in different years. want to estimate the effect on readmission rates. how should i set this up in R?", "should_trigger": true},
-  {"query": "running a diff in diff where treatment rolls out across states at different times — my twfe coefficient looks weird, is staggered timing a problem here?", "should_trigger": true},
-  {"query": "i have an instrument for schooling (distance to nearest college) and want returns to education. set up the 2SLS in python with linearmodels and tell me what to check", "should_trigger": true},
-  {"query": "we ran an RD around a test-score cutoff for a scholarship. how do i convince a referee the design is valid before i trust the estimate?", "should_trigger": true},
-  {"query": "estimate the employment impact of the 2014 minimum wage hike using the bordering-counties comparison", "should_trigger": true},
-  {"query": "i'm matching treated and control firms on propensity score then comparing outcomes — what do i need to verify before reporting the ATT?", "should_trigger": true},
-  {"query": "did the email campaign actually cause the signup lift or is it just seasonality? i have weekly signups for the 12 weeks before and after launch", "should_trigger": true},
-  {"query": "regress log wages on union membership with worker and year fixed effects — can i read that coefficient as the causal union premium?", "should_trigger": true},
-  {"query": "synthetic control for one treated state vs a donor pool of 30 others, how do i tell if the gap is actually significant", "should_trigger": true},
-  {"query": "i want to claim the new policy cut recidivism by 8 percent. what placebo and sensitivity tests should i run before i put that number in the report?", "should_trigger": true},
-  {"query": "tighten the empirics section of my paper where i describe the difference-in-differences design, the prose reads clunky and the referee called it unclear", "should_trigger": false},
-  {"query": "improve the figure note under my event-study plot for the AER submission, it needs to explain the bands and the omitted period", "should_trigger": false},
-  {"query": "format this regression output into a LaTeX table with significance stars and clustered SEs in parentheses", "should_trigger": false},
-  {"query": "my IV regression in R throws 'system is computationally singular', how do i fix the code", "should_trigger": false},
-  {"query": "write a literature-review paragraph on the staggered DiD debate citing Goodman-Bacon and Callaway-Sant'Anna", "should_trigger": false},
-  {"query": "what's a good causal inference textbook for someone self-studying after a stats minor?", "should_trigger": false},
-  {"query": "rephrase my referee response where i defend the parallel trends assumption, i want it firmer but polite", "should_trigger": false},
-  {"query": "i need to merge my treatment-assignment file with the outcomes panel on unit and year before i can do anything", "should_trigger": false},
-  {"query": "make a slide that explains our RDD findings to non-technical execs without the jargon", "should_trigger": false},
-  {"query": "explain intuitively why fixed effects don't control for time-varying confounders, i'm prepping for a class", "should_trigger": false},
-  {"query": "i have prices, unit shares, and product characteristics for breakfast cereals across 50 cities and want to estimate demand then simulate a merger between two of the manufacturers", "should_trigger": false},
-  {"query": "what would consumer surplus be if a new entrant added a product to this market? i have the current products' shares and attributes and want to predict the welfare gain", "should_trigger": false},
-  {"query": "recover the marginal costs behind these observed prices from a random-coefficients demand model so i can run a pass-through counterfactual", "should_trigger": false}
+ {
+  "query": "i've got panel data on 200 hospitals from 2008-2019 and a subset adopted an EHR mandate in different years. want to estimate the effect on readmission rates. how should i set this up in R?",
+  "should_trigger": true
+ },
+ {
+  "query": "running a diff in diff where treatment rolls out across states at different times \u2014 my twfe coefficient looks weird, is staggered timing a problem here?",
+  "should_trigger": true
+ },
+ {
+  "query": "i have an instrument for schooling (distance to nearest college) and want returns to education. set up the 2SLS in python with linearmodels and tell me what to check",
+  "should_trigger": true
+ },
+ {
+  "query": "we ran an RD around a test-score cutoff for a scholarship. how do i convince a referee the design is valid before i trust the estimate?",
+  "should_trigger": true
+ },
+ {
+  "query": "estimate the employment impact of the 2014 minimum wage hike using the bordering-counties comparison",
+  "should_trigger": true
+ },
+ {
+  "query": "i'm matching treated and control firms on propensity score then comparing outcomes \u2014 what do i need to verify before reporting the ATT?",
+  "should_trigger": true
+ },
+ {
+  "query": "did the email campaign actually cause the signup lift or is it just seasonality? i have weekly signups for the 12 weeks before and after launch",
+  "should_trigger": true
+ },
+ {
+  "query": "regress log wages on union membership with worker and year fixed effects \u2014 can i read that coefficient as the causal union premium?",
+  "should_trigger": true
+ },
+ {
+  "query": "synthetic control for one treated state vs a donor pool of 30 others, how do i tell if the gap is actually significant",
+  "should_trigger": true
+ },
+ {
+  "query": "i want to claim the new policy cut recidivism by 8 percent. what placebo and sensitivity tests should i run before i put that number in the report?",
+  "should_trigger": true
+ },
+ {
+  "query": "tighten the empirics section of my paper where i describe the difference-in-differences design, the prose reads clunky and the referee called it unclear",
+  "should_trigger": false
+ },
+ {
+  "query": "improve the figure note under my event-study plot for the AER submission, it needs to explain the bands and the omitted period",
+  "should_trigger": false
+ },
+ {
+  "query": "format this regression output into a LaTeX table with significance stars and clustered SEs in parentheses",
+  "should_trigger": false
+ },
+ {
+  "query": "my IV regression in R throws 'system is computationally singular', how do i fix the code",
+  "should_trigger": false
+ },
+ {
+  "query": "write a literature-review paragraph on the staggered DiD debate citing Goodman-Bacon and Callaway-Sant'Anna",
+  "should_trigger": false
+ },
+ {
+  "query": "what's a good causal inference textbook for someone self-studying after a stats minor?",
+  "should_trigger": false
+ },
+ {
+  "query": "rephrase my referee response where i defend the parallel trends assumption, i want it firmer but polite",
+  "should_trigger": false
+ },
+ {
+  "query": "i need to merge my treatment-assignment file with the outcomes panel on unit and year before i can do anything",
+  "should_trigger": false
+ },
+ {
+  "query": "make a slide that explains our RDD findings to non-technical execs without the jargon",
+  "should_trigger": false
+ },
+ {
+  "query": "explain intuitively why fixed effects don't control for time-varying confounders, i'm prepping for a class",
+  "should_trigger": false
+ },
+ {
+  "query": "i have prices, unit shares, and product characteristics for breakfast cereals across 50 cities and want to estimate demand then simulate a merger between two of the manufacturers",
+  "should_trigger": false
+ },
+ {
+  "query": "what would consumer surplus be if a new entrant added a product to this market? i have the current products' shares and attributes and want to predict the welfare gain",
+  "should_trigger": false
+ },
+ {
+  "query": "recover the marginal costs behind these observed prices from a random-coefficients demand model so i can run a pass-through counterfactual",
+  "should_trigger": false
+ },
+ {
+  "query": "instrument the API handlers with tracing",
+  "should_trigger": false
+ },
+ {
+  "query": "create a new branch on writing based on this. how should i write for this. Hi Nicole, hope this email finds you well",
+  "should_trigger": false
+ }
 ]
