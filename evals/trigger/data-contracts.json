@@ -86,5 +86,12 @@
  {
   "query": "fix the merge conflict in the feature branch",
   "should_trigger": false
+ },
+ {
+  "query": "flag the outliers in this quarter's transactions before we load them",
+  "should_trigger": true,
+  "expected": [
+   "data-contracts"
+  ]
  }
 ]

@@ -102,5 +102,13 @@
  {
   "query": "polish the intro of my paper, then re-run the DiD with the corrected sample and report the new effect of the reform",
   "should_trigger": true
+ },
+ {
+  "query": "did the experiment move the metric? results came in yesterday",
+  "should_trigger": true,
+  "expected": [
+   "causal-identification",
+   "analysis-review"
+  ]
  }
 ]

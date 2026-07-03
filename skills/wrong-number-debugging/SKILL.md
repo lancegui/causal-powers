@@ -1,6 +1,6 @@
 ---
 name: wrong-number-debugging
-description: Use the moment a computed result looks wrong, surprising, suspicious, or "off" — a total that doesn't reconcile, revenue that tripled after a join, a mean that moved, a coefficient with the wrong sign, a count that's too high or too low, a metric that disagrees with another team's. Bisects the data pipeline to find the exact step where the number went bad, tracing provenance backward instead of guessing-and-patching. Use whenever the user says "this number looks wrong", "why is this so high", "these don't match", "the totals are off", "that can't be right", or when a `data-contracts` reconciliation fails — in R, Julia, or Python.
+description: Use the moment a computed result looks wrong, surprising, suspicious, or "off" — a total that doesn't reconcile, revenue that tripled after a join, a mean that moved, a coefficient with the wrong sign, a count that's too high or too low, a metric that disagrees with another team's. Bisects the data pipeline to find the exact step where the number went bad, tracing provenance backward instead of guessing-and-patching. Use whenever the user says "this number looks wrong", "why is this so high", "these don't match", "the totals are off", "that can't be right", or when a `data-contracts` reconciliation fails — in R, Julia, Python, or Stata.
 ---
 
 # Wrong-Number Debugging

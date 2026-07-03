@@ -86,13 +86,13 @@ def load_evals(only_skill=None):
                 q = PAYLOAD_PREFIX + json.dumps(e["payload"], sort_keys=True)
             else:
                 q = e["query"]
-            cases.append((skill, q, bool(e["should_trigger"])))
+            cases.append((skill, q, bool(e["should_trigger"]), e.get("expected")))
     return cases
 
 
 def part_a(cases, update_baseline: bool) -> int:
     per = {}
-    for skill, query, should in cases:
+    for skill, query, should, _expected in cases:
         if query.startswith(PAYLOAD_PREFIX):
             fired = route_payload(json.loads(query[len(PAYLOAD_PREFIX):]))
             hit = bool(fired)  # payload cases: ANY family fire counts (shape test)
@@ -185,13 +185,13 @@ def part_b(cases, model, sample, competitors) -> int:
         descs |= COMPETITORS
     menu = "\n\n".join(f"### {k}\n{v}" for k, v in descs.items())
     by_skill = {}
-    for skill, q, should in cases:
+    for skill, q, should, expected in cases:
         if q.startswith(PAYLOAD_PREFIX):
             continue  # payload cases test the router artifact, not description matching
-        by_skill.setdefault(skill, []).append((q, should))
+        by_skill.setdefault(skill, []).append((q, should, expected))
     wins = losses = viol = neg_ok = 0
     for skill, qs in sorted(by_skill.items()):
-        for q, should in qs[: sample or len(qs)]:
+        for q, should, expected in qs[: sample or len(qs)]:
             prompt = (
                 "You are deciding which skill to invoke FIRST for a user message, "
                 "based only on the skill descriptions.\n\n" + menu +
@@ -204,17 +204,20 @@ def part_b(cases, model, sample, competitors) -> int:
                 capture_output=True, text=True, timeout=120,
             )
             ans = r.stdout.strip().split("\n")[-1].strip()
-            mine = f"causal-powers:{skill}" in ans
+            # expected (contested phrases): the pick may land on any named winner.
+            # negatives: a fire by ANY family skill is a violation, not just the
+            # file's own skill — a negative captured by a sibling was invisible before.
+            ok_set = [f"causal-powers:{e}" for e in (expected or [skill])]
             if should:
-                if mine:
+                if any(e in ans for e in ok_set):
                     wins += 1
                 else:
                     losses += 1
                     print(f"  LOST [{skill}] -> {ans[:60]:60s} | {q[:70]}")
             else:
-                if mine:
+                if "causal-powers:" in ans:
                     viol += 1
-                    print(f"  FALSE-FIRE [{skill}] | {q[:70]}")
+                    print(f"  FALSE-FIRE [{skill}] -> {ans[:60]:60s} | {q[:70]}")
                 else:
                     neg_ok += 1
     print(f"\n--live ({model}{', +competitors' if competitors else ''}): "

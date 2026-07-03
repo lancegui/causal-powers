@@ -20,7 +20,10 @@
   "analysis-review": {
     "hits": [
       "before i ship this, can you look over the model results? our holdout AUC jumped to 0.97 and i want a second pair of eyes on whether something's off",
-      "can you review my churn notebook before i send it to the VP? it's analysis/q3_churn.ipynb \u2014 i mostly want to know if the numbers are trustworthy, not whether the code is pretty"
+      "can you review my churn notebook before i send it to the VP? it's analysis/q3_churn.ipynb \u2014 i mostly want to know if the numbers are trustworthy, not whether the code is pretty",
+      "my colleague dropped a pricing analysis in the PR and asked me to sanity-check it. there's a big join between transactions and accounts and the revenue total feels high. does this look right?",
+      "sanity-check these numbers before I send this",
+      "sanity-check these numbers for me \u2014 finance gave me a spreadsheet and a python script that recomputes margins by region and the regional figures don't reconcile to the company total"
     ],
     "violations": []
   },

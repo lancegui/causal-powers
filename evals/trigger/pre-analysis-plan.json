@@ -1,25 +1,101 @@
 [
-  {"query": "we're about to read out the checkout-redesign A/B test next week. before i look at the conversion numbers, help me lock down exactly what we'll test and what counts as a win", "should_trigger": true},
-  {"query": "leadership wants to know if the onboarding revamp actually moved 30-day retention. it's a high-stakes call and i don't want anyone accusing me of cherry-picking specs after the fact", "should_trigger": true},
-  {"query": "register this analysis — i'm evaluating whether the state paid-leave mandate reduced infant mortality and i need the primary spec, sample rules, and robustness suite written down before i touch outcomes", "should_trigger": true},
-  {"query": "i have a stake in this coming out positive (it's my project) so i want to commit to the hypotheses and the exact regression now, while i'm still blind to results", "should_trigger": true},
-  {"query": "did the pricing experiment move ARPU? data's not unblinded yet, want to set up a proper confirmatory readout in pap.md before i estimate", "should_trigger": true},
-  {"query": "test the hypothesis that the new feature increased weekly active sessions. this is going in the board deck so it needs to be airtight, not a spec search", "should_trigger": true},
-  {"query": "the regulator is going to scrutinize our claim that the rate change didn't harm low-income borrowers. how do i pre-commit the analysis so it holds up to a skeptical reviewer", "should_trigger": true},
-  {"query": "we ran a field experiment giving cash transfers to half the villages. i want to write down the primary outcome, the exclusion rules, and the placebo checks BEFORE i merge in the endline survey", "should_trigger": true},
-  {"query": "evaluate whether the discount campaign worked. before i start poking at it i want hypotheses ranked, one primary spec locked, and a decision rule for what counts as no effect", "should_trigger": true},
-  {"query": "i keep getting tempted to tweak controls until significance shows up. can you help me freeze the analysis design now so i stop fishing on this policy eval", "should_trigger": true},
-  {"query": "before we estimate the effect of the tutoring program i want one committed model and a defined null — what would count as the program not working", "should_trigger": true},
-  {"query": "what's the right estimand and population here — am i after the ATT on treated schools or the ITT across everyone assigned? help me pin that down first", "should_trigger": false},
-  {"query": "someone just handed me this sales dataset, no specific question yet. i just want to poke around and see what's interesting in it", "should_trigger": false},
-  {"query": "just give me the total number of active users per region last month, simple descriptive count, no modeling", "should_trigger": false},
-  {"query": "i already ran the diff-in-diff and the parallel-trends pre-period looks off — help me figure out why the coefficient flipped sign", "should_trigger": false},
-  {"query": "the analysis is basically done, i just need to reconcile the totals in my table against the source and reproduce it from a clean session before i send it", "should_trigger": false},
-  {"query": "before i write any code, what decision is this metric actually informing and how should i define 'engaged user' for it?", "should_trigger": false},
-  {"query": "my 2SLS first stage is super weak, F-stat around 3. how do i diagnose and fix the instrument in my python code", "should_trigger": false},
-  {"query": "format these pre-registered regression results into a latex table with clustered SEs and significance stars for the appendix", "should_trigger": false},
-  {"query": "explain to my intern the difference between confirmatory and exploratory analysis, i'm prepping a short talk", "should_trigger": false},
-  {"query": "let's pre-commit to the test design before we look at the CI run results", "should_trigger": false},
-  {"query": "register for the conference before the deadline", "should_trigger": false},
-  {"query": "did the marketing campaign for the launch party go well", "should_trigger": false}
+ {
+  "query": "we're about to read out the checkout-redesign A/B test next week. before i look at the conversion numbers, help me lock down exactly what we'll test and what counts as a win",
+  "should_trigger": true
+ },
+ {
+  "query": "leadership wants to know if the onboarding revamp actually moved 30-day retention. it's a high-stakes call and i don't want anyone accusing me of cherry-picking specs after the fact",
+  "should_trigger": true
+ },
+ {
+  "query": "register this analysis \u2014 i'm evaluating whether the state paid-leave mandate reduced infant mortality and i need the primary spec, sample rules, and robustness suite written down before i touch outcomes",
+  "should_trigger": true
+ },
+ {
+  "query": "i have a stake in this coming out positive (it's my project) so i want to commit to the hypotheses and the exact regression now, while i'm still blind to results",
+  "should_trigger": true
+ },
+ {
+  "query": "did the pricing experiment move ARPU? data's not unblinded yet, want to set up a proper confirmatory readout in pap.md before i estimate",
+  "should_trigger": true
+ },
+ {
+  "query": "test the hypothesis that the new feature increased weekly active sessions. this is going in the board deck so it needs to be airtight, not a spec search",
+  "should_trigger": true
+ },
+ {
+  "query": "the regulator is going to scrutinize our claim that the rate change didn't harm low-income borrowers. how do i pre-commit the analysis so it holds up to a skeptical reviewer",
+  "should_trigger": true
+ },
+ {
+  "query": "we ran a field experiment giving cash transfers to half the villages. i want to write down the primary outcome, the exclusion rules, and the placebo checks BEFORE i merge in the endline survey",
+  "should_trigger": true
+ },
+ {
+  "query": "evaluate whether the discount campaign worked. before i start poking at it i want hypotheses ranked, one primary spec locked, and a decision rule for what counts as no effect",
+  "should_trigger": true
+ },
+ {
+  "query": "i keep getting tempted to tweak controls until significance shows up. can you help me freeze the analysis design now so i stop fishing on this policy eval",
+  "should_trigger": true
+ },
+ {
+  "query": "before we estimate the effect of the tutoring program i want one committed model and a defined null \u2014 what would count as the program not working",
+  "should_trigger": true
+ },
+ {
+  "query": "what's the right estimand and population here \u2014 am i after the ATT on treated schools or the ITT across everyone assigned? help me pin that down first",
+  "should_trigger": false
+ },
+ {
+  "query": "someone just handed me this sales dataset, no specific question yet. i just want to poke around and see what's interesting in it",
+  "should_trigger": false
+ },
+ {
+  "query": "just give me the total number of active users per region last month, simple descriptive count, no modeling",
+  "should_trigger": false
+ },
+ {
+  "query": "i already ran the diff-in-diff and the parallel-trends pre-period looks off \u2014 help me figure out why the coefficient flipped sign",
+  "should_trigger": false
+ },
+ {
+  "query": "the analysis is basically done, i just need to reconcile the totals in my table against the source and reproduce it from a clean session before i send it",
+  "should_trigger": false
+ },
+ {
+  "query": "before i write any code, what decision is this metric actually informing and how should i define 'engaged user' for it?",
+  "should_trigger": false
+ },
+ {
+  "query": "my 2SLS first stage is super weak, F-stat around 3. how do i diagnose and fix the instrument in my python code",
+  "should_trigger": false
+ },
+ {
+  "query": "format these pre-registered regression results into a latex table with clustered SEs and significance stars for the appendix",
+  "should_trigger": false
+ },
+ {
+  "query": "explain to my intern the difference between confirmatory and exploratory analysis, i'm prepping a short talk",
+  "should_trigger": false
+ },
+ {
+  "query": "let's pre-commit to the test design before we look at the CI run results",
+  "should_trigger": false
+ },
+ {
+  "query": "register for the conference before the deadline",
+  "should_trigger": false
+ },
+ {
+  "query": "did the marketing campaign for the launch party go well",
+  "should_trigger": false
+ },
+ {
+  "query": "we're about to launch the A/B test \u2014 evaluate whether it moves conversion",
+  "should_trigger": true,
+  "expected": [
+   "pre-analysis-plan"
+  ]
+ }
 ]
