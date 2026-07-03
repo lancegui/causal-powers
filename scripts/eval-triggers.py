@@ -152,6 +152,22 @@ def part_a(cases, update_baseline: bool) -> int:
     return 0
 
 
+def agents_md_sync_check() -> int:
+    """AGENTS.md is a real file (symlinks break on Windows checkouts and ZIP
+    downloads — the card arrived as a one-line path string). It must stay
+    byte-identical to hooks/session-context.md; regenerate with:
+        cp hooks/session-context.md AGENTS.md"""
+    agents = ROOT / "AGENTS.md"
+    card = ROOT / "hooks" / "session-context.md"
+    if not agents.exists():
+        print("AGENTS.md MISSING — run: cp hooks/session-context.md AGENTS.md")
+        return 1
+    if agents.read_bytes() != card.read_bytes():
+        print("AGENTS.md DRIFTED from hooks/session-context.md — run: cp hooks/session-context.md AGENTS.md")
+        return 1
+    return 0
+
+
 def frontmatter_cap_check(cap: int = 1024) -> int:
     """agentskills.io caps SKILL.md frontmatter at 1024 chars; Claude Code's own
     live skill listing truncates long descriptions mid-trigger-list (observed at
@@ -237,7 +253,7 @@ if __name__ == "__main__":
     cases = load_evals(a.skill)
     if not cases:
         sys.exit("no eval cases found")
-    over = frontmatter_cap_check()
+    over = frontmatter_cap_check() + agents_md_sync_check()
     rc = part_a(cases, a.update_baseline)
     rc = max(rc, 1 if over else 0)
     if a.live:
