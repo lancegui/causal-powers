@@ -9,7 +9,12 @@
     "violations": []
   },
   "analysis-craft": {
-    "hits": [],
+    "hits": [
+      "annotate this notebook to explain why we winsorized at the 99th percentile",
+      "don't over-engineer this \u2014 i need a quick julia script to average the survey responses per cohort, not a framework",
+      "refactor this analysis script so it's readable for the referee",
+      "this pipeline script is over-engineered, simplify it"
+    ],
     "violations": []
   },
   "analysis-review": {
@@ -24,6 +29,7 @@
       "estimate the employment impact of the 2014 minimum wage hike using the bordering-counties comparison",
       "i have an instrument for schooling (distance to nearest college) and want returns to education. set up the 2SLS in python with linearmodels and tell me what to check",
       "i want to claim the new policy cut recidivism by 8 percent. what placebo and sensitivity tests should i run before i put that number in the report?",
+      "polish the intro of my paper, then re-run the DiD with the corrected sample and report the new effect of the reform",
       "regress log wages on union membership with worker and year fixed effects \u2014 can i read that coefficient as the causal union premium?",
       "synthetic control for one treated state vs a donor pool of 30 others, how do i tell if the gap is actually significant"
     ],
@@ -65,17 +71,7 @@
       "we keep saying opioid scripts 'exploded' in the 2000s \u2014 can you actually pull the growth trend from the ARCOS extract and show me what it looked like? casual but i need it to be right",
       "what does the distribution of firm markups look like in markups_2019.csv? i suspect it's really right-skewed"
     ],
-    "violations": [
-      "did the medicaid expansion actually raise insurance coverage? i've got a diff-in-diff setup with treated and control states in coverage.dta",
-      "forecast next quarter's prescription volume by region so we can plan inventory",
-      "help me write the pre-analysis plan for our RCT before we unblind \u2014 hypotheses, primary outcome, the specs",
-      "i need to estimate what prices the merged firm would set after the merger \u2014 i've got the demand system data",
-      "i want to nail down the right way to define 'active prescriber' before i compute anything \u2014 what should the metric even be?",
-      "merge these three messy claims extracts into one clean patient-month panel and dedupe the overlapping records",
-      "this revenue figure looks wrong \u2014 it tripled right after i joined the two tables, that can't be right. can you work out what happened?",
-      "what's the effect of the 2016 minimum-wage hike on teen employment in the bordering counties?",
-      "which of these ~4,000 pharmacies should we prioritize for a DEA audit based on their shipment patterns? rank them by diversion risk"
-    ]
+    "violations": []
   },
   "executing-analysis-plans": {
     "hits": [
@@ -115,6 +111,17 @@
     ],
     "violations": []
   },
+  "project-organization": {
+    "hits": [
+      "clean up the repo and organize the project before I push",
+      "commit a checkpoint before we change the spec",
+      "make this reproducible for a collaborator",
+      "standardize the naming of the scripts and figures",
+      "the results folder has 40 diagnostic pngs mixed with the paper figures \u2014 sort out what's a deliverable",
+      "what folder structure should this research project use"
+    ],
+    "violations": []
+  },
   "question-framing": {
     "hits": [
       "can you make a figure of treatment vs control facilities on a map so i can sanity-check that the treated ones actually cluster where i think",
@@ -136,6 +143,13 @@
       "ok the lift is 4.2% and i'm putting it in the board deck tomorrow morning. anything i should do before that slide is final?",
       "the answer is the price elasticity is -1.8. wrapping up the memo now",
       "think i'm done with the churn analysis. the headline is 11.3% monthly churn for the SMB segment. about to send the summary to the VP of sales"
+    ],
+    "violations": []
+  },
+  "router-payload": {
+    "hits": [
+      "PAYLOAD::{\"cwd\": \"/Users/x/proj\", \"prompt\": \"why is this number so high? the total doesn't match the source extract\"}",
+      "PAYLOAD::{\"cwd\": \"/Users/x/webapp\", \"prompt\": \"merge these two csv files into one dataset on customer_id\"}"
     ],
     "violations": []
   },

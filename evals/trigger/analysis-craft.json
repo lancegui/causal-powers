@@ -1,25 +1,106 @@
 [
-  {"query": "add a churned_flag column to my retention notebook based on last_active_date, don't touch anything else", "should_trigger": true},
-  {"query": "can you tweak this dplyr pipeline so it groups by region as well as month? here's the chunk", "should_trigger": true},
-  {"query": "i wrote a 180-line pandas cell to compute weekly active users and it's a mess, can you clean it up without changing the numbers", "should_trigger": true},
-  {"query": "i'm about to add a config system and a class to this one-off script that just reads a csv and plots revenue — is that overkill?", "should_trigger": true},
-  {"query": "refactor request: i only need you to swap the hard-coded 2023 for a date variable in this analysis, leave the rest of my colleague's pipeline alone", "should_trigger": true},
-  {"query": "this R script merges two files and prints a summary. just make it also write the result to parquet, nothing fancy", "should_trigger": true},
-  {"query": "don't over-engineer this — i need a quick julia script to average the survey responses per cohort, not a framework", "should_trigger": true},
-  {"query": "add a log-transform step before the regression in cell 7 of my notebook, keep the diff small so i can review it", "should_trigger": true},
-  {"query": "my teammate's data.table script works fine, i just want to append one more aggregated column for median tenure. please don't restyle her code", "should_trigger": true},
-  {"query": "i have a working notebook that computes the conversion funnel. add a row for the checkout step but keep everything reproducible and surgical", "should_trigger": true},
-  {"query": "annotate this regression script so a referee could follow why each sample restriction is there", "should_trigger": true},
-  {"query": "make this cleaning code readable for the replication package — name the variables and comment the winsorize", "should_trigger": true},
-  {"query": "add comments explaining why we cluster at the state level and why we drop pre-2010, for my coauthor", "should_trigger": true},
-  {"query": "this number looks wrong — revenue tripled right after i joined the orders and customers tables, can you figure out what went off", "should_trigger": false},
-  {"query": "my total active users jumped from 40k to 600k after the last merge and that can't be right, help me trace where it broke", "should_trigger": false},
-  {"query": "before i start, what exactly should 'active user' mean here — logged in, or did an action? i need to pin the definition", "should_trigger": false},
-  {"query": "can you sanity-check my notebook before i send it to the VP? does this look right to you", "should_trigger": false},
-  {"query": "review this analysis for silent failures — i'm worried about an unchecked join and a fished spec before we publish", "should_trigger": false},
-  {"query": "write a build script that retries the nightly cron job three times and posts to slack on failure", "should_trigger": false},
-  {"query": "tighten the methods paragraph in my paper describing how i constructed the panel, the prose is clunky", "should_trigger": false},
-  {"query": "format this regression output into a latex table with significance stars and clustered SEs", "should_trigger": false},
-  {"query": "the coefficient on price came out positive which makes no sense — where in my pipeline did the sign flip", "should_trigger": false},
-  {"query": "refactor our react dashboard component to use hooks instead of class components", "should_trigger": false}
+ {
+  "query": "add a churned_flag column to my retention notebook based on last_active_date, don't touch anything else",
+  "should_trigger": true
+ },
+ {
+  "query": "can you tweak this dplyr pipeline so it groups by region as well as month? here's the chunk",
+  "should_trigger": true
+ },
+ {
+  "query": "i wrote a 180-line pandas cell to compute weekly active users and it's a mess, can you clean it up without changing the numbers",
+  "should_trigger": true
+ },
+ {
+  "query": "i'm about to add a config system and a class to this one-off script that just reads a csv and plots revenue \u2014 is that overkill?",
+  "should_trigger": true
+ },
+ {
+  "query": "refactor request: i only need you to swap the hard-coded 2023 for a date variable in this analysis, leave the rest of my colleague's pipeline alone",
+  "should_trigger": true
+ },
+ {
+  "query": "this R script merges two files and prints a summary. just make it also write the result to parquet, nothing fancy",
+  "should_trigger": true
+ },
+ {
+  "query": "don't over-engineer this \u2014 i need a quick julia script to average the survey responses per cohort, not a framework",
+  "should_trigger": true
+ },
+ {
+  "query": "add a log-transform step before the regression in cell 7 of my notebook, keep the diff small so i can review it",
+  "should_trigger": true
+ },
+ {
+  "query": "my teammate's data.table script works fine, i just want to append one more aggregated column for median tenure. please don't restyle her code",
+  "should_trigger": true
+ },
+ {
+  "query": "i have a working notebook that computes the conversion funnel. add a row for the checkout step but keep everything reproducible and surgical",
+  "should_trigger": true
+ },
+ {
+  "query": "annotate this regression script so a referee could follow why each sample restriction is there",
+  "should_trigger": true
+ },
+ {
+  "query": "make this cleaning code readable for the replication package \u2014 name the variables and comment the winsorize",
+  "should_trigger": true
+ },
+ {
+  "query": "add comments explaining why we cluster at the state level and why we drop pre-2010, for my coauthor",
+  "should_trigger": true
+ },
+ {
+  "query": "this number looks wrong \u2014 revenue tripled right after i joined the orders and customers tables, can you figure out what went off",
+  "should_trigger": false
+ },
+ {
+  "query": "my total active users jumped from 40k to 600k after the last merge and that can't be right, help me trace where it broke",
+  "should_trigger": false
+ },
+ {
+  "query": "before i start, what exactly should 'active user' mean here \u2014 logged in, or did an action? i need to pin the definition",
+  "should_trigger": false
+ },
+ {
+  "query": "can you sanity-check my notebook before i send it to the VP? does this look right to you",
+  "should_trigger": false
+ },
+ {
+  "query": "review this analysis for silent failures \u2014 i'm worried about an unchecked join and a fished spec before we publish",
+  "should_trigger": false
+ },
+ {
+  "query": "write a build script that retries the nightly cron job three times and posts to slack on failure",
+  "should_trigger": false
+ },
+ {
+  "query": "tighten the methods paragraph in my paper describing how i constructed the panel, the prose is clunky",
+  "should_trigger": false
+ },
+ {
+  "query": "format this regression output into a latex table with significance stars and clustered SEs",
+  "should_trigger": false
+ },
+ {
+  "query": "the coefficient on price came out positive which makes no sense \u2014 where in my pipeline did the sign flip",
+  "should_trigger": false
+ },
+ {
+  "query": "refactor our react dashboard component to use hooks instead of class components",
+  "should_trigger": false
+ },
+ {
+  "query": "refactor this analysis script so it's readable for the referee",
+  "should_trigger": true
+ },
+ {
+  "query": "annotate this notebook to explain why we winsorized at the 99th percentile",
+  "should_trigger": true
+ },
+ {
+  "query": "this pipeline script is over-engineered, simplify it",
+  "should_trigger": true
+ }
 ]

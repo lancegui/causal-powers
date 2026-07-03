@@ -1,0 +1,11 @@
+[
+  {"query": "clean up the repo and organize the project before I push", "should_trigger": true},
+  {"query": "what folder structure should this research project use", "should_trigger": true},
+  {"query": "standardize the naming of the scripts and figures", "should_trigger": true},
+  {"query": "make this reproducible for a collaborator", "should_trigger": true},
+  {"query": "commit a checkpoint before we change the spec", "should_trigger": true},
+  {"query": "the results folder has 40 diagnostic pngs mixed with the paper figures — sort out what's a deliverable", "should_trigger": true},
+  {"query": "clean up this dataframe before modeling", "should_trigger": false},
+  {"query": "organize my thoughts on the identification strategy", "should_trigger": false},
+  {"query": "commit to the primary specification before we see outcomes", "should_trigger": false}
+]
