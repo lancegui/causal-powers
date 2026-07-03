@@ -100,7 +100,7 @@ When ML estimates the nuisances of a causal estimand, this arm still governs —
 
 ## Bad controls — the quiet killer of reduced-form work
 
-Adding a control can *create* bias as easily as remove it. The rule: only condition on variables determined **before** treatment. A control that is itself an outcome of the treatment reopens the very confounding you're trying to close.
+Adding a control can *create* bias as easily as remove it. The rule: only condition on variables determined **before** treatment — and even that is necessary, not sufficient: a pre-treatment collider (M-bias) or a bias-amplifying near-instrument is still a bad control. Every control needs a confounding story, not just a timestamp. A control that is itself an outcome of the treatment reopens the very confounding you're trying to close.
 
 - **Post-treatment controls / mediators.** Controlling for a channel the treatment works through (e.g. "effect of education on wages, controlling for occupation") nets out part of the effect and biases the estimate — usually toward zero, sometimes unpredictably. If it could plausibly have been *affected* by treatment, it is not a control.
 - **Colliders.** Conditioning on a variable that both treatment and outcome cause induces a spurious association where none existed. Selecting the sample on such a variable does the same thing silently.

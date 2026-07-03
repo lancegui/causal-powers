@@ -86,7 +86,9 @@ def grad_check(obj, analytic_grad, theta, h=1e-6):
     return np.max(np.abs(g_analytic - g_fd))   # central diff: agree to ~6–8 digits; complex-step: ~machine eps
 ```
 
-**When a closed form genuinely isn't achievable:** use complex-step or central
+**Automatic differentiation first:** ForwardDiff/Enzyme (Julia) or JAX/PyTorch (Python) deliver machine-precision gradients through most objectives — including fixed-point inner loops via the implicit-function theorem (differentiate the solved system, not the iterations). Verify once against finite differences (the harness below), then rely on it; hand-derive only what AD cannot traverse.
+
+**When neither AD nor a closed form is achievable:** use complex-step or central
 differences, keep the inner-loop tolerance tight, and prefer **MPEC** so there's no
 nested loop whose tolerance can poison the gradient.
 
@@ -100,7 +102,7 @@ non-identification (a flat objective). Run it first; keep it as a regression tes
 
 **Recipe.**
 1. Fix a true θ★ and simulate a dataset *from the model* at θ★. Keep each fit
-   cheap — **shrink the parameter space and the sample size** so the slow
+   cheap — **shrink the sample size (N, markets, draws), never θ's dimension** so the slow
    structural estimator runs fast enough to repeat many times. Then estimate
    **from a θ₀ deliberately far from θ★** and confirm convergence *back* to θ★ —
    the distant cold start is what tests identification and the optimizer, not just
@@ -122,7 +124,7 @@ non-identification (a flat objective). Run it first; keep it as a regression tes
    cross-seed variance.
 
 **Pass criteria** (assert these — `data-contracts` for the estimator):
-- θ̂ converges back to θ★ from distant starts at each θ★ — mean |θ̂ − θ★| within ~2 Monte-Carlo SEs (or bias < a few % of θ★ as a default tolerance).
+- θ̂ converges back to θ★ from distant starts at each θ★ — mean |θ̂ − θ★| within ~2 Monte-Carlo SEs. (MC-SE units only: a %-of-θ★ tolerance is vacuous at θ★ = 0, a common and important test point.)
 - θ̂ variance shrinks as N grows.
 - No flat axis at θ★, **and** the smallest eigenvalue of the Hessian/Jacobian is bounded away from zero (no ridge).
 - Analytical and finite-difference gradients agree to ~6–8 digits.
