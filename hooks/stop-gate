@@ -68,8 +68,16 @@ wrote_results=0
 # reads it as 'not backslash, not n', which silently killed this detector in
 # production (0/62 ledger hits). grep is line-based; .* cannot cross lines.
 printf '%s' "$tail_blob" | grep -Eq '"name":[[:space:]]*"(Write|Edit|NotebookEdit)".*"file_path":[[:space:]]*"[^"]*((results?|summary|findings|estimates?|tables?|figures?|report|outputs?|deliverable|writeup|memo)[^"]*\.(md|csv|tex|txt|html|pdf|docx|xlsx|png)|/(output|outputs|results|tables|figures|reports)/[^"]*\.(md|csv|tex|txt|html|pdf|docx|xlsx|png))"' && wrote_results=1
+# verified needs EVIDENCE, not utterance: merely loading result-verification
+# satisfied the old check with zero verification performed. Now the LAST
+# invocation must be followed by at least one Bash tool call (something ran).
+# Limitation, stated honestly: this proves post-invocation execution, not that
+# reconciliation passed — the block text demands the evidence lines themselves.
 verified=0
-grep -Eq '"skill":[[:space:]]*"(causal-powers:)?result-verification"' "$transcript" 2>/dev/null && verified=1
+ver_line="$(grep -nE '"skill":[[:space:]]*"(causal-powers:)?result-verification"' "$transcript" 2>/dev/null | tail -1 | cut -d: -f1)"
+if [ -n "$ver_line" ]; then
+  tail -n +"$ver_line" "$transcript" 2>/dev/null | grep -Eq '"name":[[:space:]]*"Bash"' && verified=1
+fi
 debug_count="$(grep -Ec '"skill":[[:space:]]*"(causal-powers:)?wrong-number-debugging"' "$transcript" 2>/dev/null || echo 0)"
 debug_count="${debug_count//[!0-9]/}"; debug_count="${debug_count:-0}"
 debugged=0; [ "$debug_count" -ge 1 ] && debugged=1
