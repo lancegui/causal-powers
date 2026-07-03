@@ -94,7 +94,9 @@ effect — the `predictive-modeling` arm):
   versus known estimates, and does it match a mechanism?
 
 **Reproducibility**
-- Does it reproduce from a clean state with a fixed seed? Do the numbers in the
+- Is there a fixed seed and a single entry point? You don't rebuild it — report
+  actual reproduction as **unverified-by-reviewer**; the author proves it via
+  result-verification. Do the numbers in the
   prose/figures match this run's output?
 
 ## What to return

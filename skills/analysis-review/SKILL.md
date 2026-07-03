@@ -34,13 +34,7 @@ Work down from the conclusion to the data. Each item is a class of silent error 
 - **Structural models:** is each parameter's identification stated — what variation or moment moves it? Was the estimator shown to recover known parameters (a Monte-Carlo recovery test), or is a converged optimizer being taken as proof of identification? Is any counterfactual computed by *re-solving equilibrium* rather than holding prices fixed? Is the conduct/distribution assumption flagged as load-bearing and untestable? (Hand off to `structural-estimation`.)
 
 **Prediction models** (when the deliverable is a score / flag / ranking, not an effect — the `predictive-modeling` arm):
-- **Leakage variants:** target leakage (a feature that encodes the outcome), temporal leakage (future data in a predictor), group leakage (test rows share a group with train rows), and preprocessing leakage (scaling/imputation fit on the full sample before the split).
-- **Split doesn't mirror deployment:** random split when temporal or group-aware splitting is needed — the held-out error will be optimistic and the model will underperform in production.
-- **Tuning on the test set:** hyperparameters or thresholds selected by looking at test performance; no truly held-out evaluation remains.
-- **Feature importance / SHAP read as a causal effect:** variable importance ranks predictive contribution under the training distribution — it is not an effect and does not survive an intervention.
-- **Proxy label treated as ground truth:** the label was itself predicted, imputed, or derived from a biased process; reported performance is relative to a noisy or biased target, not the underlying truth.
-- **No baseline to beat:** a model with no comparison to a simple rule, the prior rate, or a last-observation-carry-forward benchmark cannot be judged useful.
-- **"Anomalous" flag reported as "guilty":** an outlier or anomaly score is a deviation from the training distribution, not evidence of wrongdoing; conflating them is a claim the model cannot support.
+- The class-by-class hunt list — leakage variants, deployment-mismatched splits, tuning-on-test, importance-read-as-causal, proxy labels, missing baselines, anomalous-read-as-guilty — lives in **`agents/analysis-reviewer.md`**, which the reviewer agent carries. Don't restate it here; dispatch the agent (below) or open that file when reviewing inline.
 
 **Reproducibility**
 - Does it **reproduce from a clean state** with a fixed seed, or only inside the author's live session?
@@ -48,11 +42,13 @@ Work down from the conclusion to the data. Each item is a class of silent error 
 
 ## Run it as an independent agent
 
-For a genuinely independent pass — especially before results ship, or in parallel
-with the work itself — dispatch the **`analysis-reviewer`** agent that Causal
-Powers ships. A reviewer with fresh context catches what the author (you)
-rationalized; it returns concrete findings with severity rather than a
-rubber stamp. Use it in addition to, not instead of, reviewing as you go.
+**For your OWN analysis, pre-ship, dispatching the `analysis-reviewer` agent is
+REQUIRED — an inline self-review does not satisfy this skill.** You cannot supply
+your own independence: the reviewer's value is fresh context hunting what the
+author rationalized, and it returns concrete findings with severity rather than
+a rubber stamp. Reviewing someone else's work, you already are the fresh
+context — inline is fine. Either way, use it in addition to, not instead of,
+reviewing as you go.
 
 ## Review like an adversary, not a proofreader
 
@@ -93,6 +89,7 @@ When someone critiques your analysis, the failure mode is reflexive agreement: "
 | "It's just an internal review, ship it." | The internal number drives the decision. Internal is exactly when nobody else will catch it. |
 | "They flagged it, so it must be wrong — fixing." | Maybe. Verify it against the data first; agreeing without checking can introduce a new bug. |
 | "There's no time to ask for the intermediate checks." | Then there's no time to know whether the number is real. Reviewing only the output is reviewing nothing. |
+| "result-verification already covered all of this." | Verification proves the number reproduces and reconciles. Review hunts what reproducibility can't catch — leakage, bad controls, fished specs. Different failure classes; both run. |
 
 ## When to Use → where this hands off
 
