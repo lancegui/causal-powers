@@ -15,18 +15,18 @@ This is the execution-time form of "Think Before Coding": don't decide silently,
 
 ## The line: your call vs. the user's call
 
-The test is simple — **does this change what is being estimated, on what data, or a number the user has already seen?** If yes, it's the user's call. Run this one question on *every* decision you're about to make; the two lists below are just worked examples of "yes" (STOP) and "no" (proceed and report).
+The test is simple — **does this change what is being estimated, on what data, or a number the user has already seen?** If yes, it's the user's call. Run this one question on *every* decision you're about to make; the two lists below are just worked examples of "yes" (STOP) and "no" (proceed and report). Two sanctioned stops sit *outside* the test: the execution-mode choice (inline vs subagents) and discretionary-robustness selection — they stop because the plan assigns them to the user, not because they change what's estimated.
 
 ### Decisions that REQUIRE a checkpoint — STOP and ask
 - **Design / identification strategy.** Switching estimators or designs (near-vs-far DiD → triple-difference, OLS → IV, adding/removing a fixed effect that changes identification, changing the comparison group). This is the most commonly smuggled-in change.
 - **The structural model itself.** For structural work: the utility/payoff form, the random-coefficient distribution, the conduct/equilibrium assumption, what's treated as a primitive vs. held fixed or calibrated, and the counterfactual design. These decide what is even being estimated and what the counterfactual means; they belong in the approved model card, so changing one mid-estimation — switching Nash–Bertrand to collusion, adding a random coefficient to make estimates behave — is a deviation, not a fix (`structural-estimation`).
 - **Any deviation from the framed question or the pre-analysis plan.** The PAP exists precisely so these stops happen. A deviation is allowed — but disclosed and approved, never hidden.
 - **The estimand.** ATE vs. ATT vs. LATE, the population, the time window.
-- **The sample.** Dropping rows, filtering, winsorizing, trimming, excluding outliers, changing inclusion/exclusion rules, restricting to a subsample.
+- **The sample.** Dropping rows, filtering, winsorizing, trimming, excluding outliers, changing inclusion/exclusion rules, restricting to a subsample — and the additive direction too: **adding to, re-pulling, or substituting the data source/vintage**, and **selecting among optimizer runs / seeds / starting values** for the reported estimate.
 - **Materially different specifications or models** where there's a real tradeoff (functional form, control set, clustering level, missing-data handling, imputation).
 - **Metric definition / units / grain.** Redefining the numerator or denominator, changing the unit of observation.
 - **The scope of the robustness suite.** Don't fan out an exhaustive menu of checks. Propose the ~3 that probe the main threat, with rationales, and get approval before running — robustness is an argument, not an inventory (`executing-analysis-plans`).
-- **Any number the user has already seen** that your change would move.
+- **Any reported or actionable number the user has seen** — a result, headline total, or anything in a deliverable — that your change would move. (Echoed intermediates — row counts, quick chat diagnostics — don't stop the work: apply the change and report the old → new delta inline.)
 
 ### Decisions you may make autonomously — note it, don't ask
 - **Mechanical data-bug fixes that *restore* the intended computation** — dedup a key that was always meant to be unique, correct a wrong join type, fix a units error, repair a broken date parse. These return the analysis to what was already agreed; they don't change the design. Always **report** what you fixed. A "restoring" claim must **cite the written line** (brief / PAP / decisions log) that establishes the intended behavior — no citation, no "restore": it's a design choice, STOP. During `data-preparation`'s Phase 1 its stricter rule wins: any beyond-trivial dedup is a checkpoint. **Tiebreaker:** a restoring fix that nonetheless *moves a number the user has already seen* is still a checkpoint — apply it, but surface the moved number (old → new, and why) before building anything further on it.
@@ -43,6 +43,8 @@ When you hit one, stop and present — don't implement past it:
 3. **Lay out the options** — at least two — each with its tradeoff and what it would change about the result.
 4. **Give your recommendation and why** — you're not abdicating judgment, you're surfacing it for approval.
 5. **WAIT.** Do not write the redesign, drop the rows, or re-estimate until the user chooses. Implementing "so it's ready for them to see" is the exact failure mode.
+
+**Bundle the asks, never the decisions:** gates known at the same moment go in **one approval message** (framing + PAP + Phase-1 roadmap + execution mode), each named separately so the user can approve or redirect each. PAP sign-off covers the Phase-1 roadmap when the PAP already specifies the build steps.
 
 **If you cannot reach the user** (a batch, cron, or otherwise non-interactive run), a deadlock is wrong but so is deciding for them: **stop at the last validated state, do NOT implement the checkpoint-class change, and return the options + your recommendation as the deliverable** for a human to resolve. Surfacing the decision unresolved is the correct output, not a failure.
 
@@ -90,7 +92,9 @@ digraph analysis_checkpoints_next {
     "User decided?" -> "WAIT — present options + recommendation, do not implement" [label="no"];
     "User decided?" -> "Change is to the framed question / estimand?" [label="yes — approved"];
     "Change is to the framed question / estimand?" -> "invoke question-framing — re-frame, then re-derive the plan" [label="yes"];
-    "Change is to the framed question / estimand?" -> "invoke pre-analysis-plan — record the deviation, re-lock" [label="no — deviation from the locked PAP"];
+    "record the approved deviation in analysis-plan.md's decisions log, resume" [shape=box style=filled fillcolor=lightgreen];
+    "Change is to the framed question / estimand?" -> "invoke pre-analysis-plan — record the deviation, re-lock" [label="no — a locked PAP exists"];
+    "Change is to the framed question / estimand?" -> "record the approved deviation in analysis-plan.md's decisions log, resume" [label="no — everyday plan, no PAP"];
 }
 ```
 
