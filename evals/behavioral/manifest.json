@@ -1,5 +1,6 @@
 [
   "bad-control",
+  "composition-simpson",
   "fanout-join",
   "leakage-overlap",
   "na-silent-drop",
