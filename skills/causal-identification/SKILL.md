@@ -15,6 +15,25 @@ A regression coefficient is a correlation with good posture. It becomes a causal
 
 Before any model, answer the Angrist–Pischke question: **if you could have run the ideal randomized experiment to answer this, what would it be — and what real-world variation are you using as a stand-in for that randomization?** Name the source of variation in one sentence and say why it's as good as random. If you can't, you don't have an identification strategy; you have a regression hoping to be one. Everything below — the design, the assumptions, the diagnostics — is just making that "as good as random" claim precise and testable.
 
+## The Design Card — sign-off before estimation
+
+Structural work locks a model card; prediction locks a Prediction Spec. A causal
+claim locks a **Design Card** — write it into the plan file (root
+`analysis-plan.md`, or the PAP when one exists) and get explicit sign-off
+BEFORE estimating:
+
+- **Causal question + estimand** — ATT/ATE/LATE, for which population.
+- **Design + source of variation** — the "what's your experiment?" answer, one sentence.
+- **The untestable assumption**, in plain language, and why it's plausible *here*.
+- **Diagnostics planned** — the design-specific tests you'll run before reading the estimate.
+- **Robustness shortlist** — the ~3 checks aimed at the main threat (running them is an `analysis-checkpoints` approval).
+- **Primary spec** — outcome, treatment, FE/controls (each control with its confounding story), SEs/clustering.
+
+Entering mid-stream ("just run the DiD") does not waive the card — reconstruct it
+from context in ≤10 lines, confirm with the user, then estimate. "The user
+already said regress Y on X" names the *spec*, not the *design*; the card is
+still required.
+
 ## The discipline
 
 ```
@@ -33,6 +52,12 @@ NAME THE DESIGN  →  STATE THE ASSUMPTIONS  →  TEST THE TESTABLE ONES  →  E
 Picking the identification strategy, and *changing* it once the analysis is underway, are among the most consequential calls in the whole study — they decide what is even being estimated. They are not yours to make silently. When a diagnostic fails (pre-trends violated, weak first stage, manipulation at the cutoff, imbalance that won't resolve) or you discover a threat that calls for a different design, present the **threat, the candidate remedies, and your recommendation** as a checkpoint and let the user decide — see **`analysis-checkpoints`**. Surfacing "the parallel-trends assumption is violated; we could switch to a triple-difference, restrict the sample, or report with a caveat" is the job. Quietly upgrading the design to make the estimate behave is not — especially when it deviates from the pre-analysis plan.
 
 ## Per-design assumptions and diagnostics
+
+Tag discipline: items labeled **Test** are *diagnostics* — run them before or
+with estimation, no approval needed. Items labeled **Robustness** (and every
+placebo) belong to the approval-gated ~3-check shortlist (see "Robustness,
+placebo, sensitivity"). Don't reclassify a placebo as a diagnostic to skip the
+checkpoint, or a pre-trend test as robustness to stall it.
 
 ### Difference-in-differences / event study
 - **Load-bearing assumption:** parallel trends — treated and control would have moved together absent treatment. Untestable directly; argue it.
@@ -116,6 +141,7 @@ When a stack lacks a mature implementation (much of staggered-DiD and RDD outsid
 | "TWFE is the standard DiD." | It was. With staggered timing it's biased toward the wrong comparisons. Use a modern estimator. |
 | "The instrument is clearly exogenous." | Exclusion is untestable, which is exactly why it needs a real argument, not an assertion. |
 | "Robustness checks are for the appendix." | They're for deciding whether you believe your own result. Run them before you commit to it. |
+| "The user already said regress Y on X — that's my approval." | That approved the spec, not the design. The Design Card (variation source, untestable assumption, diagnostics) still gets written and signed off. |
 
 ## When to Use → where this hands off
 
