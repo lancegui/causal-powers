@@ -64,14 +64,17 @@ proj="$(field cwd)"; proj="${proj:-${PWD:-.}}"
 # writes = Write/Edit tool calls whose file_path looks like a results artifact.
 tail_blob="$(tail -c 400000 "$transcript" 2>/dev/null || true)"
 wrote_results=0
-printf '%s' "$tail_blob" | grep -Eq '"name":[[:space:]]*"(Write|Edit|NotebookEdit)"[^\n]*"file_path":[[:space:]]*"[^"]*(results?|summary|findings|estimates|tables?)[^"]*\.(md|csv|tex|txt|html)"' && wrote_results=1
+# NB: never use [^\n] in a bracket here — in the hook's C locale (no LANG) grep
+# reads it as 'not backslash, not n', which silently killed this detector in
+# production (0/62 ledger hits). grep is line-based; .* cannot cross lines.
+printf '%s' "$tail_blob" | grep -Eq '"name":[[:space:]]*"(Write|Edit|NotebookEdit)".*"file_path":[[:space:]]*"[^"]*((results?|summary|findings|estimates?|tables?|figures?|report|outputs?|deliverable|writeup|memo)[^"]*\.(md|csv|tex|txt|html|pdf|docx|xlsx|png)|/(output|outputs|results|tables|figures|reports)/[^"]*\.(md|csv|tex|txt|html|pdf|docx|xlsx|png))"' && wrote_results=1
 verified=0
 grep -Eq '"skill":[[:space:]]*"(causal-powers:)?result-verification"' "$transcript" 2>/dev/null && verified=1
 debug_count="$(grep -Ec '"skill":[[:space:]]*"(causal-powers:)?wrong-number-debugging"' "$transcript" 2>/dev/null || echo 0)"
 debug_count="${debug_count//[!0-9]/}"; debug_count="${debug_count:-0}"
 debugged=0; [ "$debug_count" -ge 1 ] && debugged=1
 lessons_touched=0
-printf '%s' "$tail_blob" | grep -Eq '"name":[[:space:]]*"(Write|Edit)"[^\n]*"file_path":[[:space:]]*"[^"]*LESSONS\.md"' && lessons_touched=1
+printf '%s' "$tail_blob" | grep -Eq '"name":[[:space:]]*"(Write|Edit)".*"file_path":[[:space:]]*"[^"]*LESSONS\.md"' && lessons_touched=1
 
 # Ledger (append-only; failures never block the session).
 {
