@@ -103,7 +103,10 @@ discipline present, makes the chain *fire* reliably, and makes long work resumab
   write-it-down-before-you-build rule (plan / spec / model card), the
   frame→approve→execute→verify spine, and a silent-failure + economist red-lines
   card — so the discipline is present by default, not contingent on a skill
-  triggering.
+  triggering. The same hook runs a **once-a-day update check** (a single fetch of
+  the repo's `plugin.json` from raw.githubusercontent.com, cache-gated) and
+  prints a one-line nudge when the installed version is stale; the
+  `CAUSAL_POWERS_DISABLED_HOOKS` kill-switch disables it like any other hook.
 - **A configurable language profile** (in that same always-on block) — sets the
   default language *by task*, correcting the LLM's reflex to reach for Python:
   **R** for analysis (cleaning with tidyverse/`dplyr`, descriptive evidence,
@@ -115,7 +118,7 @@ discipline present, makes the chain *fire* reliably, and makes long work resumab
 - **Trigger + chain-enforcement hooks** that turn the family from a *map* into a
   *flow that propels*. Every skill ends with an imperative `When to Use` decision
   graph + `The Process` that invokes the next skill; the hooks back that up — a
-  `UserPromptSubmit` keyword router (`hooks/prompt-router`, a high-precision
+  `UserPromptSubmit` keyword router (`hooks/prompt-router` — matches the prompt field only, skipping harness-injected shapes like task notifications and IDE events; a high-precision
   backstop) that re-surfaces the right skill on each prompt, and a `PostToolUse`
   skill-chain (`hooks/skill-chain`) that, the moment a skill is invoked, names its
   next obligation in the spine (framing → written plan → approval gate; execution →
@@ -145,11 +148,16 @@ discipline present, makes the chain *fire* reliably, and makes long work resumab
   by logging the failure class that bit, and general lessons fold back into the
   skills.
 - **Evals that measure both halves** (`evals/`, `scripts/`). *Does it fire?* —
-  `scripts/eval-triggers.py` runs the trigger corpus through the real
-  `prompt-router` against a committed regression baseline, with a `--live`
-  description-matching mode that includes the *competing* superpowers
-  descriptions. *Does it catch anything?* — `scripts/run-behavioral-eval.py`
-  A/Bs `claude -p` with and without the always-on card on nine tasks with
+  `scripts/eval-triggers.py` runs the trigger corpus (including full
+  payload-shaped cases) through the real `prompt-router` against a committed
+  regression baseline, enforces the 1024-char frontmatter cap and the
+  `AGENTS.md` sync, and has a `--live` description-matching mode that scores
+  contested phrases against expected winners alongside the *competing*
+  superpowers descriptions. *Does it catch anything?* —
+  `scripts/run-behavioral-eval.py` A/Bs `claude -p` across **baseline / card /
+  plugin** arms (the plugin arm installs the real hooks + skills into an
+  isolated config; `--user-reply` adds the second turn that sign-off gates
+  need) on tasks with
   planted silent failures (fan-out join, leakage, bad control, pre-trend
   violation, non-identified parameter, …), isolated from locally installed
   plugins, LLM-graded against per-scenario catch criteria
@@ -204,7 +212,8 @@ The skills are plain `SKILL.md` files with `name` + `description` frontmatter �
 **the same format Codex uses** — so they load and trigger natively (off the
 `description`, or by explicit `$<skill-name>`). Codex compatibility ships in the
 repo: a Codex manifest (`.codex-plugin/plugin.json`), an `AGENTS.md` that carries
-the always-on discipline (Codex has no SessionStart hook), and a tool-mapping
+the always-on discipline (Codex has no SessionStart hook; it's a real file, kept
+byte-identical to `hooks/session-context.md` by a CI check), and a tool-mapping
 reference ([`skills/using-causal-powers/references/codex-tools.md`](skills/using-causal-powers/references/codex-tools.md)).
 
 ### Built-in installer (copy-paste)
