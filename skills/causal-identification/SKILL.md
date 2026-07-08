@@ -18,9 +18,9 @@ Before any model, answer the Angrist–Pischke question: **if you could have run
 ## The Design Card — sign-off before estimation
 
 Structural work locks a model card; prediction locks a Prediction Spec. A causal
-claim locks a **Design Card** — write it into the plan file (root
-`analysis-plan.md`, or the PAP when one exists) and get explicit sign-off
-BEFORE estimating:
+claim locks a **Design Card** — invoke `analysis-state-management`, write it into
+`docs/analysis/` (or reference the PAP when one exists), and get explicit
+sign-off BEFORE estimating:
 
 - **Causal question + estimand** — ATT/ATE/LATE, for which population.
 - **Design + source of variation** — the "what's your experiment?" answer, one sentence.

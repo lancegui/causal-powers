@@ -15,7 +15,7 @@ failure visible before it reaches a result.
 
 1. **Economic framing of mature, proven skills.** It adapts the disciplines proven in software engineering — contract-checked transforms, systematic debugging, specification before code, independent review — to the silent failures and judgment calls of empirical microeconomics.
 2. **It grows into your data's domain.** Each iteration records what went wrong in a given project and surfaces it the next time the same step recurs, so the discipline grows more attuned to that dataset over time. The shared skills stay general; what accumulates is the project's own record of past mistakes.
-3. **Built for day-to-day research, not one-shot answers.** Empirical projects run for weeks across many sessions. A living, phased `analysis-plan.md` keeps the state of the work on disk, so it survives `/clear`, automatic compaction, and interruption: a new session resumes where the last left off, with prior decisions and their rationale intact.
+3. **Built for day-to-day research, not one-shot answers.** Empirical projects run for weeks across many sessions. A small `docs/analysis/` state folder keeps current phase, decisions, artifacts, runs, and handoffs on disk, so it survives `/clear`, automatic compaction, and interruption without forcing every fresh session to reread one giant plan.
 
 ## Motivation
 
@@ -52,8 +52,9 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 | `question-framing` | Pin the estimand/metric, population, unit, and the decision — before code | `brainstorming` |
 | `descriptive-evidence` | Stylized facts, trends, summary-stats tables, distributions, and maps done honestly: fix comparability (real-vs-nominal, per-capita, weighting), run the composition check (a mix shift faking a within-group change; a count choropleth just maps population), show the distribution, keep the verb descriptive — the descriptive layer beneath the fork | (none — domain core) |
 | `pre-analysis-plan` | Lock hypotheses, primary spec, and robustness suite before seeing outcomes | spec-driven dev / `writing-plans` |
+| `analysis-state-management` | Maintain `docs/analysis/index.yaml` plus compact current/decision/artifact/phase/run/handoff YAML records; replaces one growing `analysis-plan.md` | `planning-with-files` |
 | `data-contracts` | Invariants, join-cardinality checks, totals reconciliation, frozen baselines — the **checker** | `test-driven-development` |
-| `data-preparation` | Owns the data ingest & cleaning **phase** (the heaviest one): ingest→clean→join→dedup→recode→reconcile as a phased, checkboxed plan with a decisions log; the **doer** that *calls* `data-contracts` per step and routes consequential cleaning choices to `analysis-checkpoints` | `writing-plans` (for the cleaning phase) |
+| `data-preparation` | Owns the data ingest & cleaning **phase** (the heaviest one): ingest→clean→join→dedup→recode→reconcile as a phased YAML checklist with a decisions ledger; the **doer** that *calls* `data-contracts` per step and routes consequential cleaning choices to `analysis-checkpoints` | `writing-plans` (for the cleaning phase) |
 | `analysis-craft` | Minimum analysis that answers the question; surgical edits to notebooks/pipelines | Karpathy: simplicity + surgical |
 | `analysis-checkpoints` | Stop and ask before changing design/sample/spec/estimand; loop toward the agreed goal, never redefine it | superpowers review gates |
 | `executing-analysis-plans` | Drive an approved plan: sequential spine validated in order, independent specs/designs fanned out to parallel subagents | `executing-plans` / `subagent-driven-development` |
@@ -124,14 +125,14 @@ discipline present, makes the chain *fire* reliably, and makes long work resumab
   next obligation in the spine (framing → written plan → approval gate; execution →
   *ask* inline-vs-subagent fan-out, bounded ~3 checks; verify → review).
 - **A resumability hook** (`hooks/plan-resume`, `SessionStart` + `PreCompact`):
-  reads the living, phased **`analysis-plan.md`** and resumes you at the next open
-  phase/step, so a long cleaning or estimation effort survives `/clear` and
+  reads `docs/analysis/index.yaml` and the records it names to resume at the next
+  open phase/step, so a long cleaning or estimation effort survives `/clear` and
   auto-compaction instead of restarting — disk-as-RAM, after
   [planning-with-files](https://github.com/othmanadi/planning-with-files).
-  Injected excerpts are length-capped and sanitized (the plan file is an
+  Injected excerpts are length-capped and sanitized (analysis state is an
   injection surface).
 - **A Stop-gate + run ledger** (`hooks/stop-gate`): at most once per session, in
-  analysis projects only (opt-in via `analysis-plan.md`/`docs/LESSONS.md`), and
+  analysis projects only (opt-in via `docs/analysis/index.yaml`/`docs/LESSONS.md`), and
   never when already continuing from a block — if a results artifact was written
   but `result-verification` never fired, or debugging ran but no lesson was
   logged, the stop is blocked once with a precise reason (and an explicit out).
@@ -170,7 +171,7 @@ discipline present, makes the chain *fire* reliably, and makes long work resumab
   any agent that reads `SKILL.md` skills + `AGENTS.md` (see [On Codex](#on-codex-and-other-agents)
   and [On OpenCode](#on-opencode) below).
 - The hooks (the always-on block, the trigger router / skill-chain, and the
-  `analysis-plan.md` resumability hook) need **Claude Code v2.1+**, which auto-loads
+  `docs/analysis` resumability hook) need **Claude Code v2.1+**, which auto-loads
   `hooks/hooks.json` from installed plugins. Everything else (skills, agents) works
   on any plugin-capable version.
 - The skills are language-agnostic guidance for **R, Julia, and Python** — no
@@ -244,11 +245,12 @@ and `/plugins` directory also work — see the
 add `AGENTS.md` to your project root yourself for the always-on discipline.)
 
 **What changes on Codex:** the `hooks/` (always-on injection, trigger router,
-skill-chain, `analysis-plan.md` resumability) are Claude-Code-only. On Codex the
+skill-chain, `docs/analysis` resumability) are Claude-Code-only. On Codex the
 discipline lives in `AGENTS.md`, skills trigger off their descriptions natively,
 the subagent fan-out uses `spawn_agent` (or degrades to inline — enable
-`[features] multi_agent = true` in `~/.codex/config.toml`), and you maintain the
-living `analysis-plan.md` yourself (flush it before compacting). Full mapping in
+`[features] multi_agent = true` in `~/.codex/config.toml`), and you maintain
+`docs/analysis/index.yaml` plus its named records yourself (flush them before
+compacting). Full mapping in
 [`codex-tools.md`](skills/using-causal-powers/references/codex-tools.md).
 
 ## On OpenCode
@@ -276,21 +278,21 @@ too. Re-run to update; `--uninstall --opencode` cleanly removes it.
 **What changes on OpenCode:** like Codex, the `hooks/` are Claude-Code-only — the
 discipline lives in `AGENTS.md`, skills trigger off their descriptions natively
 (exposed through OpenCode's `skill` tool), the subagent fan-out uses the `task`
-tool (or degrades to inline), and you maintain the living `analysis-plan.md`
-yourself. Full mapping in
+tool (or degrades to inline), and you maintain `docs/analysis/index.yaml` plus
+its named records yourself. Full mapping in
 [`opencode-tools.md`](skills/using-causal-powers/references/opencode-tools.md).
 
 ## How it's organized
 
 ```
 causal-powers/
-├── skills/        # the 14 disciplines (gateway + 13); plain SKILL.md — also Codex-native
+├── skills/        # the 15 disciplines; plain SKILL.md — also Codex-native
 ├── agents/        # robustness-runner, analysis-reviewer
 ├── hooks/         # Claude Code: always-on block + trigger router + skill-chain + plan resumability
 ├── evals/         # trigger/ (router CI corpus + baseline) · behavioral/ (planted-silent-failure benchmark)
 ├── scripts/       # eval-triggers.py (trigger CI) · run-behavioral-eval.py (benchmark) · install-codex.sh
 ├── docs/          # LESSONS.md template + dated design & measurement notes
-├── AGENTS.md      # always-on discipline for Codex / other agents (symlink → hooks/session-context.md)
+├── AGENTS.md      # always-on discipline for Codex / other agents; kept synced with hooks/session-context.md
 ├── .codex-plugin/   # Codex plugin manifest
 └── .claude-plugin/  # Claude Code plugin + marketplace manifests
 ```

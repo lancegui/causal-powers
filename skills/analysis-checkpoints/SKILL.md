@@ -92,9 +92,9 @@ digraph analysis_checkpoints_next {
     "User decided?" -> "WAIT — present options + recommendation, do not implement" [label="no"];
     "User decided?" -> "Change is to the framed question / estimand?" [label="yes — approved"];
     "Change is to the framed question / estimand?" -> "invoke question-framing — re-frame, then re-derive the plan" [label="yes"];
-    "record the approved deviation in analysis-plan.md's decisions log, resume" [shape=box style=filled fillcolor=lightgreen];
+    "invoke analysis-state-management — record approved deviation in docs/analysis/decisions.yaml, resume" [shape=box style=filled fillcolor=lightgreen];
     "Change is to the framed question / estimand?" -> "invoke pre-analysis-plan — record the deviation, re-lock" [label="no — a locked PAP exists"];
-    "Change is to the framed question / estimand?" -> "record the approved deviation in analysis-plan.md's decisions log, resume" [label="no — everyday plan, no PAP"];
+    "Change is to the framed question / estimand?" -> "invoke analysis-state-management — record approved deviation in docs/analysis/decisions.yaml, resume" [label="no — everyday plan, no PAP"];
 }
 ```
 

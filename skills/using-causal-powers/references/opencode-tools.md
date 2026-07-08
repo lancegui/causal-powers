@@ -30,9 +30,9 @@ specs run in parallel without colliding.
 
 One wrinkle: OpenCode **disables `todowrite`/`todoread` for subagents by default**
 (so background agents don't clutter the main TODO list). That's fine here — the
-fan-out subagents return a *structured result*, they don't need to keep a live
-plan. The living `analysis-plan.md` is owned by the **primary** agent, which keeps
-`todowrite` and the plan file.
+fan-out subagents return a *structured result*, they don't need to keep live
+todos. Durable analysis state is owned by the **primary** agent under
+`docs/analysis/`, with `index.yaml` as the default resume surface.
 
 If you'd rather not fan out (or are on a setup where the `task` tool is
 restricted), the fan-out **degrades to inline** — run the chosen specs one at a
@@ -79,16 +79,18 @@ the always-on discipline block (`AGENTS.md`).
 The plugin's `hooks/` are Claude-Code-only. On OpenCode:
 
 - **Always-on discipline** (the SessionStart injection) → lives in **`AGENTS.md`**.
-  OpenCode reads the repo-root `AGENTS.md` (a symlink to `hooks/session-context.md`)
-  when you work in that tree, and the global `~/.config/opencode/AGENTS.md`
+  OpenCode reads the repo-root `AGENTS.md` (kept byte-identical to
+  `hooks/session-context.md`) when you work in that tree, and the global
+  `~/.config/opencode/AGENTS.md`
   everywhere; all instruction files are combined. The `--opencode` installer writes
   the managed discipline block into whichever you pick.
 - **Trigger router + skill-chain** (the UserPromptSubmit / PostToolUse backstops)
   → not needed: OpenCode selects skills from their `description` natively, and each
   skill's own `## When to Use` graph + `## The Process` carry the handoffs.
-- **`analysis-plan.md` resumability hook** (SessionStart/PreCompact) → you maintain
-  the living plan yourself: keep `analysis-plan.md` current and **flush it before
-  you compact**, so a fresh OpenCode session resumes from the file (disk-as-RAM).
+- **Legacy `analysis-plan.md` resumability hook** (SessionStart/PreCompact) →
+  superseded by `docs/analysis/` state. Maintain `index.yaml` plus the named YAML
+  records and flush them before compaction, so a fresh OpenCode session reads the
+  index first instead of rereading a giant plan.
 - **Stop-gate** (the Stop hook that blocks an unverified results-write) → no hook
   equivalent ships here. The **causal-conductor** spine plugin, if installed,
   gates mutating tools behind an approved contract (`tool.execute.before` throws

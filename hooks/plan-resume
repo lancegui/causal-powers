@@ -1,79 +1,57 @@
 #!/usr/bin/env bash
-# SessionStart + PreCompact hook for the causal-powers plugin — RESUMABILITY.
+# SessionStart + PreCompact hook for causal-powers resumability.
 #
-# WHY THIS EXISTS: long analyses get compacted or resumed in a fresh session,
-# and the model's default is to RESTART — re-frame the question, re-run Phase 1,
-# re-derive decisions already made — instead of picking up where the prior
-# session left off. The living analysis-plan.md (see plan_template) is the
-# durable state; this hook makes the harness surface it at the two moments that
-# matter:
-#   * SessionStart — read the plan and inject a compact "here's where the work
-#     stands" block (current phase, checked vs unchecked boxes, next step) so a
-#     fresh/compacted session RESUMES instead of starting over.
-#   * PreCompact — the plan may be stale in working memory and about to be
-#     summarized away; remind the model to FLUSH the plan to disk now so the
-#     post-compaction session has accurate state to resume from.
-#
-# Conventions mirror the other hooks: bash, set -uo pipefail, no jq, always
-# exit 0, hookSpecificOutput.additionalContext on Claude Code / top-level
-# additionalContext elsewhere. Defensive throughout: no plan file -> exit 0
-# silently, never block the session.
+# Durable state now lives in docs/analysis/index.yaml plus the small YAML records
+# it names. The hook injects only a compact snapshot so fresh/compacted sessions
+# resume instead of restarting. Legacy analysis-plan.md is supported only as a
+# migration signal.
 
 set -uo pipefail
-# Kill-switch: CAUSAL_POWERS_DISABLED_HOOKS is a comma-separated list of hook
-# names to disable at runtime (e.g. "prompt-router,skill-chain") — the escape
-# hatch when a hook misbehaves, without uninstalling the plugin.
-case ",${CAUSAL_POWERS_DISABLED_HOOKS:-}," in *",plan-resume,"*) exit 0 ;; esac
 
+case ",${CAUSAL_POWERS_DISABLED_HOOKS:-}," in *",plan-resume,"*) exit 0 ;; esac
 
 payload="$(cat 2>/dev/null || true)"
 
-# Which hook event fired? Claude Code puts it in hook_event_name; if absent
-# (other harness / direct invocation) default to SessionStart, the common case.
 event="$(printf '%s' "$payload" \
   | grep -oE '"hook_event_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 \
   | sed -E 's/.*:[[:space:]]*"([^"]*)"$/\1/')"
 event="${event:-SessionStart}"
 
-# Locate the plan. Prefer cwd, then the project root the harness exposes.
-# CLAUDE_PROJECT_DIR is set by Claude Code; fall back to PWD.
-plan=""
+state_index=""
+legacy_plan=""
 for dir in "${PWD:-.}" "${CLAUDE_PROJECT_DIR:-}"; do
   [ -n "$dir" ] || continue
-  if [ -f "${dir}/analysis-plan.md" ]; then
-    plan="${dir}/analysis-plan.md"
+  if [ -f "${dir}/docs/analysis/index.yaml" ]; then
+    state_index="${dir}/docs/analysis/index.yaml"
     break
+  fi
+  if [ -z "$legacy_plan" ] && [ -f "${dir}/analysis-plan.md" ]; then
+    legacy_plan="${dir}/analysis-plan.md"
+  fi
+  if [ -z "$legacy_plan" ] && [ -f "${dir}/docs/analysis-plan.md" ]; then
+    legacy_plan="${dir}/docs/analysis-plan.md"
   fi
 done
 
-# No plan -> nothing to resume from. Exit silently (defensive, never block).
-[ -n "$plan" ] || exit 0
-[ -r "$plan" ] || exit 0
+[ -n "$state_index" ] || [ -n "$legacy_plan" ] || exit 0
 
 escape_for_json() {
-    local s="$1"
-    s="${s//\\/\\\\}"
-    s="${s//\"/\\\"}"
-    s="${s//$'\n'/\\n}"
-    s="${s//$'\r'/\\r}"
-    s="${s//$'\t'/\\t}"
-    printf '%s' "$s"
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  s="${s//$'\n'/\\n}"
+  s="${s//$'\r'/\\r}"
+  s="${s//$'\t'/\\t}"
+  printf '%s' "$s"
 }
 
-# SECURITY: plan-file content is re-injected into context on every SessionStart,
-# so analysis-plan.md is an injection surface — anything that can write to it
-# (including text pasted from fetched web pages) gets replayed to the model here
-# (cf. planning-with-files' 2026-03 prompt-injection audit). Mitigation: inject
-# only short EXCERPTS, cap their length, and strip the reminder-wrapper tokens
-# so plan text cannot close or forge the <system-reminder> block.
 sanitize_excerpt() {
-    printf '%s' "$1" \
-      | sed -e 's;</system-reminder>;;g' -e 's;<system-reminder>;;g' \
-      | head -c 240
+  printf '%s' "$1" \
+    | sed -e 's;</system-reminder>;;g' -e 's;<system-reminder>;;g' \
+    | head -c 260
 }
 
 emit() {
-  # $1 = hookEventName, $2 = already-escaped context string
   if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
     printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "%s",\n    "additionalContext": "%s"\n  }\n}\n' "$1" "$2"
   else
@@ -82,55 +60,98 @@ emit() {
   exit 0
 }
 
-# ---- PreCompact: remind to flush, don't summarize state ----------------------
+if [ -z "$state_index" ]; then
+  if [ "$event" = "PreCompact" ]; then
+    msg="<system-reminder>
+RESUMABILITY - legacy analysis plan exists at ${legacy_plan}. Before compaction,
+flush current state and migrate the resume surface to docs/analysis/index.yaml
+plus small YAML records. Do not rely on rereading the whole legacy plan after
+compaction.
+</system-reminder>"
+  else
+    msg="<system-reminder>
+RESUMABILITY - legacy analysis plan exists at ${legacy_plan}. Read only the
+section needed to recover current state, then invoke analysis-state-management
+and create docs/analysis/index.yaml so future sessions do not reread the whole
+plan.
+</system-reminder>"
+  fi
+  emit "$event" "$(escape_for_json "$msg")"
+fi
+
+base_dir="$(dirname "$state_index")"
+
+yaml_value() {
+  # yaml_value <file> <key> - shallow key only, no dependency on yq/jq.
+  [ -r "$1" ] || return 0
+  grep -m1 -E "^[[:space:]]*$2:[[:space:]]*" "$1" \
+    | sed -E "s/^[[:space:]]*$2:[[:space:]]*//" \
+    | sed -E 's/^["'\'']|["'\'']$//g'
+}
+
+resolve_record() {
+  local rel="$1"
+  [ -n "$rel" ] || return 0
+  case "$rel" in
+    /*) printf '%s' "$rel" ;;
+    *) printf '%s/%s' "$base_dir" "$rel" ;;
+  esac
+}
+
+current_rel="$(yaml_value "$state_index" current)"
+decisions_rel="$(yaml_value "$state_index" decisions)"
+current_file="$(resolve_record "$current_rel")"
+decisions_file="$(resolve_record "$decisions_rel")"
+
+active_phase="$(yaml_value "$state_index" active_phase)"
+current_phase="$(yaml_value "$current_file" phase)"
+status="$(yaml_value "$current_file" status)"
+next_action="$(yaml_value "$current_file" next_action)"
+updated="$(yaml_value "$current_file" updated)"
+
+[ -n "$active_phase" ] || active_phase="$current_phase"
+[ -n "$active_phase" ] || active_phase="unknown"
+[ -n "$status" ] || status="unknown"
+[ -n "$next_action" ] || next_action="read docs/analysis/index.yaml and current.yaml, then continue"
+
+latest_decision=""
+if [ -r "$decisions_file" ]; then
+  latest_decision="$(grep -E '^[[:space:]]*(decision|id):[[:space:]]*' "$decisions_file" 2>/dev/null | tail -2 | tr '\n' '; ' | sed 's/[[:space:]]*$//')"
+fi
+
+read_list="$(awk '
+  /^[[:space:]]*read_for_current_task:[[:space:]]*$/ { in_list=1; next }
+  in_list && /^[[:space:]]*-[[:space:]]+/ { sub(/^[[:space:]]*-[[:space:]]+/, ""); print; next }
+  in_list && /^[^[:space:]-]/ { exit }
+' "$state_index" 2>/dev/null | head -5 | paste -sd ', ' -)"
+[ -n "$read_list" ] || read_list="current.yaml only"
+
 if [ "$event" = "PreCompact" ]; then
   msg="<system-reminder>
-RESUMABILITY — analysis-plan.md exists at ${plan}. Compaction is about to discard working memory. BEFORE you let it: flush the living plan to disk now — tick the boxes you actually completed this session, update the per-phase Status lines, append any Decisions-log entries you made but only held in chat, and set the 'Next step' to the single action a fresh session should take. The post-compaction session resumes from this file, not from the summary, so anything not written down is lost.
+RESUMABILITY - docs/analysis state exists at ${state_index}. Before compaction,
+flush current state now: update current.yaml, decisions.yaml, artifact_registry.yaml,
+active phase/run/handoff records, and index.yaml read_for_current_task. The next
+session resumes from the index, not from the compacted chat summary.
 </system-reminder>"
   emit "PreCompact" "$(escape_for_json "$msg")"
 fi
 
-# ---- SessionStart: summarize where the work stands, so we resume -------------
-# Count checkbox progress (jq-free, grep-based). Markdown task list syntax:
-#   - [ ] open    - [x]/[X] done
-done_n="$(grep -cE '^[[:space:]]*[-*][[:space:]]+\[[xX]\]' "$plan" 2>/dev/null || echo 0)"
-open_n="$(grep -cE '^[[:space:]]*[-*][[:space:]]+\[[[:space:]]\]' "$plan" 2>/dev/null || echo 0)"
-done_n="${done_n//[!0-9]/}"; done_n="${done_n:-0}"
-open_n="${open_n//[!0-9]/}"; open_n="${open_n:-0}"
-
-# Current phase = the first phase heading that still has an open box under it.
-# Cheap heuristic: the heading line immediately preceding/owning the first
-# "- [ ]". We surface the nearest preceding "## Phase" / "Phase N" heading.
-current_phase="$(awk '
-  /^#{1,6}[[:space:]]/                 { last_h = $0 }
-  /^[[:space:]]*[-*][[:space:]]+\[[[:space:]]\]/ {
-    if (last_h != "") { print last_h; exit }
-  }
-' "$plan" 2>/dev/null)"
-current_phase="${current_phase##*([#[:space:]])}"
-[ -n "$current_phase" ] || current_phase="(all boxes checked — see Phase 5 / assembly)"
-
-# Next step = first open checkbox's text.
-next_step="$(grep -m1 -E '^[[:space:]]*[-*][[:space:]]+\[[[:space:]]\]' "$plan" 2>/dev/null \
-  | sed -E 's/^[[:space:]]*[-*][[:space:]]+\[[[:space:]]\][[:space:]]*//')"
-[ -n "$next_step" ] || next_step="No open checkboxes — verify Phase 5 assembly and report, then finish."
-
-# Pull the most recent Decisions-log line if present, so locked choices survive.
-last_decision="$(grep -E '^[[:space:]]*[-*][[:space:]]' "$plan" 2>/dev/null \
-  | grep -iE 'decision|locked|chose|dropped|winsoriz|excluded' | tail -1 \
-  | sed -E 's/^[[:space:]]*[-*][[:space:]]*//')"
-
 decision_line=""
-[ -n "$last_decision" ] && decision_line="
-- Most recent logged decision (do NOT silently revisit): $(sanitize_excerpt "$last_decision")"
+[ -n "$latest_decision" ] && decision_line="
+- Latest decision hint: $(sanitize_excerpt "$latest_decision")"
 
 msg="<system-reminder>
-RESUMABILITY — an analysis-plan.md exists at ${plan}. This is a RESUMED or freshly-started session for work already in progress. Do NOT restart: do not re-frame the question, do not re-run completed phases, do not re-derive locked decisions. Read the plan and continue from where it stands.
-Snapshot from the plan:
-- Progress: ${done_n} checked / ${open_n} still open.
-- Current phase: $(sanitize_excerpt "$current_phase")
-- Next step (first open box): $(sanitize_excerpt "$next_step")${decision_line}
-Open analysis-plan.md now, confirm this snapshot against the full file, and resume at the next step. Keep the plan living — tick boxes and append to the Decisions log as you go.
+RESUMABILITY - docs/analysis/index.yaml exists at ${state_index}. This is a
+resumed or freshly-started analysis session. Do not restart, re-frame, re-run
+completed phases, or re-derive locked decisions.
+Snapshot:
+- Updated: $(sanitize_excerpt "$updated")
+- Active phase: $(sanitize_excerpt "$active_phase")
+- Status: $(sanitize_excerpt "$status")
+- Next action: $(sanitize_excerpt "$next_action")
+- Read next: $(sanitize_excerpt "$read_list")${decision_line}
+Open docs/analysis/index.yaml first, then only the records named for the current
+task. Keep YAML state current as you work.
 </system-reminder>"
 
 emit "SessionStart" "$(escape_for_json "$msg")"

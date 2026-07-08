@@ -30,8 +30,11 @@ project-root/
 │   ├── 03_estimation/ 04_montecarlo/ 05_robustness/ 06_counterfactual/   # (structural)
 │   └── lib/              # shared functions
 ├── results/              # generated artifacts — tables/ figures/ (canonical) · diagnostics/ (scratch) · archive/ (old runs, kept)
-├── docs/                 # MODEL_CARD.md · pre-analysis-plan.md · LESSONS.md
-├── analysis-plan.md      # the LIVE working plan (root, not docs/ — the stop-gate and resume hook key on it)
+├── docs/
+│   ├── analysis/         # index.yaml + compact phase/decision/artifact state
+│   ├── MODEL_CARD.md
+│   ├── pre-analysis-plan.md
+│   └── LESSONS.md
 ├── sandbox/              # exploratory throwaway, clearly not a deliverable
 └── .gitignore
 ```
@@ -66,7 +69,7 @@ The repo a collaborator sees should be code + manuscript + results + the shareab
 
 ## Checkpoint as you go — commit locally in phases
 
-A multi-hour analysis sitting at **zero commits** is a failure mode, not caution. `analysis-plan.md` and your validated intermediates are only durable as *disk-as-RAM* if they're checkpointed — otherwise one stray `git switch`, `reset`, or editor mishap loses the whole uncommitted tree, and a fresh session can't resume from work that was never saved. So **commit locally at phase boundaries, proactively, without being asked** — "only commit when the user asks" is wrong for a research repo.
+A multi-hour analysis sitting at **zero commits** is a failure mode, not caution. `docs/analysis/` and your validated intermediates are only durable as *disk-as-RAM* if they're checkpointed — otherwise one stray `git switch`, `reset`, or editor mishap loses the whole uncommitted tree, and a fresh session can't resume from work that was never saved. So **commit locally at phase boundaries, proactively, without being asked** — "only commit when the user asks" is wrong for a research repo.
 
 - **When to checkpoint:** the plan is written and agreed; a `data-preparation` phase produces a clean dataset; a result is validated and frozen (`data-contracts` golden output); a debugging session lands a fix. Each is a natural restore point — close it with a commit.
 - **Commit ≠ push.** A **local commit** on your working branch is cheap, private, and reversible — that's the checkpoint, and you do it on your own. **Pushing** (or opening a PR) is outward and shared — *that* stays the user's explicit call (`analysis-checkpoints`). The conservative "only when asked" default governs **push**, never the local checkpoint.

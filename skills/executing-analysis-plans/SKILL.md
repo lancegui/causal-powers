@@ -72,17 +72,29 @@ Execution is not "run to the end and show the user." After each spine step and a
 - **Validate** the result against its contract (`data-contracts`); reconcile totals; if a number looks wrong, switch to `wrong-number-debugging`.
 - **Checkpoint** any consequential decision that surfaced (`analysis-checkpoints`) — execution is exactly when "the data surprised us, let's change the design" arises, and that is the user's call, not a step you take to keep moving.
 
-## Keep the plan live, and compact at phase boundaries
+## Keep durable state live, and compact at phase boundaries
 
 A long analysis with many mid-step fixes drags context until quality degrades and auto-compaction fires at a random, lossy moment — losing the gotchas and decisions you can't afford to lose. Don't wait for that. **Actively maintain the plan/brief/model card as you go** — mark steps done, record the gotcha you just hit, revise the next step — it's a living document you keep current, not something you wrote once at the start.
 
 Make the trigger **mechanical**, not a vibe: run the update-and-offer-compact routine **after each completed spine step and after the fan-out is assembled** (the checkpoints the skill already defines), not whenever a phase "feels" done. At each:
 
-1. **Update the durable plan document so it stands on its own** — the **same plan file** produced by `question-framing`/`pre-analysis-plan` — root `analysis-plan.md` (create it if none exists), and **record its path in your todos** so a post-compact session knows what to open. Write the **decisions locked** (and why), the **state and key insight** so far, and the **concrete next steps as resume-from-clean-slate instructions** (e.g. "POST-COMPACT: build the PPML death moment on Option B, then FD-verify the jacobian, then MC-recover all params under the mixed objective"). Mirror it in your todos (done ✓ / queued). It lives in the repo, not the chat.
-2. **Offer to compact**: "this is a clean point to `/compact` — the plan doc carries the decisions, the insight, and the next steps, so we resume on a clean slate without losing anything." You can't compact yourself (the user runs `/compact`), so *suggest* it — at real phase boundaries only, never mid-step, and easy to wave off.
-3. On resume, **re-read the plan document** and continue from its next-steps list.
+1. **Update `docs/analysis/` so it stands on its own** — invoke
+   `analysis-state-management` and update `index.yaml`, `current.yaml`, the
+   active phase YAML, `decisions.yaml`, `artifact_registry.yaml`, and any
+   handoff/run records that changed. Write the **decisions locked** (and why),
+   the **state and key insight** so far, and the **concrete next step** as a
+   resume-from-clean-slate instruction. Mirror the immediate next step in your
+   todos. State lives in the repo, not the chat.
+2. **Offer to compact**: "this is a clean point to `/compact` — `docs/analysis/index.yaml` points to the decisions, insight, and next step, so we resume on a clean slate without losing anything." You can't compact yourself (the user runs `/compact`), so *suggest* it — at real phase boundaries only, never mid-step, and easy to wave off.
+3. On resume, **read `docs/analysis/index.yaml` first**, then only the records it
+   names for the current task. Continue from `current.yaml`'s `next_action`.
 
-The test: **if the conversation were compacted right now, could a clean session pick up from the plan document alone?** If not, the document isn't finished — write the missing state *before* you suggest the compact. This is what makes the whole "write it down before you build" rule pay off: durable state in the file is exactly what lets a long, fix-heavy session compact safely.
+The test: **if the conversation were compacted right now, could a clean session
+pick up from `docs/analysis/index.yaml` plus the named records alone?** If not,
+the state isn't finished — write the missing state *before* you suggest the
+compact. This is what makes the whole "write it down before you build" rule pay
+off: durable indexed state is exactly what lets a long, fix-heavy session compact
+safely without every agent rereading a giant plan.
 
 ## Synthesis
 

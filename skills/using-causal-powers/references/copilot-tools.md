@@ -13,11 +13,11 @@ Copilot equivalent:
 | `Bash` (run commands) | Copilot's shell / terminal tool |
 | `Grep` / `Glob` (search) | Copilot's search tools |
 | `Task` tool (dispatch a subagent) | See [Subagent fan-out](#subagent-fan-out-degrades-to-inline) |
-| `TodoWrite` (task tracking) | Copilot's plan/todo surface, or maintain `analysis-plan.md` by hand |
+| `TodoWrite` (task tracking) | Copilot's plan/todo surface, plus `docs/analysis/` state |
 
 ## Always-on discipline lives in `AGENTS.md`
 
-Copilot CLI reads the repo-root **`AGENTS.md`** (a symlink to
+Copilot CLI reads the repo-root **`AGENTS.md`** (kept byte-identical to
 `hooks/session-context.md`) and `.github/copilot-instructions.md`. Keep the managed
 Causal Powers block in whichever your setup loads, so the discipline is always on
 when you work in the tree. The plugin's `hooks/` (SessionStart injection, trigger
@@ -57,8 +57,8 @@ is the *inline* arm of the execution-mode choice `executing-analysis-plans` alre
 presents; the `robustness-runner` / `analysis-reviewer` recipes still apply, you
 just run them yourself rather than dispatching them.
 
-## Maintain `analysis-plan.md` yourself
+## Maintain docs/analysis yourself
 
-With no resumability hook, keep the living `analysis-plan.md` current and **flush it
-before you compact or end a session**, so a fresh Copilot session resumes from the
-file (disk-as-RAM).
+With no resumability hook, keep `docs/analysis/index.yaml` and the YAML records it
+names current, then **flush them before you compact or end a session**, so a fresh
+Copilot session resumes from the index instead of rereading a giant plan.

@@ -40,11 +40,12 @@ execution-mode choice `executing-analysis-plans` already presents; on Codex,
 The plugin's `hooks/` are Claude-Code-only. On Codex:
 
 - **Always-on discipline** (the SessionStart injection) → lives in **`AGENTS.md`**
-  at the repo root (a symlink to `hooks/session-context.md`), which Codex reads
-  automatically.
+  at the repo root, kept byte-identical to `hooks/session-context.md`, which
+  Codex reads automatically.
 - **Trigger router + skill-chain** (the UserPromptSubmit / PostToolUse backstops)
   → not needed: Codex selects skills from their `description` natively, and each
   skill's own `## When to Use` graph + `## The Process` carry the handoffs.
-- **`analysis-plan.md` resumability hook** (SessionStart/PreCompact) → you maintain
-  the living plan yourself: keep `analysis-plan.md` current and **flush it before
-  you compact**, so a fresh Codex session resumes from the file (disk-as-RAM).
+- **Legacy `analysis-plan.md` resumability hook** (SessionStart/PreCompact) →
+  superseded by `docs/analysis/` state. Maintain `index.yaml` plus the named YAML
+  records and flush them before compaction, so a fresh Codex session reads the
+  index first instead of rereading a giant plan.
