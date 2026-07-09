@@ -31,6 +31,8 @@ Usage:
 """
 import argparse, json, pathlib, re, subprocess, sys
 
+import yaml
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 ROUTER = ROOT / "hooks" / "prompt-router"
 EVALS = ROOT / "evals" / "trigger"
@@ -168,6 +170,30 @@ def agents_md_sync_check() -> int:
     return 0
 
 
+def frontmatter_parse_check() -> int:
+    """OpenCode loads skills through a strict YAML parser and drops — silently —
+    any SKILL.md whose frontmatter fails to parse. An unquoted description
+    containing ': ' reads as a nested mapping and takes the whole skill down;
+    four of this family's skills were invisible on OpenCode for weeks that way.
+    Claude Code's parser is lenient, so nothing upstream catches it."""
+    bad = 0
+    for f in sorted((ROOT / "skills").glob("*/SKILL.md")):
+        parts = f.read_text().split("---", 2)
+        if len(parts) < 3:
+            continue
+        try:
+            fm = yaml.safe_load(parts[1])
+        except yaml.YAMLError as e:
+            print(f"FRONTMATTER UNPARSEABLE: {f.parent.name}: {str(e).splitlines()[0]}")
+            print("  fix: description: >-  (folded block scalar, body indented 2 spaces)")
+            bad += 1
+            continue
+        if not isinstance(fm, dict) or not fm.get("name") or not fm.get("description"):
+            print(f"FRONTMATTER MISSING name/description: {f.parent.name}")
+            bad += 1
+    return bad
+
+
 def frontmatter_cap_check(cap: int = 1024) -> int:
     """agentskills.io caps SKILL.md frontmatter at 1024 chars; Claude Code's own
     live skill listing truncates long descriptions mid-trigger-list (observed at
@@ -187,11 +213,8 @@ def frontmatter_cap_check(cap: int = 1024) -> int:
 def skill_descriptions():
     descs = {}
     for f in sorted((ROOT / "skills").glob("*/SKILL.md")):
-        fm = f.read_text().split("---", 2)[1]
-        name = re.search(r"^name:\s*(\S+)", fm, re.M).group(1)
-        # description may wrap; grab everything after 'description:' to end of block
-        desc = fm.split("description:", 1)[1].strip()
-        descs[f"causal-powers:{name}"] = desc
+        fm = yaml.safe_load(f.read_text().split("---", 2)[1])
+        descs[f"causal-powers:{fm['name']}"] = fm["description"].strip()
     return descs
 
 
@@ -253,7 +276,7 @@ if __name__ == "__main__":
     cases = load_evals(a.skill)
     if not cases:
         sys.exit("no eval cases found")
-    over = frontmatter_cap_check() + agents_md_sync_check()
+    over = frontmatter_parse_check() + frontmatter_cap_check() + agents_md_sync_check()
     rc = part_a(cases, a.update_baseline)
     rc = max(rc, 1 if over else 0)
     if a.live:

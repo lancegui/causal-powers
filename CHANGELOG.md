@@ -2,6 +2,24 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.28.1 — four skills were invisible on OpenCode
+
+`question-framing`, `descriptive-evidence`, `data-contracts`, and
+`predictive-modeling` each carried an unquoted `description:` containing a
+`': '`, which YAML reads as a nested mapping. OpenCode parses skill frontmatter
+strictly and drops an unparseable skill silently, so a quarter of the family —
+including the entry gate and the everyday workhorse — was never registered and
+could never trigger. Claude Code's parser is lenient, which is why nothing
+surfaced upstream and the trigger evals kept passing.
+
+- **Fix.** All four descriptions are now folded block scalars (`>-`), text
+  unchanged byte-for-byte. `descriptive-evidence` lost two spaces around
+  slashes to stay under the 1024-char frontmatter cap; no trigger words changed.
+- **Guard.** `eval-triggers.py` gains `frontmatter_parse_check()`, which runs
+  every `SKILL.md` through a real YAML parser — the cap check only ever counted
+  characters. `skill_descriptions()` now parses YAML too, instead of splitting
+  on `description:` (which would have read the literal `>-`).
+
 ## 0.28.0 — the adversarial-review release
 
 A five-reviewer adversarial fan-out over the whole family, cross-checked against
