@@ -30,8 +30,8 @@ This skill produces and maintains **Phase 1 — Data ingest & cleaning** in the
 `docs/analysis/` state folder that `question-framing`,
 `pre-analysis-plan`, and `executing-analysis-plans` share. If no state exists,
 invoke `analysis-state-management` and create `docs/analysis/index.yaml`,
-`current.yaml`, `decisions.yaml`, `artifact_registry.yaml`, and an active
-`phases/YYYY-MM-DD_phase-1-data-prep.yaml`. Phase 1 carries its own sub-checklist
+`decisions.yaml`, `artifact_registry.yaml`, and an active
+`phases/phase-1-data-prep.yaml`. Phase 1 carries its own sub-checklist
 plus a decisions ledger:
 
 **Lay out the sub-checklist as a roadmap and get a nod before you execute it** — this is task-altitude planning, and it fires for an **ad-hoc mid-analysis merge or reconcile** ("just join these two sources", "reconcile these totals") just as much as for a from-scratch panel build, not only when someone says the words "clean the data". A merge is a multi-step plan whose cardinality can silently reshape the sample; the user should see the steps (which keys, which side is unique, what you do with unmatched rows) and be able to redirect *before* rows move, not after. Agree once, then work the checklist autonomously — surfacing only the consequential cleaning decisions below.
@@ -96,7 +96,7 @@ the YAML state holds, at every save point:
 - the decisions ledger up to date with every consequential choice and its WHY;
 - the concrete next step written as a resume-from-clean-slate instruction ("POST-COMPACT: assert m:1 on the orders→customers join, reconcile row count, then handle missing `region`").
 
-Update the active phase YAML, `current.yaml`, and `index.yaml` after every couple of actions and at every phase boundary; offer to `/compact` only at a clean boundary, never mid-step.
+Update the active phase YAML and `index.yaml` after every couple of actions and at every phase boundary; offer to `/compact` only at a clean boundary, never mid-step.
 
 ## Size threshold — and the waiver
 

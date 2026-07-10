@@ -1,34 +1,20 @@
-# docs/analysis template
+# docs/analysis template (schema v2)
 
 Use this as the initial shape for the analysis-state folder. Agents should read
-`docs/analysis/index.yaml` first and then only the YAML records it names.
+`docs/analysis/index.yaml` first and then only the YAML records it names. Full
+schema and field-by-field rules live in `analysis-state-management`; this file
+is just a ready-to-copy starting shape.
 
 ## docs/analysis/index.yaml
 
 ```yaml
 updated: 2026-07-08
 active_phase: phase-0
-current: current.yaml
-decisions: decisions.yaml
-artifact_registry: artifact_registry.yaml
-read_for_current_task:
-  - phases/2026-07-08_phase-0-framing.yaml
-latest_handoffs: {}
-do_not_read_by_default:
-  - scratch/
-  - archived logs
-  - old markdown notes
-```
-
-## docs/analysis/current.yaml
-
-```yaml
-updated: 2026-07-08
-goal:
-phase: phase-0
-status: not_started
-next_action:
+next_action: frame the question, then write Phase 1 (data ingest & cleaning)
 blockers: []
+read_for_current_task:
+  - phases/phase-0-framing.yaml
+latest_handoffs: {}
 ```
 
 ## docs/analysis/decisions.yaml
@@ -43,46 +29,36 @@ decisions: []
 artifacts: {}
 ```
 
-## docs/analysis/phases/2026-07-08_phase-1-data-prep.yaml
+## docs/analysis/phases/phase-1-data-prep.yaml
 
 ```yaml
 id: phase-1-data-prep
 updated: 2026-07-08
-status: not_started
-owner: causal-powers:data-preparation
-session_plan:
-  goal: build validated cleaned panel
-  scope:
-    - inventory sources
-    - validate per-source schemas and counts
-    - assert joins and write cleaned output
-  out_of_scope:
-    - estimating treatment effects
-  acceptance_checks:
-    - source inventory with provenance exists
-    - row/key deltas logged after each join
-    - totals reconciled to source
-  delegated_agents:
-    preflight:
-      - git-specialist
-      - cleanliness-specialist
-    execution:
-      - fixer
-    verification:
-      - oracle
-  budget:
-    context_pressure_red_at: "50%"
-    fresh_subagent_each_phase: true
-lifecycle:
-  previous_phase: phase-0-framing
-  next_phase: phase-2-primary-spec
-  dependencies:
-    - decisions.yaml
-  verification_gate: oracle verifies data contracts before estimation
-  state_updates:
-    - current.yaml
-    - artifact_registry.yaml
-    - runs/
+status: planned
+goal: build validated cleaned panel
+scope:
+  - inventory sources
+  - validate per-source schemas and counts
+  - assert joins and write cleaned output
+out_of_scope:
+  - estimating treatment effects
+acceptance_checks:
+  - source inventory with provenance exists
+  - row/key deltas logged after each join
+  - totals reconciled to source
+plausibility_threats:
+  - threat: state the concrete way this dataset could mislead (mismatched
+      source vintages, a fan-out join, a silently dropped stratum) — do not
+      leave this empty; a genuinely low-risk phase still names the threat it
+      considered and ruled out
+    check: the check that would catch it
+topology:
+  nodes:
+    - id: build-panel
+      kind: spine
+    # add one leaf node per independent piece of work once the phase has any
+    # (a second source cleaned in parallel, an independent robustness cut) —
+    # do not collapse independent work into one node
 checklist:
   - item: source inventory with provenance
     status: pending
@@ -103,5 +79,4 @@ checklist:
   - item: totals reconciled to source
     status: pending
 outputs: []
-next_action:
 ```
