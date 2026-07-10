@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 # SessionStart + PreCompact hook for causal-powers resumability.
 #
-# Durable state now lives in docs/analysis/index.yaml plus the small YAML records
-# it names. The hook injects only a compact snapshot so fresh/compacted sessions
-# resume instead of restarting. Legacy analysis-plan.md is supported only as a
-# migration signal.
+# Durable state lives in docs/analysis/index.yaml (schema v2 — index.yaml
+# carries updated/active_phase/next_action/blockers directly; there is no
+# separate current.yaml) plus the small YAML records it names. The hook
+# injects only a compact snapshot so fresh/compacted sessions resume instead
+# of restarting.
+#
+# docs/analysis/index.yaml is keyed FIRST and always wins if present. A
+# legacy root analysis-plan.md (v1) or a leftover docs/analysis/current.yaml
+# (v1 folder layout) is supported ONLY as a migration signal — this hook
+# never resumes a session from either; it only nudges the model to migrate
+# them into docs/analysis/ v2 via analysis-state-management.
 
 set -uo pipefail
 
@@ -18,22 +25,28 @@ event="$(printf '%s' "$payload" \
 event="${event:-SessionStart}"
 
 state_index=""
-legacy_plan=""
+legacy_signal=""
 for dir in "${PWD:-.}" "${CLAUDE_PROJECT_DIR:-}"; do
   [ -n "$dir" ] || continue
   if [ -f "${dir}/docs/analysis/index.yaml" ]; then
     state_index="${dir}/docs/analysis/index.yaml"
     break
   fi
-  if [ -z "$legacy_plan" ] && [ -f "${dir}/analysis-plan.md" ]; then
-    legacy_plan="${dir}/analysis-plan.md"
+  if [ -z "$legacy_signal" ] && [ -f "${dir}/analysis-plan.md" ]; then
+    legacy_signal="${dir}/analysis-plan.md"
   fi
-  if [ -z "$legacy_plan" ] && [ -f "${dir}/docs/analysis-plan.md" ]; then
-    legacy_plan="${dir}/docs/analysis-plan.md"
+  if [ -z "$legacy_signal" ] && [ -f "${dir}/docs/analysis-plan.md" ]; then
+    legacy_signal="${dir}/docs/analysis-plan.md"
+  fi
+  if [ -z "$legacy_signal" ] && [ -f "${dir}/docs/analysis/current.yaml" ]; then
+    legacy_signal="${dir}/docs/analysis/current.yaml"
   fi
 done
 
-[ -n "$state_index" ] || [ -n "$legacy_plan" ] || exit 0
+# docs/analysis/index.yaml always wins if present — never fall through to the
+# legacy-migration branch once v2 state exists, even if a v1 file also lingers
+# on disk (that lingering file is its own red flag, but not this hook's job).
+[ -n "$state_index" ] || [ -n "$legacy_signal" ] || exit 0
 
 escape_for_json() {
   local s="$1"
@@ -63,17 +76,21 @@ emit() {
 if [ -z "$state_index" ]; then
   if [ "$event" = "PreCompact" ]; then
     msg="<system-reminder>
-RESUMABILITY - legacy analysis plan exists at ${legacy_plan}. Before compaction,
-flush current state and migrate the resume surface to docs/analysis/index.yaml
-plus small YAML records. Do not rely on rereading the whole legacy plan after
-compaction.
+RESUMABILITY - a legacy (v1) plan file exists at ${legacy_signal} and no
+docs/analysis/index.yaml was found. This is a MIGRATE suggestion only — do
+not resume from the legacy file. Before compaction, invoke
+analysis-state-management and migrate it into docs/analysis/ v2 by extraction
+(index.yaml + phases/<id>.yaml with plausibility_threats and topology.nodes),
+then archive the legacy file under docs/analysis/scratch/ or delete it.
 </system-reminder>"
   else
     msg="<system-reminder>
-RESUMABILITY - legacy analysis plan exists at ${legacy_plan}. Read only the
-section needed to recover current state, then invoke analysis-state-management
-and create docs/analysis/index.yaml so future sessions do not reread the whole
-plan.
+RESUMABILITY - a legacy (v1) plan file exists at ${legacy_signal} and no
+docs/analysis/index.yaml was found. This is a MIGRATE suggestion only — do
+not resume from the legacy file. Read only the section needed to recover
+current goal/phase/next-action, then invoke analysis-state-management and
+create docs/analysis/index.yaml (schema v2) so future sessions read the index
+instead of rereading the legacy file.
 </system-reminder>"
   fi
   emit "$event" "$(escape_for_json "$msg")"
@@ -89,31 +106,23 @@ yaml_value() {
     | sed -E 's/^["'\'']|["'\'']$//g'
 }
 
-resolve_record() {
-  local rel="$1"
-  [ -n "$rel" ] || return 0
-  case "$rel" in
-    /*) printf '%s' "$rel" ;;
-    *) printf '%s/%s' "$base_dir" "$rel" ;;
-  esac
-}
-
-current_rel="$(yaml_value "$state_index" current)"
-decisions_rel="$(yaml_value "$state_index" decisions)"
-current_file="$(resolve_record "$current_rel")"
-decisions_file="$(resolve_record "$decisions_rel")"
-
+# Schema v2: index.yaml carries updated/active_phase/next_action directly —
+# no current.yaml indirection.
+updated="$(yaml_value "$state_index" updated)"
 active_phase="$(yaml_value "$state_index" active_phase)"
-current_phase="$(yaml_value "$current_file" phase)"
-status="$(yaml_value "$current_file" status)"
-next_action="$(yaml_value "$current_file" next_action)"
-updated="$(yaml_value "$current_file" updated)"
+next_action="$(yaml_value "$state_index" next_action)"
 
-[ -n "$active_phase" ] || active_phase="$current_phase"
+# Status lives on the phase record only (one source of truth), not the index.
+phase_file=""
+[ -n "$active_phase" ] && [ -f "${base_dir}/phases/${active_phase}.yaml" ] \
+  && phase_file="${base_dir}/phases/${active_phase}.yaml"
+status="$(yaml_value "$phase_file" status)"
+
 [ -n "$active_phase" ] || active_phase="unknown"
 [ -n "$status" ] || status="unknown"
-[ -n "$next_action" ] || next_action="read docs/analysis/index.yaml and current.yaml, then continue"
+[ -n "$next_action" ] || next_action="read docs/analysis/index.yaml, then continue"
 
+decisions_file="${base_dir}/decisions.yaml"
 latest_decision=""
 if [ -r "$decisions_file" ]; then
   latest_decision="$(grep -E '^[[:space:]]*(decision|id):[[:space:]]*' "$decisions_file" 2>/dev/null | tail -2 | tr '\n' '; ' | sed 's/[[:space:]]*$//')"
@@ -124,14 +133,15 @@ read_list="$(awk '
   in_list && /^[[:space:]]*-[[:space:]]+/ { sub(/^[[:space:]]*-[[:space:]]+/, ""); print; next }
   in_list && /^[^[:space:]-]/ { exit }
 ' "$state_index" 2>/dev/null | head -5 | paste -sd ', ' -)"
-[ -n "$read_list" ] || read_list="current.yaml only"
+[ -n "$read_list" ] || read_list="index.yaml only"
 
 if [ "$event" = "PreCompact" ]; then
   msg="<system-reminder>
 RESUMABILITY - docs/analysis state exists at ${state_index}. Before compaction,
-flush current state now: update current.yaml, decisions.yaml, artifact_registry.yaml,
-active phase/run/handoff records, and index.yaml read_for_current_task. The next
-session resumes from the index, not from the compacted chat summary.
+flush current state now: update index.yaml (updated/active_phase/next_action/
+blockers/read_for_current_task), the active phase YAML, decisions.yaml,
+artifact_registry.yaml, and any run/handoff records. The next session resumes
+from the index, not from the compacted chat summary.
 </system-reminder>"
   emit "PreCompact" "$(escape_for_json "$msg")"
 fi
