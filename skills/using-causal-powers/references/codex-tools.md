@@ -45,7 +45,11 @@ The plugin's `hooks/` are Claude-Code-only. On Codex:
 - **Trigger router + skill-chain** (the UserPromptSubmit / PostToolUse backstops)
   → not needed: Codex selects skills from their `description` natively, and each
   skill's own `## When to Use` graph + `## The Process` carry the handoffs.
-- **Legacy `analysis-plan.md` resumability hook** (SessionStart/PreCompact) →
-  superseded by `docs/analysis/` state. Maintain `index.yaml` plus the named YAML
-  records and flush them before compaction, so a fresh Codex session reads the
-  index first instead of rereading a giant plan.
+- **Claude Code's `plan-resume`/`stop-gate` hooks** (SessionStart/PreCompact/Stop)
+  → no direct equivalent; the discipline is `docs/analysis/index.yaml` itself.
+  Maintain `index.yaml` plus the named YAML records and flush them before
+  compaction, so a fresh Codex session reads the index first instead of
+  rereading a giant plan. If a root `analysis-plan.md` (v1) is still present,
+  that is a migration signal only — extract it into `docs/analysis/` via
+  `analysis-state-management` and archive or delete it; never resume from it
+  directly.

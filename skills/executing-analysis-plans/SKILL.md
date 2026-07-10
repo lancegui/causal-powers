@@ -36,14 +36,18 @@ Once the validated dataset and primary spec exist, the supporting analyses are i
 - the one **sensitivity analysis** that matters (Oster δ, e-value, bandwidth);
 - for **structural** work, the independent pieces are the **Monte-Carlo recovery reps** (across true-θ points and sample sizes), the **multiple starting values** on the non-convex objective, and the **counterfactual scenarios** (one per mechanism) — they fan out the same way (`structural-estimation`).
 
-The approved shortlist reads the *same* validated dataset, so it parallelizes cleanly. **But choosing the execution *mode* is itself a checkpoint — present it, don't assume it.** Before running the shortlist, ask the user how they want it run:
+The approved shortlist reads the *same* validated dataset, so it parallelizes cleanly. **But choosing the execution *mode* is itself a checkpoint — present it, don't assume it — unless a topology has already decided it.**
+
+**An approved phase IS the execution-mode consent when it carries a topology.** If an approved `docs/analysis/phases/<id>.yaml` already exists with a non-empty `topology.nodes` (schema owned by `analysis-state-management`) — the normal case under the causal-conductor spine on OpenCode, and available to any project that adopts the schema — the user already made the inline-vs-fan-out call when they approved that topology: **one leaf node per independent piece of work is the fan-out plan**, pre-approved. Map the shortlist onto those leaf nodes and dispatch; do not re-ask. Re-asking a decision the user already made by approving the topology is friction dressed up as diligence. **The ask-first rule below applies only when no conductor/topology state exists** — plain Claude Code with no phase-YAML topology, or a phase record that is still a bare single spine node with no leaves drafted yet.
+
+When no topology has already decided it, ask the user how they want the shortlist run:
 
 - **Inline** — each chosen spec in turn, here in this session, every step fully observable as it goes.
 - **Subagent dispatch** — one parallel subagent per spec, run concurrently.
 
 Recommend **subagent dispatch** for genuinely independent specs (faster, and it isolates each spec's context from yours), but it is the user's call — inline keeps everything in view, which some prefer for a small or delicate run. Make this a real, up-front question, not a silent default; this mirrors the inline-vs-subagent choice superpowers presents at execution.
 
-Once they choose: for **subagent dispatch**, hand each chosen task to the **`robustness-runner`** agent that Causal Powers ships — it executes one pre-specified spec, asserts the data contracts, and returns a structured result, stopping if it hits a design decision (use superpowers' **`dispatching-parallel-agents`** / **`subagent-driven-development`** for the mechanics). For **inline**, run the chosen specs one at a time, applying the same data-contract assertions to each. Either way the shortlist and what each spec carries (next sections) are unchanged — only the execution mode differs.
+Once the mode is settled (asked, or already given by an approved topology): for **subagent dispatch**, hand each chosen task to the **`robustness-runner`** agent that Causal Powers ships — it executes one pre-specified spec, asserts the data contracts, and returns a structured result, stopping if it hits a design decision (use superpowers' **`dispatching-parallel-agents`** / **`subagent-driven-development`** for the mechanics). **Vocabulary note (delegation is unified across layers):** a `robustness-runner` dispatch **is** one `topology.nodes` leaf-node dispatch — same unit of work, named differently by layer: the phase YAML calls it a node, this skill calls the agent that runs it `robustness-runner`, and on OpenCode under causal-conductor the underlying lane that actually executes it is `fixer`, dispatched exactly one node per call (never a multi-node prompt — that is the collapse the topology exists to prevent). For **inline**, run the chosen specs one at a time, applying the same data-contract assertions to each — each spec is still one topology leaf, just executed in this session instead of a subagent. Either way the shortlist and what each spec carries (next sections) are unchanged — only the execution mode differs.
 
 ## Robustness is an argument, not an inventory
 
@@ -79,7 +83,7 @@ A long analysis with many mid-step fixes drags context until quality degrades an
 Make the trigger **mechanical**, not a vibe: run the update-and-offer-compact routine **after each completed spine step and after the fan-out is assembled** (the checkpoints the skill already defines), not whenever a phase "feels" done. At each:
 
 1. **Update `docs/analysis/` so it stands on its own** — invoke
-   `analysis-state-management` and update `index.yaml`, `current.yaml`, the
+   `analysis-state-management` and update `index.yaml`, the
    active phase YAML, `decisions.yaml`, `artifact_registry.yaml`, and any
    handoff/run records that changed. Write the **decisions locked** (and why),
    the **state and key insight** so far, and the **concrete next step** as a
@@ -87,7 +91,7 @@ Make the trigger **mechanical**, not a vibe: run the update-and-offer-compact ro
    todos. State lives in the repo, not the chat.
 2. **Offer to compact**: "this is a clean point to `/compact` — `docs/analysis/index.yaml` points to the decisions, insight, and next step, so we resume on a clean slate without losing anything." You can't compact yourself (the user runs `/compact`), so *suggest* it — at real phase boundaries only, never mid-step, and easy to wave off.
 3. On resume, **read `docs/analysis/index.yaml` first**, then only the records it
-   names for the current task. Continue from `current.yaml`'s `next_action`.
+   names for the current task. Continue from `index.yaml`'s `next_action`.
 
 The test: **if the conversation were compacted right now, could a clean session
 pick up from `docs/analysis/index.yaml` plus the named records alone?** If not,

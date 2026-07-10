@@ -17,12 +17,38 @@ equivalent:
 | `Bash` (run commands) | `bash` |
 | `Grep` / `Glob` (search) | `grep` / `glob` |
 
+## Delegation vocabulary — one mapping table
+
+The same delegation concept has different names at different layers: the phase
+YAML's execution topology (`analysis-state-management` schema v2), the Causal
+Powers agents this plugin ships, and the causal-conductor spine's OpenCode
+lanes. They are the same thing, not three things:
+
+| Causal Powers layer | OpenCode / causal-conductor lane | What it does |
+|---|---|---|
+| `explorer` (discovery, read-only) | `explorer` | Finds/reads code and state before a plan is drafted; never dispatched as a `topology.nodes` leaf. |
+| a `topology.nodes` **leaf** dispatch — one `robustness-runner` call | `fixer` | Executes exactly one pre-specified node (one robustness spec, one placebo, one subsample cut, one leaf-node build step), asserts the data contracts, returns a structured result. `robustness-runner` **≡** one leaf-node dispatch — same unit of work, one node per call, never a multi-node prompt. |
+| a `topology.nodes` **spine** step | `fixer` (sequential, dependency-ordered) | The dependent build/clean/estimate steps that must run in order — still one node per call, just called one after another instead of concurrently. |
+| review / verification pass | `oracle` | Independent review of a fixer's output against source, not against fixer/explorer prose (`analysis-reviewer`, `result-verification`). |
+| repo hygiene before a mutating run | git-/cleanliness-specialist | Preflight checks (`project-organization`) — runs before topology dispatch, not as a node in it. |
+
+**An approved phase (with a topology) IS the execution-mode consent.** If an
+approved `docs/analysis/phases/<id>.yaml` already carries a non-empty
+`topology.nodes`, the user made the inline-vs-fan-out call when they approved
+that topology — one leaf node per independent piece of work is the pre-approved
+fan-out plan. `executing-analysis-plans` maps the shortlist onto those nodes and
+dispatches; it does **not** re-ask inline-vs-fan-out in that case. The ask-first
+rule (present inline vs. subagent dispatch, get the user's call) applies only
+when **no** conductor/topology state exists yet — e.g. plain Claude Code with no
+phase-YAML topology, or a phase record still at a bare single spine node.
+
 ## Subagent fan-out uses the `task` tool
 
 `executing-analysis-plans` fans **independent** work (the chosen ~3 robustness
 specs, alternative designs, subsample cuts, placebo tests) out to parallel
 subagents, and ships two agents — `robustness-runner` (runs one pre-specified
-spec, asserts the data contracts, returns a structured result) and
+spec, asserts the data contracts, returns a structured result — one
+`topology.nodes` leaf per call, see the mapping table above) and
 `analysis-reviewer` (independent silent-failure review). On OpenCode these are
 dispatched with the **`task`** tool: it spins up a fresh session for the chosen
 subagent with its own context window (and optionally its own model), so several
@@ -87,10 +113,14 @@ The plugin's `hooks/` are Claude-Code-only. On OpenCode:
 - **Trigger router + skill-chain** (the UserPromptSubmit / PostToolUse backstops)
   → not needed: OpenCode selects skills from their `description` natively, and each
   skill's own `## When to Use` graph + `## The Process` carry the handoffs.
-- **Legacy `analysis-plan.md` resumability hook** (SessionStart/PreCompact) →
-  superseded by `docs/analysis/` state. Maintain `index.yaml` plus the named YAML
-  records and flush them before compaction, so a fresh OpenCode session reads the
-  index first instead of rereading a giant plan.
+- **Claude Code's `plan-resume`/`stop-gate` hooks** (SessionStart/PreCompact/Stop)
+  → no direct equivalent; the discipline is `docs/analysis/index.yaml` itself.
+  Maintain `index.yaml` plus the named YAML records and flush them before
+  compaction, so a fresh OpenCode session reads the index first instead of
+  rereading a giant plan. If a root `analysis-plan.md` (v1) is still present,
+  that is a migration signal only — extract it into `docs/analysis/` via
+  `analysis-state-management` and archive or delete it; never resume from it
+  directly.
 - **Stop-gate** (the Stop hook that blocks an unverified results-write) → no hook
   equivalent ships here. The **causal-conductor** spine plugin, if installed,
   gates mutating tools behind an approved contract (`tool.execute.before` throws
