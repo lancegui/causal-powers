@@ -123,7 +123,8 @@ The plugin's `hooks/` are Claude-Code-only. On OpenCode:
   directly.
 - **Stop-gate** (the Stop hook that blocks an unverified results-write) → no hook
   equivalent ships here. The **causal-conductor** spine plugin, if installed,
-  gates mutating tools behind an approved contract (`tool.execute.before` throws
-  until a `<spine_contract>` is approved) — a stricter gate than Claude Code's.
-  Without it, *result-verification before reporting* is pure discipline: treat it
-  as the gate.
+  gates mutating tools behind the approved phase record (`tool.execute.before`
+  throws until the current `docs/analysis/` phase YAML passes the validator and
+  its approval is hash-bound to that file's bytes) — a stricter gate than Claude
+  Code's. Without it, *result-verification before reporting* is pure discipline:
+  treat it as the gate.

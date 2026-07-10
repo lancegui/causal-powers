@@ -2,6 +2,24 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.29.1 — stale v1 execution-mode/contract language, post-v2 sweep
+
+0.29.0 shipped the v2 schema but left two spots still describing v1 behavior:
+
+- `hooks/prompt-router`'s executing-analysis-plans nudge unconditionally told
+  the model to ask inline-vs-fan-out; it now asks only when no approved
+  `docs/analysis/` phase topology already fixed the execution mode, matching
+  the v2 approved-topology-is-consent rule (§7).
+- `opencode-tools.md`'s Stop-gate row still described the causal-conductor
+  gate as chat-parsed `<spine_contract>` approval; rewritten to the v2
+  mechanism — the gate binds to the approved phase YAML (validator pass +
+  hash of the file's bytes), not a chat-text block.
+- Re-swept `spine_contract` across `skills/`, `hooks/`, `docs/`, `README.md`,
+  `AGENTS.md` (the 0.29.0 purge only tracked `analysis-plan.md`/
+  `current.yaml`); the only other hit is this changelog's own 0.29.0 entry,
+  which correctly describes the retirement as a historical fact and is left
+  as-is.
+
 ## 0.29.0 — state-bound contract v2 (BREAKING: v1→v2 state schema)
 
 Implements the causal-powers half of the state-bound contract v2 spec
