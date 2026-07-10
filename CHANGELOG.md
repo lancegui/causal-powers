@@ -2,6 +2,59 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.29.0 — state-bound contract v2 (BREAKING: v1→v2 state schema)
+
+Implements the causal-powers half of the state-bound contract v2 spec
+(`causal-conductor/docs/specs/2026-07-10-state-bound-contract-v2.md`), which
+also rewrites the causal-conductor gate (separate repo/release) to parse this
+schema off disk instead of chat-text `<spine_contract>` blocks. This is a
+**breaking change to the `docs/analysis/` state schema** — the previous
+schema migration (0.28.0, "one canonical plan artifact") shipped without a
+changelog callout; this one does not repeat that.
+
+- **BREAKING: `docs/analysis/current.yaml` is retired.** Its fields
+  (`updated`, `goal`/`active_phase`, `phase`, `status`, `next_action`,
+  `blockers`) merge directly into `index.yaml` — one default read instead of
+  two. `index.yaml` also drops the v1 constant pointer keys (`current:`,
+  `decisions:`, `artifact_registry:`) and `do_not_read_by_default` (the
+  read-only-what-the-index-names rule already covers it). Any project with a
+  live `docs/analysis/current.yaml` must migrate before its next session (see
+  `analysis-state-management`'s Migrating Old Plans section) — the field
+  layout is not backward compatible.
+- **BREAKING: phase records gain two required, non-empty fields —
+  `plausibility_threats` and `topology.nodes`** — and drop
+  `delegated_agents`, `budget:`, and the `session_plan`/`lifecycle` nesting
+  (flattened to top-level `goal`/`scope`/`out_of_scope`/`acceptance_checks`).
+  `topology.nodes` is the new enforcement surface: one node per independent
+  piece of work (a robustness spec, a subsample cut, a placebo test) — the
+  schema causal-conductor's validator checks and the fixer-dispatch gate
+  binds to on OpenCode.
+- **Approval is never stored in the phase file** — `status:` is
+  `planned | in_progress | done | superseded` only, never `approved`; a
+  `status: approved` or `approved:` key in a phase record is now a documented
+  red flag, not a shortcut, since the model that writes the file could
+  otherwise stamp its own approval.
+- `analysis-state-management` (schema's normative home) and
+  `data-preparation/analysis-plan-template.md` rewritten to v2 throughout;
+  `executing-analysis-plans` unifies delegation vocabulary (a
+  `robustness-runner` dispatch **is** one `topology.nodes` leaf-node dispatch;
+  on OpenCode the underlying lane is `fixer`) and adds the
+  approved-phase-is-execution-consent rule — a topology already approved by
+  the user is not re-asked inline-vs-fan-out; `opencode-tools.md` gains the
+  single cross-layer mapping table.
+- `hooks/plan-resume` and `hooks/stop-gate` now key on
+  `docs/analysis/index.yaml` first; a root `analysis-plan.md` (or a leftover
+  v1 `docs/analysis/current.yaml`) triggers a migrate-only nudge and is never
+  resumed from directly.
+- `hooks/session-context.md` / `AGENTS.md` (byte-identical, CI-checked): the
+  plan-artifact sentence now states the approved-topology-is-consent rule,
+  compressed to stay within the card's word budget rather than appended.
+- Every other `analysis-plan.md` / `current.yaml` reference across `skills/`,
+  `hooks/`, `docs/` was swept: each hit is now either this migration section,
+  a false-positive substring (`pre-analysis-plan.md`, a different file), or a
+  dated historical spec/design doc describing a past state of the repo (left
+  unedited — rewriting history would misrepresent it, not document it).
+
 ## 0.28.1 — four skills were invisible on OpenCode
 
 `question-framing`, `descriptive-evidence`, `data-contracts`, and
