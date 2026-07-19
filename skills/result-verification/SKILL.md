@@ -37,11 +37,11 @@ Run these before any result leaves your hands. Each maps to a real way final num
 
 ## Reliability is not validity — verify the number *means* what you think
 
-Reconcile, reproduce, determinism, robustness establish **reliability** — the number is computed correctly from the data. They do not establish **validity** — that the quantity measures the construct you named. A figure can tie out to source, reproduce from a clean session, and survive every robustness re-cut, and still be a precise measure of the *wrong thing*: a count of *visible traces* reported as a count of *the underlying behavior*, a proxy label treated as the truth, a coverage-limited slice named as the whole. Every internal check passes; the number is reliable and wrong. "It's internally consistent" is exactly how a reliable measure of the wrong quantity ships.
+Reconcile, reproduce, determinism, robustness establish **reliability** — the number is computed correctly from the data. They do not establish **validity** — that the quantity measures the construct you named. A figure can tie out to source, reproduce from a clean session, and survive every robustness re-cut, and still be a precise measure of the *wrong thing*: a count of *visible traces* reported as a count of *the underlying behavior*, a proxy label treated as the truth, a coverage-limited slice named as the whole. Every internal check passes; the number is reliable and wrong.
 
 Validity is checked against something *outside* the dataset, and at least one such check belongs in verification whenever the number's **level** (not just its precision) carries the claim — for a descriptive count or rate as much as for an estimated effect:
 
-- **A known shock that should move it** — does the series respond, at the right time and sign, to an event that should change it? (The descriptive analog of a placebo.)
+- **A known shock that should move it** — does the series respond, at the right time and sign, to an event that should change it?
 - **An external benchmark** — does the level sit in a defensible range next to an independent estimate of the same quantity? An order-of-magnitude gap is a finding to explain with a mechanism, not to report flat.
 - **Alternative-construct coverage** — expand the definition along the dimension you suspect is missing and see how far the level moves; a level that is an artifact of *where you looked* is a coverage limit, not a fact.
 
@@ -53,11 +53,11 @@ If a check here fails and you cannot resolve it — a total won't reconcile, the
 
 ## Read the estimate like an economist
 
-A coefficient that reconciles and reproduces can still be economically meaningless or absurd. Reproducibility tells you the number is *real*; this tells you whether it's *believable* and whether it *matters*. A senior economist won't accept an estimate until it passes here:
+A coefficient that reconciles and reproduces can still be economically meaningless or absurd. Reproducibility tells you the number is *real*; this tells you whether it's *believable* and whether it *matters*:
 
 - **Convert to interpretable units.** A raw coefficient is not yet a finding. Turn it into an elasticity, a semi-elasticity, a percent of the mean, a fraction of an SD, a dollar figure — whatever lets a reader feel the size. "0.043" means nothing; "a 4% increase, or about a third of the control-group gap" means something.
 - **Economic significance, not just statistical.** The question is never only "is it distinguishable from zero" — it's "is it big enough to matter for the decision or for welfare." A precisely-estimated tiny effect and a precise zero are, economically, the same answer: *no*. Say so, rather than dressing a trivial effect in stars.
-- **Back-of-envelope the magnitude.** Does the size survive contact with how the world works? Translate it into an implied behavioral response, an implied total dollar amount, or an implied share of a known aggregate, and check that the implication isn't absurd (an effect larger than the outcome's possible range, a response no one would plausibly make, a dollar figure exceeding the whole market).
+- **Back-of-envelope the magnitude.** Does the size survive contact with how the world works? Translate it into an implied behavioral response, an implied total dollar amount, or an implied share of a known aggregate, and check that the implication isn't absurd (an effect larger than the outcome's possible range, or a dollar figure exceeding the whole market).
 - **Mechanism consistency.** Does the sign and size match the channel you posited in `question-framing`? If the mechanism has auxiliary predictions (it should bite harder for some subgroup, show up in an intermediate outcome), check those too — a real effect usually leaves more than one fingerprint.
 - **Benchmark against what's known.** How does it compare to existing estimates of the same or similar parameter? Being far off the literature isn't disqualifying, but it demands an explanation you can state. An estimate 10× the consensus is a claim that you've overturned the consensus — be sure that's what you mean.
 
@@ -73,7 +73,7 @@ Once it passes, snapshot it as a golden output (see `data-contracts`). The verif
 
 ## Consult — and capture — what bit you
 
-**Consult first (at the start, and before you report).** An established project keeps its scar tissue in `docs/LESSONS.md` and in your memory — the silent failures that bit it before. **Read them when you pick up the analysis and again before reporting**, and check whether any apply here: a prior fan-out on these tables, a vintage mismatch in this geography, a figure-vs-note estimand trap. Recall is the half of the loop that makes a logged bug actually stop recurring — capture without consult is a write-only journal. (These are *recalled*, not folded wholesale into this skill: the lesson is domain-specific and lives in the project.)
+**Consult first (at the start, and before you report).** An established project keeps its scar tissue in `docs/LESSONS.md` and in your memory — the silent failures that bit it before. **Read them when you pick up the analysis and again before reporting**, and check whether any apply here: a prior fan-out on these tables, a vintage mismatch in this geography, a figure-vs-note estimand trap. (These are *recalled*, not folded wholesale into this skill: the lesson is domain-specific and lives in the project.)
 
 **Capture at the end.** Before you close out, do a 60-second retro: **what silent failure actually bit this project** — the fan-out join, the leaked feature, the bad control, the implausible magnitude you almost shipped? Write it down in `docs/LESSONS.md` (one line: symptom, cause, the check that would have caught it). A lesson recorded is a bug that won't recur silently.
 
