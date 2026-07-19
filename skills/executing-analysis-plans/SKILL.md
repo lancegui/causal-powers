@@ -7,47 +7,47 @@ description: Use once an analysis brief or pre-analysis plan is APPROVED and it'
 
 ## Overview
 
-A plan that's been approved is a commitment, and execution is where it either gets honored or quietly abandoned. This skill takes over once `question-framing` (and, for confirmatory work, `pre-analysis-plan`) have produced an **approved** plan, and carries it out: build, estimate, stress-test, assemble. It is the analytics counterpart of executing an implementation plan — including dispatching independent work to parallel subagents.
+A plan that's been approved is a commitment, and execution is where it either gets honored or quietly abandoned. This skill takes over once `question-framing` (and, for confirmatory work, `pre-analysis-plan`) have produced an **approved** plan, and carries it out: build, estimate, stress-test, assemble — including dispatching independent work to parallel subagents.
 
-**Core principle:** Execute the approved plan faithfully, validating as you go and parallelizing what's independent. Autonomy here is for *carrying out the agreed plan fast and thoroughly* — not for changing it. Any departure is a checkpoint, not a step.
+**Core principle:** Execute the approved plan faithfully, validating as you go and parallelizing what's independent. Autonomy here is for *carrying out the agreed plan fast and thoroughly*, not for changing it — any departure is a checkpoint, not a step.
 
 ## Prerequisite: there is an approved plan
 
-Don't start here from a cold "analyze this." If there's no approved brief/PAP yet, go back to `question-framing` (and `pre-analysis-plan` for confirmatory work) and get sign-off first. Executing a plan nobody approved is just the behind-the-back problem wearing a schedule.
+Don't start here from a cold "analyze this." If there's no approved brief/PAP yet, go back to `question-framing` (and `pre-analysis-plan` for confirmatory work) first — executing a plan nobody approved is just the behind-the-back problem wearing a schedule.
 
-**A new request on an already-locked plan still triggers this skill — re-fire, don't coast.** A re-run, a finer reporting cut, "now do the other radii / the facility-year version" is exactly this skill's job (approved plan → run it, fan independent work to subagents), and it ends in `result-verification` before any result is written to a file. "The design was locked and reviewed last week, I'll just run it" is how a new cut ships unverified — the lock covers the *design*, not this *run*. If the new cut changes the unit or estimand, it's a `question-framing`/`analysis-checkpoints` change first, not a re-run.
+**A new request on an already-locked plan still triggers this skill — re-fire, don't coast.** A re-run, a finer reporting cut, "now do the other radii / the facility-year version" is exactly this skill's job, and it still ends in `result-verification` before any result is written to a file. "The design was locked last week, I'll just run it" is how a new cut ships unverified — the lock covers the *design*, not this *run*. If the new cut changes the unit or estimand, it's a `question-framing`/`analysis-checkpoints` change first, not a re-run.
 
 ## The sequential spine vs. the parallel fan-out
 
 The single biggest execution mistake is running everything in one slow serial loop — or, worse, parallelizing things that actually depend on each other. Split the plan into its dependent spine and its independent leaves.
 
 **Sequential spine (must run in order — each depends on the last):**
-1. Build / clean / join the analysis dataset. Unless it's a trivial load of one already-clean file, this is a phase, not a line: **delegate it to `data-preparation`**, which runs the ingest→clean→join→dedup→recode→reconcile checklist (calling `data-contracts` to validate each step, routing consequential cleaning decisions to `analysis-checkpoints`) and returns the clean, validated dataset. Nothing downstream is trustworthy until that phase's reconciliation passes.
+1. Build / clean / join the analysis dataset. Unless it's a trivial load of one already-clean file, this is a phase, not a line: **delegate it to `data-preparation`**, which validates each cleaning step (`data-contracts`) and routes consequential decisions to `analysis-checkpoints`. Nothing downstream is trustworthy until that phase's reconciliation passes.
 2. Construct the treatment, outcome, and key covariates → validate ranges, missingness, leakage.
 3. Estimate the **primary specification** (the one pre-committed in the PAP) → this is *the* number.
 
 **Parallel fan-out (independent — but chosen, not exhaustive):**
-Once the validated dataset and primary spec exist, the supporting analyses are independent and *can* run concurrently — but "can run in parallel" is not "should all run." First pick the shortlist that earns its place (next section), then fan out **only those**, one subagent per task. Candidates to choose *from*:
+Once the validated dataset and primary spec exist, the supporting analyses are independent and *can* run concurrently — but "can run in parallel" is not "should all run." Pick the shortlist that earns its place (next section) and fan out **only those**, one subagent per task. Candidates to choose *from*:
 - a **robustness specification** that probes the main threat (not every control permutation);
 - the **placebo / falsification test** that would catch the confound you actually worry about;
 - a genuinely **alternative design**, when one exists;
 - a **pre-specified** subsample / heterogeneity cut (not a fishing sweep);
 - the **secondary outcome** the mechanism predicts;
 - the one **sensitivity analysis** that matters (Oster δ, e-value, bandwidth);
-- for **structural** work, the independent pieces are the **Monte-Carlo recovery reps** (across true-θ points and sample sizes), the **multiple starting values** on the non-convex objective, and the **counterfactual scenarios** (one per mechanism) — they fan out the same way (`structural-estimation`).
+- for **structural** work: the **Monte-Carlo recovery reps**, the **multiple starting values** on the non-convex objective, and the **counterfactual scenarios** (one per mechanism) — same fan-out logic (`structural-estimation`).
 
-The approved shortlist reads the *same* validated dataset, so it parallelizes cleanly. **But choosing the execution *mode* is itself a checkpoint — present it, don't assume it — unless a topology has already decided it.**
+**But choosing the execution *mode* is itself a checkpoint — present it, don't assume it — unless a topology has already decided it.**
 
-**An approved phase IS the execution-mode consent when it carries a topology.** If an approved `docs/analysis/phases/<id>.yaml` already exists with a non-empty `topology.nodes` (schema owned by `analysis-state-management`) — the normal case under the causal-conductor spine on OpenCode, and available to any project that adopts the schema — the user already made the inline-vs-fan-out call when they approved that topology: **one leaf node per independent piece of work is the fan-out plan**, pre-approved. Map the shortlist onto those leaf nodes and dispatch; do not re-ask. Re-asking a decision the user already made by approving the topology is friction dressed up as diligence. **The ask-first rule below applies only when no conductor/topology state exists** — plain Claude Code with no phase-YAML topology, or a phase record that is still a bare single spine node with no leaves drafted yet.
+**An approved phase IS the execution-mode consent when it carries a topology.** If an approved `docs/analysis/phases/<id>.yaml` already has a non-empty `topology.nodes` (schema owned by `analysis-state-management`, the normal case under causal-conductor on OpenCode), the user already made the inline-vs-fan-out call: **one leaf node per independent piece of work is the fan-out plan**, pre-approved. Map the shortlist onto those nodes and dispatch — don't re-ask, that's friction dressed up as diligence. **The ask-first rule below applies only when no topology exists yet.**
 
 When no topology has already decided it, ask the user how they want the shortlist run:
 
 - **Inline** — each chosen spec in turn, here in this session, every step fully observable as it goes.
 - **Subagent dispatch** — one parallel subagent per spec, run concurrently.
 
-Recommend **subagent dispatch** for genuinely independent specs (faster, and it isolates each spec's context from yours), but it is the user's call — inline keeps everything in view, which some prefer for a small or delicate run. Make this a real, up-front question, not a silent default; this mirrors the inline-vs-subagent choice superpowers presents at execution.
+Recommend **subagent dispatch** for genuinely independent specs (faster, and it isolates each spec's context from yours), but it is the user's call — inline keeps everything in view, which some prefer for a small or delicate run. Make this a real, up-front question, not a silent default.
 
-Once the mode is settled (asked, or already given by an approved topology): for **subagent dispatch**, hand each chosen task to the **`robustness-runner`** agent that Causal Powers ships — it executes one pre-specified spec, asserts the data contracts, and returns a structured result, stopping if it hits a design decision (use superpowers' **`dispatching-parallel-agents`** / **`subagent-driven-development`** for the mechanics). **Vocabulary note (delegation is unified across layers):** a `robustness-runner` dispatch **is** one `topology.nodes` leaf-node dispatch — same unit of work, named differently by layer: the phase YAML calls it a node, this skill calls the agent that runs it `robustness-runner`, and on OpenCode under causal-conductor the underlying lane that actually executes it is `fixer`, dispatched exactly one node per call (never a multi-node prompt — that is the collapse the topology exists to prevent). For **inline**, run the chosen specs one at a time, applying the same data-contract assertions to each — each spec is still one topology leaf, just executed in this session instead of a subagent. Either way the shortlist and what each spec carries (next sections) are unchanged — only the execution mode differs.
+Once the mode is settled: for **subagent dispatch**, hand each chosen task to the **`robustness-runner`** agent Causal Powers ships — it executes one pre-specified spec, asserts the data contracts, and returns a structured result, stopping if it hits a design decision (superpowers' **`dispatching-parallel-agents`** / **`subagent-driven-development`** cover the mechanics). A `robustness-runner` dispatch **is** one `topology.nodes` leaf-node dispatch, just named differently by layer — one node per call, never a multi-node prompt, the collapse the topology exists to prevent. For **inline**, run the chosen specs one at a time, applying the same data-contract assertions to each.
 
 ## Robustness is an argument, not an inventory
 
@@ -67,40 +67,26 @@ A parallel subagent is a place for silent errors and silent redesigns to hide, s
 - **The exact, pre-specified task** — the precise spec/test from the approved plan, not "explore X." It executes a recipe; it does not choose the recipe.
 - **The data contracts to assert** — the same `data-contracts` invariants, so a fanned-out spec can't quietly run on a corrupted subset.
 - **A structured result to return** — coefficient, SE, N, the diagnostics, and a pass/fail on its contracts — so you can assemble them without re-reading ten transcripts.
-- **The checkpoint rule** — if the subagent hits a decision that would change the design, sample, spec, or estimand (e.g. its diagnostic fails and the "fix" is a redesign), it **reports back and stops**; it does not resolve it. That decision returns to you and then to the user via `analysis-checkpoints`.
+- **The checkpoint rule** — if it hits a decision that would change the design, sample, spec, or estimand, it **reports back and stops** rather than resolving it; that decision routes to the user via `analysis-checkpoints`.
 
 ## Between every step: validate, then checkpoint
 
 Execution is not "run to the end and show the user." After each spine step and as fan-out results land:
 
 - **Validate** the result against its contract (`data-contracts`); reconcile totals; if a number looks wrong, switch to `wrong-number-debugging`.
-- **Checkpoint** any consequential decision that surfaced (`analysis-checkpoints`) — execution is exactly when "the data surprised us, let's change the design" arises, and that is the user's call, not a step you take to keep moving.
+- **Checkpoint** any consequential decision that surfaced (`analysis-checkpoints`) — execution is exactly when "the data surprised us, let's change the design" arises, and that's the user's call, not a step you take to keep moving.
 
 ## Keep durable state live, and compact at phase boundaries
 
-A long analysis with many mid-step fixes drags context until quality degrades and auto-compaction fires at a random, lossy moment — losing the gotchas and decisions you can't afford to lose. Don't wait for that. **Actively maintain the plan/brief/model card as you go** — mark steps done, record the gotcha you just hit, revise the next step — it's a living document you keep current, not something you wrote once at the start.
+A long analysis with many mid-step fixes drags context until auto-compaction fires at a random, lossy moment, losing gotchas and decisions you can't afford to lose. Don't wait for that: **actively maintain the plan/brief/model card as you go** — mark steps done, record the gotcha you just hit — a living document, not something you wrote once at the start.
 
 Make the trigger **mechanical**, not a vibe: run the update-and-offer-compact routine **after each completed spine step and after the fan-out is assembled** (the checkpoints the skill already defines), not whenever a phase "feels" done. At each:
 
-1. **Update `docs/analysis/` so it stands on its own** — invoke
-   `analysis-state-management` and update `index.yaml`, `decisions.yaml`,
-   `artifact_registry.yaml`, and any handoff/run records that changed. Edit the
-   active phase YAML only for pre-approval drafting or an explicit post-approval
-   contract revision that will be re-approved, not just to mark execution
-   progress. Write the **decisions locked** (and why), the **state and key
-   insight** so far, and the **concrete next step** as a resume-from-clean-slate
-   instruction. Mirror the immediate next step in your todos. State lives in the
-   repo, not the chat.
+1. **Update `docs/analysis/` so it stands on its own** — invoke `analysis-state-management` and update whichever records changed (see its own "How To Update State" for which file). State lives in the repo, not the chat, and it must carry the decisions locked and why, the key insight so far, and the concrete next step as a resume-from-clean-slate instruction.
 2. **Offer to compact**: "this is a clean point to `/compact` — `docs/analysis/index.yaml` points to the decisions, insight, and next step, so we resume on a clean slate without losing anything." You can't compact yourself (the user runs `/compact`), so *suggest* it — at real phase boundaries only, never mid-step, and easy to wave off.
-3. On resume, **read `docs/analysis/index.yaml` first**, then only the records it
-   names for the current task. Continue from `index.yaml`'s `next_action`.
+3. On resume, follow `analysis-state-management`'s Resume Rule: `index.yaml` first, then only the records it names, continuing from `next_action`.
 
-The test: **if the conversation were compacted right now, could a clean session
-pick up from `docs/analysis/index.yaml` plus the named records alone?** If not,
-the state isn't finished — write the missing state *before* you suggest the
-compact. This is what makes the whole "write it down before you build" rule pay
-off: durable indexed state is exactly what lets a long, fix-heavy session compact
-safely without every agent rereading a giant plan.
+The test: **if the conversation were compacted right now, could a clean session pick up from `docs/analysis/index.yaml` plus the named records alone?** If not, the state isn't finished — write the missing state *before* you suggest the compact.
 
 ## Synthesis
 
@@ -123,21 +109,21 @@ When the fan-out completes, assemble — don't just dump:
 
 | Excuse | Reality |
 |---|---|
-| "More robustness checks make it more convincing." | They make it less convincing — a wall of specs reads as theater and hides the one check that matters. Pick the few that could actually break the result. |
-| "Running them is cheap now, so why not run them all?" | Cheap-to-run is the trap. The cost isn't compute; it's the reader's trust and the buried signal. Propose ~3 and get approval. |
-| "The subagents can figure out the spec." | An under-specified subagent invents its own analysis — the parallel version of deciding behind the user's back. Hand each one the exact recipe. |
-| "A robustness check failed its data contract, but the coefficient looks fine." | A spec that ran on corrupted data isn't evidence of robustness; it's noise. The contract failing is the result. |
-| "The data suggested a better spec, so I added it." | Adding it silently is specification search. Surface it as a checkpoint; run it labeled as exploratory if approved. |
-| "I'll show all the results at the end." | Then a wrong intermediate poisons everything after it unseen. Validate each step as it lands. |
+| "More robustness checks make it more convincing." | Less — a wall of specs reads as theater and hides the one check that matters. Pick the few that could actually break the result. |
+| "Running them is cheap now, so why not run them all?" | Cheap-to-run is the trap; the cost is the reader's trust and the buried signal. Propose ~3 and get approval. |
+| "The subagents can figure out the spec." | An under-specified subagent invents its own analysis — deciding behind the user's back, in parallel. Hand each one the exact recipe. |
+| "A robustness check failed its data contract, but the coefficient looks fine." | A spec run on corrupted data isn't robustness, it's noise. The contract failing is the result. |
+| "The data suggested a better spec, so I added it." | That's specification search. Surface it as a checkpoint; run it labeled exploratory if approved. |
+| "I'll show all the results at the end." | A wrong intermediate poisons everything after it unseen. Validate each step as it lands. |
 
 ## The Process
 
-1. **Build / clean / join the dataset → delegate to `data-preparation`** (unless it's a trivial load of one already-clean file). It runs the ingest→clean→join→dedup→recode→reconcile phase — calling `data-contracts` per step, routing consequential cleaning decisions to `analysis-checkpoints` — and returns the clean, validated dataset.
-2. **Validate every later spine step + every fanned-out spec before trusting a number** — row counts, join cardinality, reconciliation → *invoke `data-contracts`*.
-3. **Fork by design as you estimate** — reduced-form (effect lives in the data) → *invoke `causal-identification`* for the robustness suite; structural (counterfactual outside the data) → *invoke `structural-estimation`* for recovery reps, starts, and per-mechanism counterfactuals.
-4. **On every write, keep the code minimal and surgical → invoke `analysis-craft`.** Touch only what the step needs.
+1. **Build / clean / join the dataset → delegate to `data-preparation`** (unless it's a trivial load of one already-clean file); it returns the clean, validated dataset.
+2. **Validate every later spine step + fanned-out spec before trusting a number** → *invoke `data-contracts`*.
+3. **Fork by design as you estimate** — reduced-form → *invoke `causal-identification`* for the robustness suite; structural → *invoke `structural-estimation`* for recovery reps, starts, and counterfactuals.
+4. **Keep the code minimal and surgical on every write → invoke `analysis-craft`.**
 5. **Any decision that changes design/sample/spec/estimand — or any number the user has already seen — STOP and invoke `analysis-checkpoints`.** A surprising result is a checkpoint, not a step; a number that looks wrong is `wrong-number-debugging`, not a silent patch.
-6. **Spine + fan-out complete, before any result is written or reported → invoke `result-verification`.** Do not end at "here are the results" — reconcile, reproduce, then hand off.
+6. **Spine + fan-out complete, before any result is written → invoke `result-verification`.** Don't end at "here are the results" — reconcile, reproduce, then hand off.
 ## The bottom line
 
 ```
