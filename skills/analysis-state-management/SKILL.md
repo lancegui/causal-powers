@@ -106,6 +106,7 @@ acceptance_checks:
 plausibility_threats:             # REQUIRED, non-empty (a waiver is still an entry)
   - threat: mortality denominator mixes county populations across vintages
     check: recompute rates with fixed-vintage denominators, compare
+    owner_node: sdid-main          # topology node that runs/verifies this check
 topology:                         # REQUIRED, non-empty — the enforcement surface
   nodes:
     - id: build-panel
@@ -124,12 +125,15 @@ outputs: []
 ```
 
 `plausibility_threats` and `topology.nodes` are both required and non-empty —
-a phase record without them is incomplete, not minimal. `topology.nodes` is
-what makes independent work visible as independent: **one leaf node per
-genuinely independent piece of work** (a robustness spec, a subsample cut, a
-placebo test); collapsing several independent leaves into one node is the
-mistake that turns a fan-out into a serial bottleneck (see
-`executing-analysis-plans`).
+a phase record without them is incomplete, not minimal. Every
+`plausibility_threats[]` item must carry `threat`, `check`, and `owner_node`;
+`owner_node` names the topology node that will run or verify the check. A threat
+check without an owner is not an advisory for later — it is a missing piece of
+the phase contract that must be fixed before approval. `topology.nodes` is what
+makes independent work visible as independent: **one leaf node per genuinely
+independent piece of work** (a robustness spec, a subsample cut, a placebo
+test); collapsing several independent leaves into one node is the mistake that
+turns a fan-out into a serial bottleneck (see `executing-analysis-plans`).
 
 Deleted from v1 phase records: `delegated_agents` (role theater — the lane
 architecture is standing config, not per-phase state), `budget:` (constants;
@@ -143,16 +147,20 @@ it could stamp its own approval — `status:` values are only
 no `approved:` key. Approval truth lives outside the file: in the user's
 explicit sign-off in chat, and — when the causal-conductor spine plugin is
 installed (OpenCode) — additionally in the plugin's own state
-(`{ phaseId, sha256(fileBytes), approvedAt }`), never in anything the model
-can edit. If you ever see a phase record with `status: approved` or an
-`approved:` key, that is a red flag, not a shortcut: fix it, don't rely on it.
+(`{ phaseId, sha256(contract), approvedAt }`), never in anything the model can
+edit. If you ever see a phase record with `status: approved` or an `approved:`
+key, that is a red flag, not a shortcut: fix it, don't rely on it.
 
 ## How To Update State
 
 Update the smallest record that changed:
 
-- phase status or next step -> the active phase YAML, then `index.yaml`'s
-  `active_phase`/`next_action`/`blockers`;
+- pre-approval phase contract changes -> the active phase YAML (`goal`,
+  `scope`, `out_of_scope`, `acceptance_checks`, `plausibility_threats`,
+  `topology`);
+- after-approval execution progress / next step -> `index.yaml`, `runs/*.yaml`,
+  `handoffs/*.yaml`, `artifact_registry.yaml`, or `decisions.yaml` as
+  appropriate; do not edit the approved phase contract just to mark progress;
 - consequential decision or approved deviation -> `decisions.yaml`;
 - new or changed output -> `artifact_registry.yaml`;
 - command/result reproducibility -> `runs/*.yaml`;
@@ -170,7 +178,10 @@ Pre-approval writing is the normal path, not an exception:
 1. Draft or refine the active phase YAML directly under
    `docs/analysis/phases/<id>.yaml` — `goal`, `scope`, `out_of_scope`,
    `acceptance_checks`, `plausibility_threats`, `topology.nodes`. Independent
-   pieces of work are separate nodes from the start.
+   pieces of work are separate nodes from the start. Each plausibility threat's
+   `check` must name `owner_node` before approval, so an oracle finding like
+   "this check should run before completion" becomes a phase-draft fix, not a
+   mid-execution reapproval.
 2. Route the phase YAML to oracle review when the design is high-risk, render
    a short human-readable summary in chat (the summary is *rendered from* the
    file for the user to read — it is never itself the source of truth), and
@@ -179,13 +190,16 @@ Pre-approval writing is the normal path, not an exception:
    — approval lives in the user's words and, if present, the conductor
    plugin's bound record. Implementation work may now proceed inside
    `topology.nodes`.
-4. **Drift = the approved phase file's bytes changing.** If you need to
-   change scope, topology, or acceptance checks after approval, that is a new
-   draft needing re-approval, not a quiet edit. Edits to `index.yaml`,
+4. **Drift = the approved phase contract changing.** The conductor plugin
+   ignores pure phase bookkeeping (`updated`, `status`, `next_action`) but
+   binds the semantic contract: id, goal/scope/out-of-scope, acceptance checks,
+   plausibility threats, topology, and unknown non-bookkeeping fields. If you
+   need to change scope, topology, or acceptance checks after approval, that is
+   a new draft needing re-approval, not a quiet edit. Edits to `index.yaml`,
    `decisions.yaml`, other phase files, or run/handoff records are not drift
    and do not require re-approval.
 5. After approval, execution agents work inside the approved `topology.nodes`
-   and update runs, artifacts, decisions, and handoffs as they complete.
+   and update index, runs, artifacts, decisions, and handoffs as they complete.
 
 ## Migrating Old Plans
 
@@ -267,6 +281,8 @@ On resume or after compaction:
 - A phase record with empty (or missing) `plausibility_threats` or
   `topology.nodes` — both are required, not optional, even for a
   single-node phase.
+- A `plausibility_threats[]` item with no `owner_node`, or an owner that is not
+  a declared topology node — the check has no execution home.
 - A phase record with `status: approved` or an `approved:` key — the model
   wrote its own approval; approval lives outside the file.
 - A live `docs/analysis/current.yaml` next to `index.yaml` — v1/v2 drift; the

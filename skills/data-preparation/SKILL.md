@@ -96,7 +96,7 @@ the YAML state holds, at every save point:
 - the decisions ledger up to date with every consequential choice and its WHY;
 - the concrete next step written as a resume-from-clean-slate instruction ("POST-COMPACT: assert m:1 on the orders→customers join, reconcile row count, then handle missing `region`").
 
-Update the active phase YAML and `index.yaml` after every couple of actions and at every phase boundary; offer to `/compact` only at a clean boundary, never mid-step.
+Update `index.yaml`, decisions, runs, handoffs, and artifact records after every couple of actions and at every phase boundary. Edit the active phase YAML only for pre-approval drafting or an explicit contract revision that will be re-approved, not merely to mark execution progress. Offer to `/compact` only at a clean boundary, never mid-step.
 
 ## Size threshold — and the waiver
 

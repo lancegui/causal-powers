@@ -125,6 +125,6 @@ The plugin's `hooks/` are Claude-Code-only. On OpenCode:
   equivalent ships here. The **causal-conductor** spine plugin, if installed,
   gates mutating tools behind the approved phase record (`tool.execute.before`
   throws until the current `docs/analysis/` phase YAML passes the validator and
-  its approval is hash-bound to that file's bytes) — a stricter gate than Claude
+  its approval is bound to the phase's semantic contract) — a stricter gate than Claude
   Code's. Without it, *result-verification before reporting* is pure discipline:
   treat it as the gate.

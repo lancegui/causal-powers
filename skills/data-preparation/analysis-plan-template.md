@@ -52,6 +52,7 @@ plausibility_threats:
       leave this empty; a genuinely low-risk phase still names the threat it
       considered and ruled out
     check: the check that would catch it
+    owner_node: build-panel
 topology:
   nodes:
     - id: build-panel

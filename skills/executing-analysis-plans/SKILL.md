@@ -83,12 +83,14 @@ A long analysis with many mid-step fixes drags context until quality degrades an
 Make the trigger **mechanical**, not a vibe: run the update-and-offer-compact routine **after each completed spine step and after the fan-out is assembled** (the checkpoints the skill already defines), not whenever a phase "feels" done. At each:
 
 1. **Update `docs/analysis/` so it stands on its own** — invoke
-   `analysis-state-management` and update `index.yaml`, the
-   active phase YAML, `decisions.yaml`, `artifact_registry.yaml`, and any
-   handoff/run records that changed. Write the **decisions locked** (and why),
-   the **state and key insight** so far, and the **concrete next step** as a
-   resume-from-clean-slate instruction. Mirror the immediate next step in your
-   todos. State lives in the repo, not the chat.
+   `analysis-state-management` and update `index.yaml`, `decisions.yaml`,
+   `artifact_registry.yaml`, and any handoff/run records that changed. Edit the
+   active phase YAML only for pre-approval drafting or an explicit post-approval
+   contract revision that will be re-approved, not just to mark execution
+   progress. Write the **decisions locked** (and why), the **state and key
+   insight** so far, and the **concrete next step** as a resume-from-clean-slate
+   instruction. Mirror the immediate next step in your todos. State lives in the
+   repo, not the chat.
 2. **Offer to compact**: "this is a clean point to `/compact` — `docs/analysis/index.yaml` points to the decisions, insight, and next step, so we resume on a clean slate without losing anything." You can't compact yourself (the user runs `/compact`), so *suggest* it — at real phase boundaries only, never mid-step, and easy to wave off.
 3. On resume, **read `docs/analysis/index.yaml` first**, then only the records it
    names for the current task. Continue from `index.yaml`'s `next_action`.
