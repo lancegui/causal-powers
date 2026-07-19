@@ -9,13 +9,11 @@ description: Use the moment a computed result looks wrong, surprising, suspiciou
 
 A surprising number is data trying to tell you something. The instinct is to patch it — add a `dropna`, a `distinct`, a filter — until it looks reasonable. That instinct is how a symptom gets hidden and the real bug ships. **Routing:** code THROWS or a test fails → `superpowers:systematic-debugging`. Code runs CLEAN but the number is wrong → this skill. Either way, a remedy that changes design/sample/spec is `analysis-checkpoints` territory, not a fix.
 
-The discipline here is the same as systematic debugging in software: **find the step where the number went bad before you change anything.**
-
 **Core principle:** Locate the bug by bisecting the pipeline, not by guessing at fixes. The number is wrong *somewhere specific* — find where, then you'll know why.
 
 ## Why analytics debugging is its own thing
 
-In software the bug usually announces itself with a stack trace pointing near the cause. In analysis there is no trace — just a number that's too big. The pipeline ran clean. The bug is somewhere in a chain of joins, filters, groupings, and recodes, and the only signal you have is that the *output* is wrong. So you work backward through the chain, checking the number at each stage, until you find the stage where it stopped being right. That stage contains the bug.
+In software a bug announces itself with a stack trace pointing near the cause. In analysis there is no trace — the pipeline ran clean, and the only signal you have is that the *output* is wrong. Work backward through the chain of joins, filters, groupings, and recodes, checking the number at each stage, until you find where it stopped being right. That stage contains the bug.
 
 ## The loop
 
@@ -25,7 +23,7 @@ REPRODUCE  →  LOCATE (bisect)  →  EXPLAIN  →  FIX AT THE SOURCE  →  RE-C
 
 1. **REPRODUCE** — Pin the wrong number down to a deterministic, minimal case. Same input, same seed, same result every time. If it's intermittent, you have hidden state (ordering, randomness, a mutated global) and *that* is the bug. Shrink to the smallest subset of rows that still shows it — debugging on 50 rows beats debugging on 50 million.
 
-   **Then state the diagnostic roadmap and get a quick nod — before you start running scans.** A bisection is a *multi-step plan*, and a plan the user can't see is one they can't redirect. In 2–4 lines, name the stages you'll check, in what order, and where you'll start: *"Roadmap: (1) pull the flagged pair's full records, (2) is the shared coordinate same-site or a geocode artifact, (3) scan the whole panel for the same pattern, (4) if systematic, trace how it's produced. Stays a diagnosis — any drop/merge of units comes back to you. Good, or reprioritize?"* This is the rung that was missing when a debug session dove straight into record-dumping and the user had to interrupt to impose an order. Get agreement **once**, then execute the roadmap autonomously — only re-stopping if a step turns into a design/sample/spec change (step 4). The roadmap is cheap to state and it is exactly where the user has the local knowledge ("check Milwaukee first") that reorders your search productively. Skip it only for a one-or-two-step check; a quick fix doesn't need a roadmap, a real bisect does.
+   **Then state the diagnostic roadmap and get a quick nod before running scans.** A bisection is a multi-step plan — state it in 2–4 lines: the stages you'll check, in what order, where you'll start. *"Roadmap: (1) pull the flagged records, (2) check X, (3) scan the panel for the pattern, (4) trace how it's produced. Stays a diagnosis — any drop/merge comes back to you. Good, or reprioritize?"* Get agreement once, then execute autonomously — only re-stopping if a step turns into a design/sample/spec change. This is where the user's local knowledge reorders your search cheaply. Skip it for a one-or-two-step check.
 
 2. **LOCATE by bisection** — Execute the agreed roadmap. Walk the pipeline and check the number at each intermediate stage:
    - What is the row count / total / value right after **load**? Is it already wrong? Then the bug is upstream — in the source or the extract, not your code.
@@ -36,7 +34,7 @@ REPRODUCE  →  LOCATE (bisect)  →  EXPLAIN  →  FIX AT THE SOURCE  →  RE-C
 
    Binary-search it: check the middle of the chain. Wrong already? Bug is in the first half. Still right? Second half. A ten-step pipeline localizes in three or four checks.
 
-3. **EXPLAIN** — Once you've found the stage, explain *why* in one sentence before touching code. "The join fanned out because `customer_id` is not unique in the orders table." If you can't articulate the mechanism, you haven't found the bug yet — keep bisecting.
+3. **EXPLAIN** — Once you've found the stage, explain *why* in one sentence before touching code. "The join fanned out because `customer_id` is not unique in the orders table." If you can't articulate the mechanism, you haven't found the bug yet — keep bisecting. A patch that merely makes the number *look* right is more dangerous than the obviously-wrong one it replaced — the bug is now hidden, not fixed.
 
 4. **FIX AT THE SOURCE — but first answer the dividing question:** *am I restoring the analysis we agreed on, or changing it?* Answer it before you touch anything; the two branches are very different:
    - **Data-bug fix** (restores the intended computation): the join fanned out, so dedup the right table or aggregate before joining; the units were wrong, so correct them; the date parse broke, so repair it. This returns the analysis to what was already agreed — **do it, then report what you found and fixed.** (Don't slap a `distinct()` on the final output to paper over tripled rows — fix the key, not the symptom.)
@@ -48,14 +46,6 @@ REPRODUCE  →  LOCATE (bisect)  →  EXPLAIN  →  FIX AT THE SOURCE  →  RE-C
 ## Trace provenance backward — the usual culprits
 
 The categories worth checking at each bisected stage are the same ones `data-contracts`' invariant catalog asserts and `result-verification`'s checklist reconciles — don't re-derive the list, bisect against it: **fan-out join** (totals inflated by a clean-ish 2×/3×; check row counts and key uniqueness), **vanishing rows** (an inner join or null-dropping filter silently discarded unmatched rows; anti-join to see what failed to match), **NA/missing poisoning**, **units/scale** (dollars vs. cents, ms vs. s), **wrong grain** (double-counting user-sessions as users), **surprise category level** (a stray `"unknown"`, mojibake, a trailing-space duplicate), **temporal** (a timezone shift or resample duplicating a period), and **upstream surgery** (the data was already sampled or filtered before it reached you).
-
-## Don't reach for the fix too early
-
-The strongest pull in debugging a wrong number is to fix it before you understand it — because a plausible patch is right there and it makes the number look sane. Resist. A number made to *look* right by an unexplained patch is more dangerous than the obviously-wrong number you started with, because now it's hidden. No fix until you can name the mechanism.
-
-## Debugging is the back door for silent redesigns
-
-The most dangerous moment in debugging is when the investigation surfaces a *design* problem and you "fix" it by changing the design — without telling the user. It feels like debugging; it's actually a unilateral redesign (`analysis-checkpoints`'s worked example is exactly this trap: a near-clinic DiD "fix" that was really a pre-registered-design change). Your job here ends at **diagnose and explain** — surface the threat and the candidate remedies; do **not** write the redesign and present it as "the fix." Changing the design, sample, spec, or estimand is an `analysis-checkpoints` decision — stop and let the user choose.
 
 ## Language cheat-sheet
 
