@@ -12,32 +12,21 @@ A number you computed but never validated is a guess wearing a lab coat.
 
 **Core principle:** Lock in what must be *true* before you trust what you *discovered*.
 
-This is the **checker**. It asserts invariants and reconciles totals; it does not plan or run the work. Its complement is the **doer**: during the cleaning phase, `data-preparation` *calls* this skill to validate each ingest/join/dedup/recode step, and `executing-analysis-plans` calls it on every later spine step and fanned-out spec. You reach for `data-contracts` directly the moment you're about to trust a number or do a join — and the doers reach for it on your behalf throughout.
+This is the **checker**: it asserts invariants and reconciles totals, it does not plan or run the work. Its complement is the **doer** — `data-preparation` calls this skill per ingest/join/dedup/recode step, `executing-analysis-plans` calls it on every spine step and fanned-out spec — but you also reach for it directly the moment you're about to trust a number or do a join.
 
-This is the data-analytics counterpart of test-driven development. TDD's literal ritual — "write a failing test asserting the exact output, then implement" — does not transfer to analysis, because in analysis the output is the unknown. You cannot assert `mean == 42.3` before you've computed it; computing it is the whole point. But the discipline underneath TDD transfers exactly, and matters *more* here.
+This is the data-analytics counterpart of test-driven development, adapted for the one way it doesn't transfer: TDD asserts the exact output before implementing, but in analysis the output is the unknown — you cannot assert `mean == 42.3` before computing it. The discipline underneath still transfers, and matters *more* here.
 
 ## Why analysis breaks naive TDD (and why you still need its spirit)
 
-In software the dangerous bug usually throws — a stack trace, a red test, something loud. In analysis the dangerous bug is **silent**: the code runs cleanly and hands you a confident, wrong answer.
-
-- A join fans out 1-to-many and your revenue triples.
-- One `NA` / `missing` / `NaN` poisons a mean, or gets silently dropped and biases it.
-- Units are off by 100× (dollars vs. cents, proportion vs. percent).
-- A timezone or date-floor shifts every event into the wrong day.
-- A factor level / category you didn't expect quietly creates a new group.
-- Train and test overlap and your model metric is a fantasy.
-
-None of these raise an error. So we move the discipline from *"assert the answer first"* (impossible) to **"assert everything *around* the answer that must hold regardless of the answer."** Those are your **data contracts** and **invariants**. They are checkable *before* you know the result and again *after* — which is exactly the leverage test-first gives you in software.
+In software the dangerous bug usually throws — a stack trace, a red test, something loud. In analysis the dangerous bug is **silent**: a join fans out, an `NA` poisons a mean, units are off by 100×, train/test overlap — the code runs cleanly and hands you a confident, wrong answer, no error raised (the full catalog of these is below). So we move the discipline from *"assert the answer first"* (impossible — computing the number IS the point) to **"assert everything *around* the answer that must hold regardless of the answer."** Those are your **data contracts** and **invariants**, checkable *before* you know the result and again *after* — exactly the leverage test-first gives you in software.
 
 ## Two regimes — know which one you're in
 
-**1. Exploration** (you're hunting for the answer: EDA, plotting, trying models).
-Do **not** force test-first here — it would be theater. The rule that *does* apply: **validate the inputs before you trust any output, and check intermediate results at every step.** Trust nothing you haven't looked at.
+**1. Exploration** (EDA, plotting, trying models). Forcing test-first here is theater — the rule that applies instead: **validate the inputs before trusting any output, and check intermediate results at every step.** Trust nothing you haven't looked at.
 
-**2. Reusable rules** (a cleaning step, a metric definition, a transform you'll run again, a feature pipeline).
-Here you *do* know the rule, so real test-first applies cleanly. Hand-build a tiny fixture with a known answer, write the check, watch it fail, then implement. A metric definition without a test is a rumor.
+**2. Reusable rules** (a cleaning step, metric definition, transform, feature pipeline). Here you *do* know the rule, so real test-first applies: hand-build a tiny fixture with a known answer, write the check, watch it fail, then implement. A metric definition without a test is a rumor.
 
-Most analysis work flows from regime 1 into regime 2: you explore to *find* the right transform, then you *lock it down* as a tested, contracted rule. The mistake is staying in regime 1 forever and shipping exploratory code as if it were production.
+Most work flows regime 1 → regime 2: explore to *find* the right transform, then *lock it down* as a tested rule. The mistake is staying in regime 1 forever and shipping exploratory code as production.
 
 ## The loop (analytics red-green)
 
@@ -46,10 +35,10 @@ CONTRACT  →  CHECK IT BITES  →  COMPUTE  →  RECONCILE  →  FREEZE
 ```
 
 1. **CONTRACT** — Before computing, write down what must be true: row counts, key uniqueness, value ranges, totals that must reconcile, allowed categories, types and units. (See the invariant catalog below.)
-2. **CHECK IT BITES** — Confirm the check actually *fails* on bad data: **feed it one deliberately broken row and watch the assertion trip.** (Recalling a past incident motivates *writing* the check; it is not a substitute for seeing it go red.) **A check that cannot fail proves nothing** — the analytics form of TDD's "watch the test fail." If you've never seen it red, you don't know it's testing anything.
+2. **CHECK IT BITES** — Confirm the check actually *fails* on bad data before you trust it: perturb one row to violate the contract, or point it at a known-bad earlier version of the data, and watch the assertion trip. **A check that cannot fail proves nothing** — the analytics form of TDD's "watch the test fail." A row-count assertion that would pass on a broken join isn't protecting you, it's lying to you comfortably; if you've never seen a check go red, you don't know it's testing anything.
 3. **COMPUTE** — Do the transform / aggregation / model.
 4. **RECONCILE** — Run the contract against the result. Reconcile totals back to the source ("do my segment revenues sum to the grand total I started with?"). Mismatch = **stop; route to `wrong-number-debugging`** to bisect to the bad step — don't patch and proceed. And if the "fix" would drop/winsorize/filter rows or move a number the user has already seen, that's a *sample/spec change*, not an autonomous fix → **`analysis-checkpoints`**.
-5. **FREEZE** — Once a result is validated, snapshot it as a **golden / reference output** (a small committed CSV/parquet, or stored summary stats). Future re-runs and refactors compare against it, so a silent drift becomes a loud failure instead of a number nobody noticed changed.
+5. **FREEZE** — Once a result is validated, snapshot it as a **golden / reference output** (a small committed CSV/parquet, or stored summary stats). Future re-runs and refactors diff against it — the regression test of data work, converting *"the number changed three weeks ago and nobody noticed"* into an immediate, obvious failure instead.
 
 ## Join cardinality — the single highest-yield contract
 
@@ -69,7 +58,7 @@ Say out loud what you expect, then let the tool enforce it:
 
 The row-count assertion around a join is the cheapest, highest-value check in all of data work. Write it every time.
 
-**Before a merge in an established project, consult the project's `docs/LESSONS.md`** (and your memory) for prior join failures in *this* data — a fan-out that bit last month, a vintage mismatch in this crosswalk, a key that wasn't as unique as it looked. The capture half of that loop lives in `result-verification`; this is the recall half — a logged join bug only stops recurring if you read it back at the moment you're about to repeat it.
+**Before a merge in an established project, consult `docs/LESSONS.md`** for prior join failures in *this* data — a fan-out that bit last month, a vintage mismatch, a key that wasn't as unique as it looked. (Capture lives in `result-verification`; this is the recall half — a logged bug only stops recurring if you read it back before repeating it.)
 
 ## The invariant catalog — what to assert
 
@@ -96,20 +85,6 @@ A contract is not just about *values*; it's about *where the values came from*. 
 - **Upstream surgery** — rows filtered, categories collapsed, values recoded, deduplication applied *before* this dataset reached you. These are the silent killers; an analyst who doesn't know a 30% sample was already taken will over-count by 3×.
 
 When a number later comes out wrong, this lineage is what lets `wrong-number-debugging` bisect fast instead of guessing. Document it while you still remember it.
-
-## Watch it bite — the "see it fail" rule, adapted
-
-The single most-skipped step, and the one that separates real validation from decoration. After writing a check, prove it can catch the thing it's meant to catch:
-
-- Perturb one row to violate the contract and confirm the assertion fires.
-- Or temporarily point the check at a known-bad earlier version of the data.
-- Or recall the specific incident that motivated the check and reconstruct it.
-
-If your row-count assertion would pass on a broken join, it isn't protecting you — it's lying to you comfortably. Fix the check until it bites.
-
-## Freeze validated results — golden outputs
-
-Once a number is right, make it stay right. Write the validated result (or its summary statistics) to a small, committed reference file. On the next run, diff against it. This converts the worst class of analytics bug — *"the number changed three weeks ago and nobody noticed"* — into an immediate, obvious failure. It's the regression test of data work.
 
 ## Language cheat-sheet (R / Julia / Python)
 

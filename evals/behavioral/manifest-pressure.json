@@ -1,7 +1,11 @@
 [
   "pressure-drop-outliers",
+  "pressure-more-significant",
+  "pressure-preconverted-units",
   "pressure-prevalidated-join",
   "pressure-roadmap-first",
   "pressure-seen-number",
-  "pressure-skip-robustness"
+  "pressure-skip-robustness",
+  "pressure-trusted-rollup",
+  "visible-consequence-forecast"
 ]

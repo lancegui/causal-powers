@@ -7,11 +7,11 @@ description: Use throughout the EXECUTION of any analysis — while running, deb
 
 ## Overview
 
-Autonomy is the point of a good analysis loop — and also its biggest hazard. You can iterate fast toward a goal, but the same momentum that makes you productive makes you redefine the goal mid-flight without noticing: a debugging session quietly becomes a redesign, an outlier "obviously" gets dropped, a near-vs-far DiD silently becomes a triple-difference. Each step felt like progress. Collectively, the user got an analysis they never agreed to.
+Autonomy is the point of a good analysis loop — and also its biggest hazard. The same momentum that makes you productive fast lets you redefine the goal mid-flight without noticing: a debugging session quietly becomes a redesign, an outlier "obviously" gets dropped, a near-vs-far DiD silently becomes a triple-difference. Each step felt like progress; collectively, the user got an analysis they never agreed to.
 
-**Core principle:** Loop autonomously *toward the agreed goal*. Never redefine the goal — the design, the sample, the spec, the estimand, the metric — behind the user's back. When execution wants to change any of those, that is a **checkpoint**, not a task: stop, surface it, and let the user decide.
+**Core principle:** Loop autonomously *toward the agreed goal*. Never redefine the goal — the design, the sample, the spec, the estimand, the metric — behind the user's back. When execution wants to change any of those, that is a **checkpoint**, not a task: stop, surface it, let the user decide.
 
-This is the execution-time form of "Think Before Coding": don't decide silently, surface the tradeoff. The up-front skills (`question-framing`, `pre-analysis-plan`) establish the agreed goal; this skill protects it while the work runs.
+This is the execution-time form of "Think Before Coding": don't decide silently, surface the tradeoff. `question-framing` / `pre-analysis-plan` establish the agreed goal up front; this skill protects it while the work runs.
 
 ## The line: your call vs. the user's call
 
@@ -46,14 +46,9 @@ When you hit one, stop and present — don't implement past it:
 
 **Bundle the asks, never the decisions:** gates known at the same moment go in **one approval message** (framing + PAP + Phase-1 roadmap + execution mode), each named separately so the user can approve or redirect each. PAP sign-off covers the Phase-1 roadmap when the PAP already specifies the build steps.
 
-**If you cannot reach the user** (a batch, cron, or otherwise non-interactive run), a deadlock is wrong but so is deciding for them: **stop at the last validated state, do NOT implement the checkpoint-class change, and return the options + your recommendation as the deliverable** for a human to resolve. Surfacing the decision unresolved is the correct output, not a failure.
+**If you cannot reach the user** (batch, cron, non-interactive run): a deadlock is wrong, but so is deciding for them. **Stop at the last validated state, do NOT implement the checkpoint-class change, and return the options + recommendation as the deliverable** for a human to resolve — surfacing the decision unresolved is correct output, not a failure.
 
-**Worked example (the kind that should always stop):**
-> While debugging the high near-clinic effect I found the 2016 citywide recording jump is geographically uneven — Beverly's 2 mi ring is +66% in 2016 while its 0.5 mi ring is flat. A plain near-vs-far DiD would misread this as an acquisition effect.
-> **Options:** (a) upgrade Design B to a triple-difference (add band×month FE to absorb the citywide near-vs-far differential) — most robust, but changes the pre-registered design; (b) keep Design B and add the differential as a documented caveat; (c) restrict to cities without the uneven jump.
-> **My recommendation:** (a), because it directly removes the confound — but it's a deviation from the PAP, so it's your call.
-
-That stops *before* the band×month FE is written. The earlier behavior — writing the triple-difference and presenting it as "the fix" — is what this skill exists to prevent.
+**Worked example (the kind that should always stop):** debugging a high near-clinic effect turns up a geographically uneven 2016 recording jump that a plain near-vs-far DiD would misread as the treatment effect. **Options:** (a) upgrade to a triple-difference absorbing the differential — most robust, but a design deviation; (b) keep the design, document the differential as a caveat; (c) restrict to cities without the jump. **Recommendation:** (a), but it's a PAP deviation, so it's the user's call — stated and WAITED on *before* the triple-difference is written. Writing it first and presenting it as "the fix" is exactly what this skill prevents.
 
 ## The locked-document gate — shared mechanics
 
@@ -68,7 +63,7 @@ Each of the five skills states only what its document IS — its required fields
 
 ## "Loop until verified" ≠ "loop until you like the number"
 
-Goal-driven autonomy (from `analysis-craft` / the gateway) means: iterate freely toward **fixed, agreed success criteria**, and don't stop at "the code ran." It does **not** authorize changing the criteria, the design, or the sample to reach a result. If hitting the goal seems to require changing the goal, that's the loudest possible checkpoint — stop and say so.
+Goal-driven autonomy (`analysis-craft` / the gateway) means iterating freely toward **fixed, agreed success criteria** — not stopping at "the code ran," but also never changing the criteria, design, or sample to reach a result. If hitting the goal seems to require changing the goal, that's the loudest possible checkpoint: stop and say so.
 
 ## Red flags — STOP
 
