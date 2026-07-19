@@ -32,7 +32,7 @@ This is the fork. One question decides which of three families you're in, and th
 
 ## Write the Prediction Spec — immediately, and keep it living
 
-A predictive model's modeling choices — what counts as the label, how the split is drawn, which metric is optimized, where the threshold sits — silently decide what *every* downstream number means and whether the score survives deployment. So **the moment you understand the problem, write it down as a Prediction Spec** (the project's living spec, in a file), and like a `pre-analysis-plan` or a structural model card it earns a gate: **get the user's sign-off before fitting anything.** This is the analog of the structural model card; it is where "choosing the prediction setup is the user's decision" actually bites, before the compute is spent and before a leaked feature has quietly defined success.
+A predictive model's modeling choices — what counts as the label, how the split is drawn, which metric is optimized, where the threshold sits — silently decide what *every* downstream number means and whether the score survives deployment. So **the moment you understand the problem, write it down as a Prediction Spec**, and get the user's sign-off before fitting anything — where "choosing the prediction setup is the user's decision" actually bites, before the compute is spent and before a leaked feature has quietly defined success. (Write-to-file, sign-off, and mid-pipeline-reconstruct are `analysis-checkpoints`'s locked-document gate; reconstructing here means especially rows 3 and 5, because that's where the silent failure lives.)
 
 The spec has **seven rows**:
 
@@ -44,9 +44,7 @@ The spec has **seven rows**:
 6. **Metric tied to the decision + baseline to beat.** The metric must follow from row 1 (precision-at-capacity when you can only audit *k*; calibration when probabilities feed a cost calculation; recall when misses are catastrophic) — and you must name the **trivial baseline** the model has to beat (predict the base rate, predict last period, the existing rule-of-thumb) or the model isn't earning its complexity.
 7. **Method + why** — simplest-that-works first. A regularized logistic / a single tree is the baseline model, not the fallback; reach for boosting or deep nets only when the simple model is beaten *honestly* and the lift justifies the opacity.
 
-**You usually enter mid-pipeline** — "just fit the model", "tune this classifier", "why is the AUC low" — with a script seemingly already in place. That does **not** mean a spec exists; it almost always means none was written. The first move, whatever was asked, is **reconstruct the spec and confirm it before doing the named step** — especially rows 3 and 5, because that's where the silent failure lives. "Reconstruct and confirm" is a real sign-off, not a mention you breeze past.
-
-**The spec is living** — refining as you learn is the point. But editability is not a backdoor around the gate: a **load-bearing change** (the label, the split design, the metric, the threshold) routes through `analysis-checkpoints` as the user's call, not a silent edit. Changing the threshold after seeing the ROC is a decision about how many false positives the user will tolerate — theirs to make, not yours to tune away.
+**The spec is living** — refining as you learn is the point — but a **load-bearing change** (the label, the split design, the metric, the threshold) still routes through `analysis-checkpoints`, never a silent edit. Changing the threshold after seeing the ROC is a decision about how many false positives the user will tolerate — theirs to make, not yours to tune away.
 
 ## The label decides the regime
 
@@ -80,7 +78,7 @@ The headline guardrail of this arm. A predictive model tells you *which units* t
 
 ## Choosing or changing the spec is the user's decision
 
-Picking the label, the split design, the metric, the threshold, the method — and **changing any of them once results are in view** — decides what is even being predicted and whether the score means anything. These are the user's calls, not yours to make silently, and the danger window is *after* you've seen results: the model underperforms, so the impulse is to relabel "audited-and-found" as "fraudulent," loosen the temporal split to random, swap AUC for accuracy, or slide the threshold until precision looks good. Every one of those is a **checkpoint, not a silent edit** — surface the threat, the candidate change, and your recommendation via `analysis-checkpoints`. A spec quietly re-cut to make a number look better is the **redesign-as-bug-fix twin** the whole family guards against, wearing a prediction hat.
+Picking the label, split design, metric, threshold, or method — and changing any of them once results are in view — is `analysis-checkpoints` territory. The danger window is *after* results: the model underperforms, so the impulse is to relabel "audited-and-found" as "fraudulent," loosen the temporal split to random, swap AUC for accuracy, or slide the threshold until precision looks good — every one is a checkpoint (surface the threat, the candidate change, your recommendation), the prediction-arm twin of redesign-as-bug-fix.
 
 ## Tooling (R / Python / Julia)
 
@@ -101,18 +99,12 @@ The model-attribution row (SHAP / DALEX) carries the standing caveat from the se
 
 ## Red flags — STOP
 
-- A model fit before the Prediction Spec — decision, label, prediction-time, split design, metric, baseline — was written down and approved.
-- The user started you at "just fit / tune / debug the model" and you began without first reconstructing the spec and confirming the as-of prediction time and the split design.
 - A **random split** used where the deployment is **temporal or grouped** (you predict the future, or act on new entities) — the most common silent killer.
 - **Tuning on the test set** — hyperparameters selected on the same data used for the honest estimate, with no nested CV.
 - A **near-perfect score** taken as a triumph instead of a leakage alarm; a single feature that alone predicts almost perfectly, un-investigated.
 - **No permutation/null probe** — the model trusted before randomized-label performance was shown to collapse to no better than the trivial baseline (base rate / majority-class prediction), not merely "to chance."
 - Feature importance / SHAP read as **causal** — "feature X drives the outcome," an intervention claim, a "why" answered by a correlation engine.
-- **No baseline** — a model reported without the trivial comparison it must beat.
-- An **anomaly score read as a verdict** — "anomalous = rogue" — with no injected-case check, no expert review, no stability check, framed as classification rather than triage.
 - A **proxy label treated as truth** — "was audited and found" reported as "is fraudulent," with the proxy's selection unstated.
-- A score **deployed on a population unlike the training data** without naming the shift.
-- The **threshold, label, split, or metric changed after seeing results** to improve a number, without surfacing it as the user's decision.
 
 ## Common rationalizations
 
@@ -123,38 +115,7 @@ The model-attribution row (SHAP / DALEX) carries the standing caveat from the se
 | "The model trains on randomized labels too, but that's fine." | No — if shuffled labels still score, information is leaking through the harness. That's a broken eval, full stop. |
 | "I just tuned on the test set to save a fold." | Then your reported number is the one you can't reproduce. Tuning needs its own fold; use nested CV. |
 | "Feature X is the top predictor, so X drives the outcome." | Importance is what the *model uses*, not what *causes* anything. Want the why? That's `causal-identification`. |
-| "The flagged units are anomalous, so they're the rogue ones." | Anomalous means *unusual*, not *guilty*. Without ground truth you can't even compute precision. It's a triage queue for a human, not a verdict. |
 | "We don't have the real label, but the proxy is close enough." | Then say you're predicting the proxy, and carry its selection bias. A proxy reported as truth is a mislabeled model. |
-| "No need for a baseline — the model is obviously good." | Then beating "predict the base rate" costs nothing and proves it. If you won't run the baseline, you don't actually know the model earns its complexity. |
-| "It worked great in validation, so it'll work in production." | Only if validation mirrored production. A model is valid on the population it was trained and validated on — name the shift before you deploy across it. |
-
-## When to Use → where this hands off
-
-Predictive modeling is **not** terminal: an approved Prediction Spec *propels* into execution, and a finished, evaluated model *propels* into verification. Route imperatively — don't just note the relationship:
-
-```dot
-digraph predictive_modeling_next {
-    "Prediction Spec written + approved?" [shape=diamond];
-    "invoke executing-analysis-plans — fan CV folds / candidate models / subsample cuts to subagents" [shape=box style=filled fillcolor=lightgreen];
-    "Estimation + honest eval complete?" [shape=diamond];
-    "invoke result-verification — reproduce from clean state, before reporting" [shape=box style=filled fillcolor=lightgreen];
-    "Metric suspicious / too-good-to-be-true?" [shape=diamond];
-    "invoke wrong-number-debugging — suspect LEAKAGE first" [shape=box style=filled fillcolor=lightgreen];
-    "Label / split / metric / threshold / method needs changing?" [shape=diamond];
-    "invoke analysis-checkpoints — it's the user's call, not a silent re-cut" [shape=box style=filled fillcolor=lightgreen];
-    "Goal is really an effect / a why?" [shape=diamond];
-    "back to causal-identification — wrong arm" [shape=box style=filled fillcolor=lightyellow];
-    "revisit the spec / route to causal-identification if the goal is really an effect" [shape=box style=filled fillcolor=lightyellow];
-    "Prediction Spec written + approved?" -> "invoke executing-analysis-plans — fan CV folds / candidate models / subsample cuts to subagents" [label="yes — proceed"];
-    "Prediction Spec written + approved?" -> "Goal is really an effect / a why?" [label="no — not yet"];
-    "Goal is really an effect / a why?" -> "back to causal-identification — wrong arm" [label="yes — wrong arm"];
-    "Goal is really an effect / a why?" -> "revisit the spec / route to causal-identification if the goal is really an effect" [label="no — finish + approve the spec"];
-    "Estimation + honest eval complete?" -> "Metric suspicious / too-good-to-be-true?" [label="check first"];
-    "Metric suspicious / too-good-to-be-true?" -> "invoke wrong-number-debugging — suspect LEAKAGE first" [label="yes"];
-    "Metric suspicious / too-good-to-be-true?" -> "invoke result-verification — reproduce from clean state, before reporting" [label="no — plausible"];
-    "Label / split / metric / threshold / method needs changing?" -> "invoke analysis-checkpoints — it's the user's call, not a silent re-cut" [label="yes"];
-}
-```
 
 ## The Process
 

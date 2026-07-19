@@ -17,10 +17,7 @@ Before any model, answer the Angrist–Pischke question: **if you could have run
 
 ## The Design Card — sign-off before estimation
 
-Structural work locks a model card; prediction locks a Prediction Spec. A causal
-claim locks a **Design Card** — invoke `analysis-state-management`, write it into
-`docs/analysis/` (or reference the PAP when one exists), and get explicit
-sign-off BEFORE estimating:
+A causal claim locks a **Design Card** — invoke `analysis-state-management`, write it into `docs/analysis/` (or reference the PAP when one exists), and get sign-off before estimating. (Structural work locks a model card, prediction a Prediction Spec — same gate, different document; mechanics owned by `analysis-checkpoints`.) Its fields:
 
 - **Causal question + estimand** — ATT/ATE/LATE, for which population.
 - **Design + source of variation** — the "what's your experiment?" answer, one sentence.
@@ -29,10 +26,7 @@ sign-off BEFORE estimating:
 - **Robustness shortlist** — the ~3 checks aimed at the main threat (running them is an `analysis-checkpoints` approval).
 - **Primary spec** — outcome, treatment, FE/controls (each control with its confounding story), SEs/clustering.
 
-Entering mid-stream ("just run the DiD") does not waive the card — reconstruct it
-from context in ≤10 lines, confirm with the user, then estimate. "The user
-already said regress Y on X" names the *spec*, not the *design*; the card is
-still required.
+Entering mid-stream ("just run the DiD") does not waive the card: "the user already said regress Y on X" names the *spec*, not the *design* — reconstruct the card from context in ≤10 lines and confirm before estimating.
 
 ## The discipline
 
@@ -49,7 +43,7 @@ NAME THE DESIGN  →  STATE THE ASSUMPTIONS  →  TEST THE TESTABLE ONES  →  E
 
 ## Choosing or changing the design is the user's decision
 
-Picking the identification strategy, and *changing* it once the analysis is underway, are among the most consequential calls in the whole study — they decide what is even being estimated. They are not yours to make silently. When a diagnostic fails (pre-trends violated, weak first stage, manipulation at the cutoff, imbalance that won't resolve) or you discover a threat that calls for a different design, present the **threat, the candidate remedies, and your recommendation** as a checkpoint and let the user decide — see **`analysis-checkpoints`**. Surfacing "the parallel-trends assumption is violated; we could switch to a triple-difference, restrict the sample, or report with a caveat" is the job. Quietly upgrading the design to make the estimate behave is not — especially when it deviates from the pre-analysis plan.
+A failed diagnostic (pre-trends violated, weak first stage, manipulation at the cutoff, imbalance that won't resolve) or a newly discovered threat is `analysis-checkpoints` territory, not a silent upgrade: surface the **threat, candidate remedies, and your recommendation** — "parallel trends is violated; switch to triple-difference, restrict the sample, or report with a caveat" — and let the user decide, especially when it would deviate from the pre-analysis plan.
 
 ## Per-design assumptions and diagnostics
 
@@ -135,10 +129,7 @@ When a stack lacks a mature implementation (much of staggered-DiD and RDD outsid
 - An IV with no reported first-stage F, or treating LATE as if it were ATE.
 - An RDD with no manipulation/density test and no bandwidth-sensitivity check.
 - Matching that reports significance but never reports covariate balance or overlap.
-- No placebo, no pre-trends, no sensitivity analysis — the estimate stands entirely on faith in the untestable assumption, unexamined.
-- An "effect" that's nowhere in the raw descriptive data and appears only after the model.
 - Controlling for variables that could have been affected by treatment (post-treatment controls / mediators / colliders) — or "it got more robust when I added controls" treated as reassurance.
-- Switching or upgrading the identification strategy mid-analysis (e.g. DiD → triple-difference) without surfacing it to the user as their decision (`analysis-checkpoints`).
 
 ## Common rationalizations
 
@@ -149,26 +140,7 @@ When a stack lacks a mature implementation (much of staggered-DiD and RDD outsid
 | "Parallel trends obviously holds." | Then plotting the pre-trends costs you nothing and earns the reader's trust. If you won't plot it, you're not sure. |
 | "TWFE is the standard DiD." | It was. With staggered timing it's biased toward the wrong comparisons. Use a modern estimator. |
 | "The instrument is clearly exogenous." | Exclusion is untestable, which is exactly why it needs a real argument, not an assertion. |
-| "Robustness checks are for the appendix." | They're for deciding whether you believe your own result. Run them before you commit to it. |
 | "The user already said regress Y on X — that's my approval." | That approved the spec, not the design. The Design Card (variation source, untestable assumption, diagnostics) still gets written and signed off. |
-
-## When to Use → where this hands off
-
-Identification is **not** a terminal step. Once the design earns the estimate, it *propels* into exactly one next skill — route imperatively, don't just note the relationship:
-
-```dot
-digraph causal_identification_next {
-    "Diagnostic failed? (pre-trends / weak first stage / manipulation / imbalance) or design change needed?" [shape=diamond];
-    "invoke analysis-checkpoints — surface threat + remedies, user decides" [shape=box style=filled fillcolor=lightgreen];
-    "Estimate wrong sign / magnitude?" [shape=diamond];
-    "invoke wrong-number-debugging — rule out a data bug first" [shape=box style=filled fillcolor=lightgreen];
-    "invoke result-verification — verify before reporting" [shape=box style=filled fillcolor=lightgreen];
-    "Diagnostic failed? (pre-trends / weak first stage / manipulation / imbalance) or design change needed?" -> "invoke analysis-checkpoints — surface threat + remedies, user decides" [label="yes"];
-    "Diagnostic failed? (pre-trends / weak first stage / manipulation / imbalance) or design change needed?" -> "Estimate wrong sign / magnitude?" [label="no — design holds"];
-    "Estimate wrong sign / magnitude?" -> "invoke wrong-number-debugging — rule out a data bug first" [label="yes"];
-    "Estimate wrong sign / magnitude?" -> "invoke result-verification — verify before reporting" [label="no — design tested, robustness passed"];
-}
-```
 
 ## The Process
 

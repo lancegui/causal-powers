@@ -72,14 +72,9 @@ Test: **"Could the owner of this notebook review my diff in two minutes and agre
 
 - Adding a class, framework, or config system to a script that runs once.
 - Refactoring or restyling code you were only asked to make a small change to.
-- A diff that touches lines unrelated to the request ("while I was in there…").
-- Writing error handling for inputs the data cannot produce.
-- Deleting pre-existing dead code that wasn't part of your task.
 - Silently picking between two materially different analytical approaches without surfacing the tradeoff.
-- Diving into a non-trivial change — or starting at the step the user pointed you to mid-task — without writing a short plan first.
-- Wrote the plan but started coding before the user responded — the plan needs *confirmation*, not just authorship.
+- Diving into a non-trivial change — or starting at the step the user pointed you to mid-task — without writing a short plan first; or writing the plan but coding before the user confirmed it.
 - A 200-line cell doing what 50 readable lines would.
-- Collapsing a join + a winsorize + a collapse into one slick pipe — a referee can't see the three decisions.
 - An analytical decision (a winsorize, a sample cut, a deflator, a cluster level) sitting in the code with no `# why:` at its site.
 
 ## Common rationalizations
@@ -89,31 +84,9 @@ Test: **"Could the owner of this notebook review my diff in two minutes and agre
 | "I'm making it flexible for the future." | The future caller usually never comes, and the flexibility you guessed at is usually wrong. Generalize when the second real caller appears. |
 | "While I was in there, I cleaned it up." | You also changed numbers someone trusted, in a diff they now can't review. Stay surgical; propose the cleanup separately. |
 | "A framework is more professional than a script." | For a one-off analysis, the readable script *is* the professional choice. Overcomplication isn't rigor. |
-| "I rewrote it in my preferred style." | The owner has to maintain it in theirs. Match the file, not your taste. |
 | "I picked the better method to save a round-trip." | If the tradeoff is real, the choice is the user's. Surfacing it costs one sentence; the wrong silent choice costs the analysis. |
-| "More error handling is safer." | Handling impossible inputs is noise that hides the checks that matter. Assert the real invariants (`data-contracts`); skip the rest. |
 | "It's faster to just start coding." | For anything past a quick fix, three lines of plan first is faster than rewriting code built on the wrong approach. Plan, confirm, then code. |
 | "I made it a tight one-liner." | You hid a join/winsorization a referee now can't review. One conceptual step per line; lines spent on the real logic are never the over-engineering — machinery is. |
-
-## When to Use → where this hands off
-
-Analysis-craft is **not** a step on the spine — it is the discipline you run *alongside* every code write or edit. It does not terminate; it routes back into execution and out to the correctness siblings. Route imperatively, don't just note the relationship:
-
-```dot
-digraph analysis_craft_next {
-    "Writing/editing code right now?" [shape=diamond];
-    "stay in executing-analysis-plans — apply craft on every write/edit" [shape=box style=filled fillcolor=lightgreen];
-    "Need a correctness invariant, not less code?" [shape=diamond];
-    "invoke data-contracts — assert the contract (this is required, not trimmable)" [shape=box style=filled fillcolor=lightgreen];
-    "Parsimony is about the metric/spec, not the code?" [shape=diamond];
-    "invoke question-framing / causal-identification / pre-analysis-plan" [shape=box style=filled fillcolor=lightgreen];
-    "Writing/editing code right now?" -> "stay in executing-analysis-plans — apply craft on every write/edit" [label="yes"];
-    "Writing/editing code right now?" -> "Need a correctness invariant, not less code?" [label="no"];
-    "Need a correctness invariant, not less code?" -> "invoke data-contracts — assert the contract (this is required, not trimmable)" [label="yes"];
-    "Need a correctness invariant, not less code?" -> "Parsimony is about the metric/spec, not the code?" [label="no"];
-    "Parsimony is about the metric/spec, not the code?" -> "invoke question-framing / causal-identification / pre-analysis-plan" [label="yes"];
-}
-```
 
 ## The Process
 

@@ -96,8 +96,7 @@ Once it passes, snapshot it as a golden output (see `data-contracts`). The verif
 - "It reproduces" — but you never actually restarted the kernel and re-ran from raw inputs.
 - A figure or table number that you haven't confirmed matches the current run's output.
 - Reporting a point estimate with no idea whether it survives dropping a few outliers.
-- A magnitude you haven't sanity-checked against anything external.
-- A level that surprised you (too high or too low) and you've checked against the data but never against an external anchor — a known shock, a benchmark, or a wider definition.
+- A magnitude — especially one that surprised you, high or low — never checked against anything external (a known shock, a benchmark, a wider definition).
 - Writing "the numbers check out" instead of showing the output that checks them out.
 
 ## Common rationalizations
@@ -108,25 +107,8 @@ Once it passes, snapshot it as a golden output (see `data-contracts`). The verif
 | "It reproduces — I just ran it." | Re-running in the same session with cached state isn't reproduction. Restart and run from raw. |
 | "Robustness is overkill for an internal number." | The internal number drives the decision. Fragile-but-unchecked is how a bad decision gets made confidently. |
 | "analysis-review will catch whatever I miss." | Review assumes verification already passed — an unverified number wastes the reviewer on arithmetic. Verify first, then dispatch review. |
-| "I already eyeballed the figures." | Eyeballing doesn't catch a stale number copied from last week's version. Tie each one to this run's output. |
 | "Every check passed, the number's solid." | Those checks prove it's computed right (reliability), not that it measures what you named (validity). Anchor the level to something outside the data. |
 | "The deadline is now." | A wrong number presented on time is worse than a right one presented late, and far worse than a caveated one on time. |
-
-## When to Use → where this hands off
-
-Verification is **not** the finish line. It either *fails and bisects*, or it *passes and propels* into the independent review and the tidy-up — route imperatively, don't just note the relationship:
-
-```dot
-digraph result_verification_next {
-    "A check FAILED? (won't reconcile / can't reproduce / magnitude absurd)" [shape=diamond];
-    "invoke wrong-number-debugging — bisect the pipeline" [shape=box style=filled fillcolor=lightgreen];
-    "invoke analysis-review — dispatch the analysis-reviewer for a fresh-context pass" [shape=box style=filled fillcolor=lightgreen];
-    "invoke project-organization — tidy scratch, then commit/push" [shape=box style=filled fillcolor=lightgreen];
-    "A check FAILED? (won't reconcile / can't reproduce / magnitude absurd)" -> "invoke wrong-number-debugging — bisect the pipeline" [label="yes — STOP, don't ship behind a caveat"];
-    "A check FAILED? (won't reconcile / can't reproduce / magnitude absurd)" -> "invoke analysis-review — dispatch the analysis-reviewer for a fresh-context pass" [label="no — all checks pass"];
-    "invoke analysis-review — dispatch the analysis-reviewer for a fresh-context pass" -> "invoke project-organization — tidy scratch, then commit/push";
-}
-```
 
 ## The Process
 

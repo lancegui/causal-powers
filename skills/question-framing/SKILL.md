@@ -69,7 +69,7 @@ An economist doesn't approach a result as a blank slate; they arrive with a pred
 
 Then name **what result would surprise you**. This matters because a surprising estimate is a fork: it's either a genuine finding or a bug, and you decide *in advance* which lens you'll reach for, instead of rationalizing whatever number appears. A prior set after seeing the estimate isn't a prior.
 
-**Write it down, then confirm before proceeding.** Invoke `analysis-state-management` and persist the brief — the metric/estimand, population, unit, the decision, the confirmatory/structural determination, and your prior (sign, magnitude, mechanism) — into `docs/analysis/` as Phase 0 state. Create `docs/analysis/index.yaml` if absent. Then present it and get the user's confirmation that the question, metric, and population are right *before* you load data — and, for general/exploratory work, that the data sources, the approach/spec, and the deliverable are right too. On that branch this is the *only* approval gate there is (no PAP, no model card), so it must cover the WHAT, the WITH-WHAT-DATA, and the HOW, or `executing-analysis-plans` inherits a plan that never said what to build. This is a real stop, not rhetorical: framing is undone if you frame and immediately barrel into the analysis on your own reading. (If no user is reachable, proceed on the most defensible reading but record every assumption for review — `analysis-checkpoints`.)
+**Persist the brief, then get sign-off before loading data.** Invoke `analysis-state-management` and write the brief — metric/estimand, population, unit, decision, the confirmatory/structural determination, your prior — into `docs/analysis/` as Phase 0 (create `docs/analysis/index.yaml` if absent). On the general/exploratory branch this brief-with-plan is the *only* approval gate (no PAP, no model card), so sign-off must also cover the data sources, the approach/spec, and the deliverable, not just the metric — or `executing-analysis-plans` inherits a plan that never said what to build. (The write-it-down → sign-off → mid-pipeline-reconstruct mechanics are `analysis-checkpoints`'; this is framing's instance of it.)
 
 ## Watch for the silent reframe
 
@@ -98,33 +98,6 @@ When the request is genuinely ambiguous, **state your assumption explicitly and 
 | "I'll define the metric once I see what's in the data." | Then the data defines the question, and you'll answer whatever is convenient rather than what matters. |
 | "They just want a number." | A number with an unstated definition is a number with an unstated bug. |
 | "Framing is overhead, the analysis is the real work." | An analysis that answers the wrong question is 100% waste, however rigorous. |
-
-## When to Use → where this hands off
-
-Framing is **not** a terminal step. It *propels* into exactly one next skill — route imperatively, don't just note the relationship:
-
-```dot
-digraph question_framing_next {
-    "Brief written + estimand/population/unit/decision pinned?" [shape=diamond];
-    "Re-confirm with user before loading data" [shape=box];
-    "Confirmatory? (drives/defends a decision, you have a stake, causal-and-reported, or will be scrutinized)" [shape=diamond];
-    "invoke pre-analysis-plan — lock it before outcomes" [shape=box style=filled fillcolor=lightgreen];
-    "Counterfactual OUTSIDE the data? (welfare, merger price, equilibrium response)" [shape=diamond];
-    "invoke structural-estimation — write the model card" [shape=box style=filled fillcolor=lightgreen];
-    "Causal cut answerable INSIDE the data?" [shape=diamond];
-    "invoke causal-identification — name the design" [shape=box style=filled fillcolor=lightgreen];
-    "invoke executing-analysis-plans — run the approved brief-with-plan" [shape=box style=filled fillcolor=lightgreen];
-
-    "Brief written + estimand/population/unit/decision pinned?" -> "Re-confirm with user before loading data" [label="yes"];
-    "Re-confirm with user before loading data" -> "Confirmatory? (drives/defends a decision, you have a stake, causal-and-reported, or will be scrutinized)";
-    "Confirmatory? (drives/defends a decision, you have a stake, causal-and-reported, or will be scrutinized)" -> "invoke pre-analysis-plan — lock it before outcomes" [label="yes"];
-    "Confirmatory? (drives/defends a decision, you have a stake, causal-and-reported, or will be scrutinized)" -> "Counterfactual OUTSIDE the data? (welfare, merger price, equilibrium response)" [label="no"];
-    "Counterfactual OUTSIDE the data? (welfare, merger price, equilibrium response)" -> "invoke structural-estimation — write the model card" [label="yes"];
-    "Counterfactual OUTSIDE the data? (welfare, merger price, equilibrium response)" -> "Causal cut answerable INSIDE the data?" [label="no"];
-    "Causal cut answerable INSIDE the data?" -> "invoke causal-identification — name the design" [label="yes"];
-    "Causal cut answerable INSIDE the data?" -> "invoke executing-analysis-plans — run the approved brief-with-plan" [label="no — general/exploratory"];
-}
-```
 
 ## The Process
 

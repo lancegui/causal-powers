@@ -129,10 +129,9 @@ The table above covers one check at one line. The moment a script has **two or m
 
 ## Red flags — STOP and validate
 
-- "The pipeline ran without errors, so the numbers are right." (Clean run ≠ correct result.)
+- "The pipeline ran without errors, so the numbers are right" / "I'll just eyeball the head() / summary() and move on." Neither a clean run nor an eyeball is a contract — neither re-runs.
 - A join, merge, filter, or group-by with no row-count check before and after.
 - Reporting a figure you computed but never reconciled against the source.
-- "I'll just eyeball the head() / summary() and move on." (Eyeballing isn't a contract; it doesn't re-run.)
 - Building step N on top of step N-1's output without having validated step N-1.
 - A check that has never once failed — you don't know it works.
 - Re-running an analysis and not comparing against the last known-good output.
@@ -145,24 +144,6 @@ The table above covers one check at one line. The moment a script has **two or m
 | "I can see it's right." | You can see *a* number. You can't see the rows the join dropped. |
 | "The totals are close enough." | "Close" on a reconciliation usually means rows are leaking. Find out why before you round it away. |
 | "Adding checks slows me down." | A wrong number in front of a stakeholder costs far more than the 60 seconds the assertion took. |
-
-## When to Use → where this hands off
-
-Contracts are **not** a terminal step. The moment a check trips, they *propel* you out of "keep building" and into a named next skill — route imperatively, don't just note the relationship:
-
-```dot
-digraph data_contracts_next {
-    "Reconciliation / total / join-cardinality assertion FAILS?" [shape=diamond];
-    "invoke wrong-number-debugging — bisect to the bad step" [shape=box style=filled fillcolor=lightgreen];
-    "The 'fix' drops/filters/winsorizes rows or redefines a metric?" [shape=diamond];
-    "invoke analysis-checkpoints — STOP, it's a design decision" [shape=box style=filled fillcolor=lightgreen];
-    "Contract holds — keep computing the next step" [shape=box];
-    "Reconciliation / total / join-cardinality assertion FAILS?" -> "invoke wrong-number-debugging — bisect to the bad step" [label="yes"];
-    "Reconciliation / total / join-cardinality assertion FAILS?" -> "The 'fix' drops/filters/winsorizes rows or redefines a metric?" [label="no, but a 'fix' is tempting"];
-    "The 'fix' drops/filters/winsorizes rows or redefines a metric?" -> "invoke analysis-checkpoints — STOP, it's a design decision" [label="yes"];
-    "The 'fix' drops/filters/winsorizes rows or redefines a metric?" -> "Contract holds — keep computing the next step" [label="no"];
-}
-```
 
 ## The Process
 

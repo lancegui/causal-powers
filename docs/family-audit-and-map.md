@@ -1,8 +1,17 @@
-# Causal Powers — family audit & structural map (2026-06-09)
+# Causal Powers — family audit & structural map (2026-06-09, refreshed 2026-07-19)
 
 Audit of all 13 skills + 2 agents + hook/gateway across four lenses: fluff,
 LLM-workflow clarity, HITL triggering, pipeline holes. Maps first, then the
 tiered fix plan.
+
+**2026-07-19 refresh.** The family grew from 13 to 17 skills: `descriptive-evidence`,
+`predictive-modeling`, `analysis-state-management`, and the current phased
+`data-preparation` were added after this audit was written. Maps 1–3 below are
+updated in place to include the four additions (marked **[new]**). Phase P1 of
+`docs/plans/2026-07-19-skill-thinning-behavioral-loop.md` also ran a fresh
+redundancy pass across all 17 post-edit files — see **Map 4″** at the bottom,
+which supersedes Map 4 / Map 4-done below for anything it re-touched and adds
+the new-since-2026-06-09 redundancies those two never covered.
 
 **Framing fact:** only the **hook card** (`session-context.md`) is guaranteed in
 context (injected on every startup/clear/compact). Every skill body — and every
@@ -19,16 +28,22 @@ drives most of the holes below.
         │ creed · NEVER-CHANGE-THE-GOAL · WRITE-IT-DOWN · workflow spine · red-lines      │
         └─────────────────────────────────────────────────────────────────────────────┘
  throughout ▸ analysis-craft (legible code)   ▸ analysis-checkpoints (HITL core)
+            ▸ analysis-state-management [new] (docs/analysis/ schema — every phase/skill above reads/writes through it)
 
- FRAME ─▶ [PLAN]* ─▶ APPROVE ─▶ EXECUTE ─▶ IDENTIFY ─▶ (DEBUG) ─▶ VERIFY ─▶ REVIEW ─▶ ORGANIZE
-   │         │          ▲         │           │           │          │         │          │
- question  pre-       (gate)   executing-   causal-id   wrong-     result-   analysis-  project-
- framing   analysis-           analysis-      OR        number-    verifi-   review     organization
-           plan                plans       structural-  debugging  cation                (tidy→git)
-   │                                       estimation
-   └─ fork: "decision inside the data?" → causal-identification
-                       "world outside the data?" → structural-estimation
- * PLAN only if confirmatory ── and "is it confirmatory?" is a SILENT judgment (see Hole H1)
+ FRAME ─▶ [PLAN]* ─▶ APPROVE ─▶ EXECUTE ─▶ MODEL (fork below) ─▶ (DEBUG) ─▶ VERIFY ─▶ REVIEW ─▶ ORGANIZE
+   │         │          ▲         │              │                   │          │         │          │
+ question  pre-       (gate)   executing-     see fork              wrong-     result-   analysis-  project-
+ framing   analysis-           analysis-                            number-    verifi-   review     organization
+           plan OR             plans (Phase 1 = data-preparation    debugging  cation                (tidy→git)
+           model card          [current], calling data-contracts
+           (structural)        per step)
+
+   └─ MODEL fork — four arms, chosen by GOAL not algorithm (description sits BENEATH the fork, not inside it):
+        "just a faithful picture of the data?" → descriptive-evidence [new] (often the whole deliverable; else it motivates one of the three below)
+        "decision inside the data?"            → causal-identification (reduced-form)
+        "world you haven't observed?"          → structural-estimation (structural)
+        "a score/rank to drive an action?"     → predictive-modeling [new] (prediction)
+ * PLAN only if confirmatory ── and "is it confirmatory?" is a SILENT judgment in the original audit — resolved, see Map 2′ (H1)
 ```
 
 ---
@@ -163,3 +178,58 @@ sibling list — that's what makes HITL survive independent skill loading.
 ## Residual (deliberately left)
 - The "never change the goal" rule still restated in every sibling list — **load-bearing** (HITL must survive independent skill loading), kept by design.
 - A couple of local aphorism doublings (creed motif) — kept as voice.
+
+---
+
+# Map 4″ — redundancy matrix, re-derived post-P1 (2026-07-19)
+
+An audit ahead of `docs/plans/2026-07-19-skill-thinning-behavioral-loop.md` found
+~45,000 words across the (then-)17 skills, a templated tail (Red flags / Common
+rationalizations / dot digraph / bottom-line box) making up 21–27% of every
+file, and several obligations restated near-verbatim in 15–16 of 17 files. Phase
+P1 ran one central dedup pass establishing the conventions below; per-skill
+thinning agents (P3) work *within* them rather than re-deciding the dedup
+independently. This table re-derives Map 4 from the **post-edit** files —
+supersedes the original Map 4 for every row it touches.
+
+| Rule | Was stated in full in… | Now stated in full in | Pointer left in |
+|--|--|--|--|
+| Locked-doc gate mechanics (write to file → sign-off before the load-bearing step → living-but-load-bearing-changes-checkpoint → mid-pipeline reconstruct-and-confirm) | `question-framing` (brief), `pre-analysis-plan` (PAP), `causal-identification` (Design Card), `structural-estimation` (model card), `predictive-modeling` (Prediction Spec) — near-verbatim in all five | **`analysis-checkpoints`** (new "The locked-document gate — shared mechanics" section) | all five keep only their document's fields + when it fires + a 1–2 line pointer |
+| STOP-gate full statement (design/estimand/sample/spec change, drop/winsorize/filter, a number already seen) | restated at varying length in 16/17 skills, incl. a verbatim-duplicate worked example (the "Beverly 2016 near-clinic" scenario) in both `analysis-checkpoints` and `wrong-number-debugging` | **`analysis-checkpoints`** (full list + the one worked example) | every other skill: one line naming its own trigger (a failed diagnostic, a misfitting model, a re-cut spec, a consequential cleaning choice…) + pointer; domain-specific STOP examples that ARE a skill's core content (e.g. `data-preparation`'s four consequential-cleaning triggers) kept, compressed |
+| dot/graphviz digraphs restating the adjacent numbered Process list | 15 of 17 skills (`analysis-state-management` and `using-causal-powers` never had one) | *(deleted — no owner; the list wasn't distinct content)* | the prose `## The Process` list, already adjacent in every file, is the only thing left |
+| Red flags / Common rationalizations tail tables, uncapped | every skill with a tail — several ran 8–12 rows per table | each skill's own table, capped ~6 rows, keeping only rows unique to that skill's domain | rows that were pure within-file restatement of a Process/discipline point already stated above the table were cut, not relocated (the point survives in the prose) |
+| result-verification / analysis-review / wrong-number-debugging checklist overlap (joins, missingness, totals, units/grain, reproduce-from-clean, artifacts-match-prose) | ~85% overlapping across the three | **`result-verification`**'s "The verification checklist" (unchanged, 9 items) | `analysis-review` points to it and keeps only its distinct content (adversarial posture, dispatching the `analysis-reviewer` agent, verifying received critiques); `wrong-number-debugging` points to it (and to `data-contracts`' invariant catalog, the actual source of the "usual culprits" list) and keeps only the bisection method |
+| Always-on card word budget | card had crept to 1243 words against its own ≤~1215 comment | compressed in place (`## Describe first, then model`, `## Always a written plan`, `## Keep the repo legible`, `## Platform note`) | now 1206 words; `AGENTS.md` re-synced byte-identical |
+
+**Kept as two distinct obligations, not merged (flagged, not deleted):**
+- `question-framing`'s "Watch for the silent reframe" (a metric/estimand definition drifting once data is seen) and `analysis-checkpoints`'s general STOP-gate are related but not the same claim — framing's is about *definitional* drift specifically, checkpoints' is the general design/sample/spec/estimand list. Both kept in full at their own sites; framing's is short enough (~3 sentences) that no further compression was applied.
+- `pre-analysis-plan`'s "gate fires at touching outcome data, not at estimation" is a PAP-specific tightening of the general locked-doc gate, not a restatement of it — kept in full as PAP's own content, with only the generic write/sign-off mechanics pointed at `analysis-checkpoints`.
+- "Robustness is an argument, not an inventory" remains stated in full in `executing-analysis-plans` (owner) with a card one-liner and reconciling mentions in `causal-identification` and `pre-analysis-plan` — this was already resolved by the 2026-06-09 pass (see "De-fluff (Map 4) — done" above) and P1 left it as is; it was not one of the five convention items in scope for this pass.
+
+## Word counts — before P1 / after P1
+
+| Skill | Before | After |
+|--|--:|--:|
+| analysis-checkpoints | 2033 | 2116 |
+| analysis-craft | 2358 | 2045 |
+| analysis-review | 1836 | 1513 |
+| analysis-state-management | 1800 | 1800 |
+| causal-identification | 2808 | 2485 |
+| data-contracts | 2603 | 2434 |
+| data-preparation | 2874 | 2446 |
+| descriptive-evidence | 4713 | 4178 |
+| executing-analysis-plans | 2959 | 2655 |
+| pre-analysis-plan | 1692 | 1436 |
+| predictive-modeling | 4228 | 3513 |
+| project-organization | 1899 | 1742 |
+| question-framing | 2737 | 2411 |
+| result-verification | 2739 | 2536 |
+| structural-estimation | 4674 | 4046 |
+| using-causal-powers | 2804 | 2799 |
+| wrong-number-debugging | 2282 | 1935 |
+| **Family total** | **47039** | **42090** |
+
+`analysis-checkpoints` grew (it absorbed five skills' mechanics plus the full
+STOP-gate) while the family total fell ~10.5%; the remaining path to the plan's
+≤~30k target is the per-skill thinning agents in P3, working inside these
+conventions.

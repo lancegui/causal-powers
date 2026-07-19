@@ -55,6 +55,17 @@ When you hit one, stop and present — don't implement past it:
 
 That stops *before* the band×month FE is written. The earlier behavior — writing the triple-difference and presenting it as "the fix" — is what this skill exists to prevent.
 
+## The locked-document gate — shared mechanics
+
+Five skills each write a planning document before their most expensive machinery starts — the framing brief, the pre-analysis plan, the causal Design Card, the structural model card, the Prediction Spec (owned respectively by `question-framing`, `pre-analysis-plan`, `causal-identification`, `structural-estimation`, `predictive-modeling`). The document differs by skill; the mechanics around it are identical, so they're owned once, here:
+
+1. **Write it to a file, not the chat.** A plan that lives only in conversation is a suggestion you can quietly revise later. Persist it in the project (`docs/analysis/...`) via `analysis-state-management` so it survives `/clear` and compaction.
+2. **Get the user's explicit sign-off before the next load-bearing step** — before touching outcome data, before building estimation machinery, before fitting, before executing. A plan the requester never confirmed is one you guessed.
+3. **The document is living, not frozen — but a load-bearing edit is still the user's call.** Refining as you learn is expected. A load-bearing change — the estimand, the design, the sample, the label, the model form — is a deviation, not a touch-up: it routes through *this* gate like any other consequential change, never a quiet rewrite of the doc to match where the work drifted.
+4. **Entering mid-pipeline waives nothing.** "Just run the regression / fit the model / estimate this" mid-stream almost never means a document already exists — usually none was written. Reconstruct it from context in a few lines, confirm it with the user, *then* do the step asked for. "They already told me to do X" names the task, not the sign-off.
+
+Each of the five skills states only what its document IS — its required fields and when it fires; this is the mechanics underneath all five, so it isn't restated five times.
+
 ## "Loop until verified" ≠ "loop until you like the number"
 
 Goal-driven autonomy (from `analysis-craft` / the gateway) means: iterate freely toward **fixed, agreed success criteria**, and don't stop at "the code ran." It does **not** authorize changing the criteria, the design, or the sample to reach a result. If hitting the goal seems to require changing the goal, that's the loudest possible checkpoint — stop and say so.
@@ -78,26 +89,6 @@ Goal-driven autonomy (from `analysis-craft` / the gateway) means: iterate freely
 | "Stopping breaks my flow." | Your flow is not the goal. An analysis the user didn't authorize is rework at best and a wrong decision at worst. |
 | "Looping until verified means I keep going." | Toward the agreed goal — yes. By changing the goal — no. That's the line. |
 
-## When to Use → where this hands off
-
-A checkpoint is a STOP-and-ask gate, **not** a place to keep working. It is the gate the whole discipline routes INTO — so its job is to return the decision to the user, then *propel* into exactly one skill to absorb that decision before you resume what you interrupted:
-
-```dot
-digraph analysis_checkpoints_next {
-    "User decided?" [shape=diamond];
-    "Change is to the framed question / estimand?" [shape=diamond];
-    "invoke question-framing — re-frame, then re-derive the plan" [shape=box style=filled fillcolor=lightgreen];
-    "invoke pre-analysis-plan — record the deviation, re-lock" [shape=box style=filled fillcolor=lightgreen];
-    "WAIT — present options + recommendation, do not implement" [shape=box style=filled fillcolor=lightyellow];
-    "User decided?" -> "WAIT — present options + recommendation, do not implement" [label="no"];
-    "User decided?" -> "Change is to the framed question / estimand?" [label="yes — approved"];
-    "Change is to the framed question / estimand?" -> "invoke question-framing — re-frame, then re-derive the plan" [label="yes"];
-    "invoke analysis-state-management — record approved deviation in docs/analysis/decisions.yaml, resume" [shape=box style=filled fillcolor=lightgreen];
-    "Change is to the framed question / estimand?" -> "invoke pre-analysis-plan — record the deviation, re-lock" [label="no — a locked PAP exists"];
-    "Change is to the framed question / estimand?" -> "invoke analysis-state-management — record approved deviation in docs/analysis/decisions.yaml, resume" [label="no — everyday plan, no PAP"];
-}
-```
-
 ## The Process
 
 1. **Run the checkpoint** — name the decision, show the evidence, lay out ≥2 options, give your recommendation, and **WAIT.** Do not implement past this point.
@@ -105,6 +96,7 @@ digraph analysis_checkpoints_next {
 3. **Once the user decides**, absorb the change before resuming — route to exactly one next step and *invoke that skill*:
    - **Estimand / question changed → invoke `question-framing`** to re-frame, then re-derive the brief.
    - **Deviation from the locked plan → invoke `pre-analysis-plan`** to record the deviation and re-lock before any further estimation.
+   - **Everyday plan, no PAP → invoke `analysis-state-management`** to record the approved deviation in `docs/analysis/decisions.yaml`, then resume.
 4. **Then return to the skill you interrupted** (`wrong-number-debugging`, `executing-analysis-plans`, `structural-estimation`) and continue from the now-approved state — never resume on the silent change.
 
 ## The bottom line

@@ -130,33 +130,6 @@ When the fan-out completes, assemble — don't just dump:
 | "The data suggested a better spec, so I added it." | Adding it silently is specification search. Surface it as a checkpoint; run it labeled as exploratory if approved. |
 | "I'll show all the results at the end." | Then a wrong intermediate poisons everything after it unseen. Validate each step as it lands. |
 
-## When to Use → where this hands off
-
-Execution is **not** a terminal step. The spine validates, the fan-out reconciles, and then it *propels* into verification — and forks by design type along the way. Route imperatively, don't just note the relationship:
-
-```dot
-digraph executing_next {
-    "Spine step 1 — build / clean / join the dataset?" [shape=diamond];
-    "invoke data-preparation — delegate the cleaning PHASE (it calls data-contracts within, returns the clean dataset)" [shape=box style=filled fillcolor=lightgreen];
-    "Every later spine step + every fanned-out spec" [shape=box style=filled fillcolor=lightblue];
-    "invoke data-contracts — assert before trusting any number" [shape=box style=filled fillcolor=lightgreen];
-    "Design type?" [shape=diamond];
-    "invoke causal-identification — reduced-form, effect lives in the data" [shape=box style=filled fillcolor=lightgreen];
-    "invoke structural-estimation — structural, counterfactual outside data" [shape=box style=filled fillcolor=lightgreen];
-    "Spine + fan-out complete?" [shape=diamond];
-    "invoke result-verification — reconcile + reproduce before any result is written" [shape=box style=filled fillcolor=lightgreen];
-    "Spine step 1 — build / clean / join the dataset?" -> "invoke data-preparation — delegate the cleaning PHASE (it calls data-contracts within, returns the clean dataset)" [label="yes — unless trivial clean load"];
-    "Spine step 1 — build / clean / join the dataset?" -> "Every later spine step + every fanned-out spec" [label="dataset already clean & built"];
-    "invoke data-preparation — delegate the cleaning PHASE (it calls data-contracts within, returns the clean dataset)" -> "Every later spine step + every fanned-out spec";
-    "Every later spine step + every fanned-out spec" -> "invoke data-contracts — assert before trusting any number";
-    "invoke data-contracts — assert before trusting any number" -> "Design type?";
-    "Design type?" -> "invoke causal-identification — reduced-form, effect lives in the data" [label="reduced-form"];
-    "Design type?" -> "invoke structural-estimation — structural, counterfactual outside data" [label="structural"];
-    "Design type?" -> "Spine + fan-out complete?" [label="estimated"];
-    "Spine + fan-out complete?" -> "invoke result-verification — reconcile + reproduce before any result is written" [label="yes"];
-}
-```
-
 ## The Process
 
 1. **Build / clean / join the dataset → delegate to `data-preparation`** (unless it's a trivial load of one already-clean file). It runs the ingest→clean→join→dedup→recode→reconcile phase — calling `data-contracts` per step, routing consequential cleaning decisions to `analysis-checkpoints` — and returns the clean, validated dataset.

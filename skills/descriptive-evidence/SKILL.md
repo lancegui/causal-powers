@@ -139,18 +139,12 @@ Reach for the simplest row that answers the question. The decomposition row is t
 
 ## Red flags — STOP
 
-- A dollar trend reported **without deflating** to a stated base year — "growth" that is partly or entirely inflation.
-- A **count compared across units or time** where the denominator (population, sample size) is itself moving — a rate dressed as a level, or vice versa.
-- An aggregate mean/rate/gap moved or differed across groups and **no composition check was run** — within-vs-between never decomposed, subgroups never plotted.
-- A trend in an average where **who is in the sample changed over the window** (entry/exit, coverage change, definition change) and selection was never ruled out.
+- A dollar trend, count, or rate reported without fixing the **comparability choices** first — no deflation to a stated base year, a denominator (population, sample size) that's itself moving, or an unweighted statistic from a weighted sample.
+- An aggregate mean/rate/gap that moved or differed across groups with **no composition check** — within-vs-between never decomposed, subgroups never plotted.
 - A **mean reported for a heavy-tailed variable** with no median, no percentiles, no view of the distribution's shape.
 - A **stylized fact reported from one specification** with no check that it survives an alternative denominator, deflator, weighting, or window.
-- A **truncated or cherry-picked axis / window** that manufactures a trend; a dual-axis "co-movement" that's an artifact of the scales.
-- A **choropleth shaded by raw counts** that is really mapping population, not the phenomenon; color breaks chosen to dramatize the hotspots.
-- A **spatial (point-in-polygon) or ownership join behind a map** with cardinality unchecked — features silently dropped outside all polygons, or double-plotted by a fan-out join.
 - A described correlation written with a **causal verb** ("X raised Y," "the effect of," "drove") — the descriptive-to-causal slide.
-- An **unweighted statistic from a weighted sample**, with no statement of which population the fact is about.
-- A fact about to be **reported or put in a paper** that was never reconciled to source (`data-contracts` / `result-verification`).
+- A trend in an average where **who is in the sample changed over the window** (entry/exit, coverage change, definition change) and selection was never ruled out.
 
 ## Common rationalizations
 
@@ -158,40 +152,10 @@ Reach for the simplest row that answers the question. The decomposition row is t
 |---|---|
 | "It's just a quick trend, no need for rigor." | The rigor *is* about the trend. A mis-deflated, composition-driven trend looks exactly as clean as a real one — that's why it's dangerous. |
 | "Revenue grew 40%, that's the fact." | In nominal dollars? Deflate to a base year first. The real number can be half that, or negative. |
-| "The average went up, so the typical unit improved." | Or the mix changed and no unit moved. Decompose within-vs-between before you write the headline. |
 | "The national rate fell, so it fell." | Check the subgroups — it can fall in aggregate while rising in every group (Simpson's paradox). Look inside before you average. |
 | "The mean is 4.2, so that's typical." | For a heavy-tailed variable the mean describes no one. Show the median and the distribution. |
 | "Y rose right when X started, so X raised Y." | That's a co-movement, not an effect. Want the causal verb? That's `causal-identification` and a design — this is the motivation, not the answer. |
-| "The fact holds in my specification." | Then it should hold in three reasonable others. If it flips when you change the deflator or the window, it's fragile, not stylized — downgrade the claim. |
-| "I zoomed the axis so the trend is visible." | If the trend needs a truncated axis to be visible, ask whether it's a trend or noise. Represent the magnitude faithfully and state the scale. |
 | "The sample changed over the years but the trend's still real." | Maybe — but a trend in the average can be entirely a trend in *who's averaged*. Rule out selection before you call it a fact. |
-| "The map shows the hotspots clearly." | A choropleth of raw counts maps population first. Normalize to a rate, pick the spatial unit deliberately, and check the color breaks aren't manufacturing the hotspots. |
-
-## When to Use → where this hands off
-
-Descriptive evidence is rarely terminal — a clean fact either *is* the deliverable (then verify it) or *motivates* the next question (then route to the fork). Route imperatively:
-
-```dot
-digraph descriptive_evidence_next {
-    "Comparability choices fixed + composition-checked?" [shape=diamond];
-    "Surprising / will-be-reported fact?" [shape=diamond];
-    "invoke result-verification — reconcile to source + reproduce, before it lands in a deck/paper" [shape=box style=filled fillcolor=lightgreen];
-    "A number looks off / doesn't reconcile?" [shape=diamond];
-    "invoke wrong-number-debugging — suspect a composition/denominator/join artifact first" [shape=box style=filled fillcolor=lightgreen];
-    "A causal / structural / predictive question emerged from the fact?" [shape=diamond];
-    "route to the fork — causal-identification | structural-estimation | predictive-modeling (the fact MOTIVATES it; it does not answer it)" [shape=box style=filled fillcolor=lightyellow];
-    "Writing up the stylized-facts section?" [shape=diamond];
-    "hand to econ-writing — this skill produced the facts, not the prose" [shape=box style=filled fillcolor=lightyellow];
-
-    "Comparability choices fixed + composition-checked?" -> "Surprising / will-be-reported fact?" [label="yes — proceed"];
-    "Surprising / will-be-reported fact?" -> "invoke result-verification — reconcile to source + reproduce, before it lands in a deck/paper" [label="yes"];
-    "Surprising / will-be-reported fact?" -> "A number looks off / doesn't reconcile?" [label="check"];
-    "A number looks off / doesn't reconcile?" -> "invoke wrong-number-debugging — suspect a composition/denominator/join artifact first" [label="yes"];
-    "Comparability choices fixed + composition-checked?" -> "A causal / structural / predictive question emerged from the fact?" [label="fact is clean"];
-    "A causal / structural / predictive question emerged from the fact?" -> "route to the fork — causal-identification | structural-estimation | predictive-modeling (the fact MOTIVATES it; it does not answer it)" [label="yes"];
-    "A causal / structural / predictive question emerged from the fact?" -> "Writing up the stylized-facts section?" [label="no — describe + report"];
-}
-```
 
 ## The Process
 

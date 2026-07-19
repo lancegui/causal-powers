@@ -47,16 +47,7 @@ REPRODUCE  →  LOCATE (bisect)  →  EXPLAIN  →  FIX AT THE SOURCE  →  RE-C
 
 ## Trace provenance backward — the usual culprits
 
-When you hit the bad stage, this is where the bodies are buried. Run down the list:
-
-- **Fan-out join** — a non-unique key on the "one" side multiplied rows. Symptom: totals inflated by a clean-ish factor (2×, 3×). Check: row count before vs. after; key uniqueness.
-- **Vanishing rows** — an inner join (or a null-dropping filter) silently discarded unmatched rows. Symptom: totals too low. Check: anti-join to see what failed to match.
-- **NA / missing poisoning** — one missing value turned a `sum`/`mean` into `NA`/`NaN`, or `na.rm`/`skipmissing` quietly dropped values and biased the result. Check: count missing before aggregating.
-- **Units / scale** — dollars vs. cents, proportion vs. percent, ms vs. s. Symptom: off by a round factor (100×, 1000×). Check: the units in the source vs. what you assumed.
-- **Wrong grain** — you aggregated at the wrong unit of observation, double-counting user-sessions as users. Check: is one row really one of what you think?
-- **Surprise category level** — a stray `"unknown"`, a trailing-space duplicate, mojibake, or an unexpected factor level created a phantom group. Check: the full set of distinct levels.
-- **Temporal** — a timezone shift or date-floor moved events across a day/period boundary; a resample duplicated a period. Check: explicit tz, period boundaries.
-- **Upstream surgery** — the data was already sampled, deduplicated, or filtered before it reached you (see the provenance notes from `data-contracts`). Check: the lineage, not just your own code.
+The categories worth checking at each bisected stage are the same ones `data-contracts`' invariant catalog asserts and `result-verification`'s checklist reconciles — don't re-derive the list, bisect against it: **fan-out join** (totals inflated by a clean-ish 2×/3×; check row counts and key uniqueness), **vanishing rows** (an inner join or null-dropping filter silently discarded unmatched rows; anti-join to see what failed to match), **NA/missing poisoning**, **units/scale** (dollars vs. cents, ms vs. s), **wrong grain** (double-counting user-sessions as users), **surprise category level** (a stray `"unknown"`, mojibake, a trailing-space duplicate), **temporal** (a timezone shift or resample duplicating a period), and **upstream surgery** (the data was already sampled or filtered before it reached you).
 
 ## Don't reach for the fix too early
 
@@ -64,11 +55,7 @@ The strongest pull in debugging a wrong number is to fix it before you understan
 
 ## Debugging is the back door for silent redesigns
 
-The most dangerous moment in debugging is when the investigation surfaces a *design* problem and you "fix" it by changing the design — without telling the user. It feels like debugging; it's actually a unilateral redesign.
-
-> **Example.** Chasing a surprisingly large near-clinic effect, you find the 2016 citywide recording jump is geographically uneven (Beverly's 2 mi ring +66% in 2016 while its 0.5 mi ring is flat). A plain near-vs-far DiD would misread this as an acquisition effect. The *remedy* — upgrade to a triple-difference with band×month fixed effects — is sound. But it changes the pre-registered identification strategy.
-
-Your job here ends at **diagnose and explain**. You surface the threat and the candidate remedies; you do **not** write the triple-difference and present it as "the fix." Changing the design, sample, spec, or estimand is a `analysis-checkpoints` decision — stop and let the user choose.
+The most dangerous moment in debugging is when the investigation surfaces a *design* problem and you "fix" it by changing the design — without telling the user. It feels like debugging; it's actually a unilateral redesign (`analysis-checkpoints`'s worked example is exactly this trap: a near-clinic DiD "fix" that was really a pre-registered-design change). Your job here ends at **diagnose and explain** — surface the threat and the candidate remedies; do **not** write the redesign and present it as "the fix." Changing the design, sample, spec, or estimand is an `analysis-checkpoints` decision — stop and let the user choose.
 
 ## Language cheat-sheet
 
@@ -97,23 +84,6 @@ Your job here ends at **diagnose and explain**. You surface the threat and the c
 | "It's a small discrepancy, probably rounding." | "Small" discrepancies are often a few leaking rows. Find the rows before you blame the floats. |
 | "I'll just rebuild the query from scratch." | You'll likely reintroduce the same bug. Localize it first; understand it; then rebuild if you must. |
 | "The number looks reasonable now." | "Looks reasonable" is the exact disguise a hidden bug wears. Reasonable ≠ reconciled. |
-
-## When to Use → where this hands off
-
-Debugging is **not** terminal, and it is **not** licence to redesign. Once you've named the mechanism, the dividing question routes you imperatively to exactly one next skill:
-
-```dot
-digraph wrong_number_next {
-    "Mechanism named — data bug or design change?" [shape=diamond];
-    "Data bug — restores the agreed computation?" [shape=diamond];
-    "invoke data-contracts — add the check that would have caught it" [shape=box style=filled fillcolor=lightgreen];
-    "invoke analysis-checkpoints — route the redesign to the user" [shape=box style=filled fillcolor=lightgreen];
-    "Mechanism named — data bug or design change?" -> "Data bug — restores the agreed computation?" [label="data bug"];
-    "Mechanism named — data bug or design change?" -> "invoke analysis-checkpoints — route the redesign to the user" [label="design/sample/spec/estimand change"];
-    "Data bug — restores the agreed computation?" -> "invoke data-contracts — add the check that would have caught it" [label="fixed at source"];
-    "Data bug — restores the agreed computation?" -> "invoke analysis-checkpoints — route the redesign to the user" [label="remedy moves the design"];
-}
-```
 
 ## The Process
 

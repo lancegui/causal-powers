@@ -65,9 +65,7 @@ The discipline that separates a credible structural estimate from a curve-fit: f
 
 ## Write the model card — immediately, and keep it living
 
-A structural model is the most expensive, least-reversible commitment in the family — days to weeks of coding, and the modeling choices (utility form, the random-coefficient distribution, conduct, what's a primitive vs. held fixed) silently decide what *every* downstream number means. So **the moment you understand the model — even roughly — write it down as a model card** (the project's living spec, in a file): the structure, and above all **what would move each parameter and what variation/instrument identifies it.** Write it *before* it's right — a parameter with nothing under "what moves it" is one you can't yet identify, and you want to see that on day one. Like a confirmatory `pre-analysis-plan`, the card earns a gate: **get the user's sign-off before building estimation machinery** — where "choosing the model is the user's decision" actually bites, before the compute is spent.
-
-**You usually enter mid-pipeline** — "estimate this model", "fix the recovery", "run the counterfactual" — with machinery seemingly already in place. That does **not** mean a card exists; it almost always means none was written, so the greenfield "sign-off before building machinery" gate can't fire as stated. The first move, whatever was asked, is to **write or reconstruct the card and get explicit sign-off on it before doing the named step.** "Reconstruct and confirm" is a real sign-off, not a mention you breeze past — do not proceed on an unconfirmed card.
+A structural model is the most expensive, least-reversible commitment in the family — days to weeks of coding, and the modeling choices (utility form, the random-coefficient distribution, conduct, what's a primitive vs. held fixed) silently decide what *every* downstream number means. So **the moment you understand the model — even roughly — write it down as a model card**: the structure, and above all **what would move each parameter and what variation/instrument identifies it.** Write it *before* it's right — a parameter with nothing under "what moves it" is one you can't yet identify, and you want to see that on day one. (Write-to-file, sign-off-before-machinery, and mid-pipeline-reconstruct-and-confirm are `analysis-checkpoints`'s locked-document gate; this is structural's instance of it — sign-off is where "choosing the model is the user's decision" actually bites, before the compute is spent.)
 
 The card states (its filled-in instance of the five modeling rows in `references/model-classes.md`, plus the estimand/decision on top):
 
@@ -78,7 +76,7 @@ The card states (its filled-in instance of the five modeling rows in `references
 - **Estimation plan** — estimator (GMM/MoM, NLS, MSL…), moments/likelihood, instruments, and the Monte-Carlo-recovery design that validates it.
 - **Counterfactual design** — one scenario per mechanism, primitives changed vs. held fixed. *This is the one row that starts as a sketch and is completed after estimation* — the gate needs the **target** counterfactual (row 1), not the finished scenario set. Don't let designing scenarios block Monte-Carlo recovery or estimation; they come last in the pipeline, once the estimator is proven and the fit validated.
 
-**The card is living.** Every later change is an edit to it, not a note in your head — refining as you learn is the point. But editability is not a backdoor around the gate: a **load-bearing change** (conduct, the random-coefficient distribution, primitive-vs-fixed, the estimand) routes through `analysis-checkpoints` as the user's call. And every fix beyond a trivial edit gets a three-line mini-spec on the card first — *what's wrong, what changes, what "fixed" looks like* (recovers θ from a distant start; gradient matches finite differences) — before you touch code. Trivial = a rename/typo/one-liner with no estimand/spec/sample/model decision; that you just do (`analysis-craft`).
+**The card is living** — refining as you learn is the point — but a **load-bearing change** (conduct, the random-coefficient distribution, primitive-vs-fixed, the estimand) still routes through `analysis-checkpoints`, never a quiet edit. And every fix beyond a trivial edit gets its own three-line mini-spec on the card first — *what's wrong, what changes, what "fixed" looks like* (recovers θ from a distant start; gradient matches finite differences) — before you touch code. Trivial = a rename/typo/one-liner with no estimand/spec/sample/model decision; that you just do (`analysis-craft`).
 
 ## Prove the algorithm recovers truth — Monte Carlo, before real data
 
@@ -121,7 +119,7 @@ Counterfactuals are where misspecification does its damage, because here you lea
 
 ## Choosing or changing the model is the user's decision
 
-Picking the utility functional form, the distribution of random coefficients, the conduct assumption, the consideration/search mechanism — and **changing any of them once estimation is underway** — decides what is even being estimated and what the counterfactuals mean. These are the user's calls, not yours to make silently. When a model fits badly, a parameter won't identify, or a counterfactual comes out implausible, the move is **not** to quietly switch Nash–Bertrand to collusion, add a random coefficient, or re-specify utility until it behaves. Surface the threat, the candidate model changes, and your recommendation as a checkpoint (`analysis-checkpoints`) — it's a deviation from the approved spec, not a silent edit. A re-specification smuggled in to fix a magnitude is the structural twin of the redesign-as-bug-fix failure mode the whole family watches for.
+Picking the utility functional form, the random-coefficient distribution, the conduct assumption, or the consideration/search mechanism — and changing any of them once estimation is underway — is `analysis-checkpoints` territory. A model that fits badly, a parameter that won't identify, or an implausible counterfactual gets surfaced as a threat + candidate changes + your recommendation, never a quiet switch (Nash–Bertrand to collusion, an added random coefficient, a re-specified utility) to make it behave — a re-spec smuggled in to fix a magnitude is the structural twin of redesign-as-bug-fix.
 
 ## Breadth — characterize *your* model, don't pick from a menu
 
@@ -144,17 +142,11 @@ The pipeline is model-agnostic: fill the model card's rows in for whatever model
 
 ## Red flags — STOP
 
-- Estimation machinery built and compute spent before the model card — primitives, per-parameter identification, the target counterfactual, the estimation plan — was written down and approved.
-- The user started you at a middle step — "estimate this demand model", "fix the recovery", "run the counterfactual" — and you began that work without first backing up to write or reconstruct the model card and confirm it.
-- Asked mid-work to "fix the Monte-Carlo recovery / the gradient / the estimator" and you started editing code without first writing down what's wrong, what the fix changes, and what "fixed" looks like. A mid-stream fix gets a mini-spec too.
+- Estimation machinery built, or a mid-work "fix" started, before the model card — primitives, per-parameter identification, the target counterfactual, the estimation plan — was written or reconstructed and confirmed.
 - A structural model built where a clean quasi-experiment would have answered the question.
 - A counterfactual reported **without re-solving equilibrium** — prices or other endogenous objects held fixed while the policy moves them.
 - **No Monte Carlo recovery** — estimates from real data trusted before the algorithm was shown to recover known θ.
-- A parameter reported with **no statement of what identifies it**; a flat objective direction noticed and ignored.
-- The analytical gradient **never checked** against finite differences; or a loose inner-loop tolerance feeding the gradient.
-- Consideration or search costs "recovered" with **no consideration/search shifter** (no exclusion restriction).
-- Conduct or a distributional form *assumed*, never flagged as load-bearing and untestable.
-- The model **re-specified mid-estimation** to fix a magnitude, without surfacing it as the user's decision.
+- A parameter reported with **no statement of what identifies it**, a flat objective direction ignored, or the analytical gradient **never checked** against finite differences.
 - A counterfactual magnitude reported with a shrug instead of bounded by its weakest assumption.
 
 ## Common rationalizations
@@ -164,36 +156,9 @@ The pipeline is model-agnostic: fill the model card's rows in for whatever model
 | "The estimation converged, so the model is identified." | A non-identified parameter converges too — to a number the data didn't pin down. Map the objective surface. |
 | "Numerical gradients are fine." | Until a loose tolerance biases them and the optimizer stops at the wrong point. Derive the gradient, or at least check it against finite differences. |
 | "We don't need Monte Carlo — the code is simple." | Then recovery costs almost nothing and proves it. If you won't run it, you're not actually sure the algorithm works. |
-| "The user jumped straight to estimation, so the modeling is settled." | Being started mid-pipeline almost never means a spec exists — usually none was written. Back up, write or reconstruct it, confirm, *then* do the step they named. |
 | "It's just a mid-stream fix, let me dive in." | A "fix" to the recovery harness, the gradient, or the estimator changes what the numbers mean or what counts as success. Write the three-line spec first — what's wrong, what changes, what "fixed" looks like — then edit. |
 | "Structural is more rigorous than reduced form." | It's more *assumption-laden*. Rigor is proving recovery and disciplining the model with a fact, not adding equations. |
 | "We'll just hold prices fixed in the counterfactual." | Then it isn't a counterfactual — it's reduced form with extra steps. Re-solve the equilibrium. |
-| "More model detail = more realism." | More primitives you can't identify = more ways to be confidently wrong. Add only what a shifter or a moment identifies. |
-| "The optimizer found the global min." | On a non-convex objective, from one start, it found *a* min. Use multiple starts and good instruments. |
-
-## When to Use → where this hands off
-
-Structural estimation is **not** terminal: an approved model card *propels* into execution, and a finished estimation *propels* into verification. Route imperatively — don't just note the relationship:
-
-```dot
-digraph structural_estimation_next {
-    "Model card written + approved?" [shape=diamond];
-    "invoke executing-analysis-plans — run recovery + estimation" [shape=box style=filled fillcolor=lightgreen];
-    "Estimation + counterfactuals complete?" [shape=diamond];
-    "invoke result-verification — verify fit + equilibrium re-solved, before reporting" [shape=box style=filled fillcolor=lightgreen];
-    "Model misfits / parameter won't identify / counterfactual implausible / assumption needs changing?" [shape=diamond];
-    "invoke analysis-checkpoints — it's the user's call, not a silent re-spec" [shape=box style=filled fillcolor=lightgreen];
-    "Counterfactual implausible?" [shape=diamond];
-    "invoke wrong-number-debugging — rule out a data bug first" [shape=box style=filled fillcolor=lightgreen];
-    "Model card written + approved?" -> "invoke executing-analysis-plans — run recovery + estimation" [label="yes"];
-    "Model card written + approved?" -> "Model misfits / parameter won't identify / counterfactual implausible / assumption needs changing?" [label="no — threat to the spec"];
-    "Model misfits / parameter won't identify / counterfactual implausible / assumption needs changing?" -> "invoke analysis-checkpoints — it's the user's call, not a silent re-spec" [label="yes"];
-    "Estimation + counterfactuals complete?" -> "Counterfactual implausible?" [label="check first"];
-    "Counterfactual implausible?" -> "invoke wrong-number-debugging — rule out a data bug first" [label="yes"];
-    "Counterfactual implausible?" -> "invoke result-verification — verify fit + equilibrium re-solved, before reporting" [label="no — plausible"];
-    "Estimation + counterfactuals complete?" -> "invoke result-verification — verify fit + equilibrium re-solved, before reporting" [label="yes"];
-}
-```
 
 ## The Process
 

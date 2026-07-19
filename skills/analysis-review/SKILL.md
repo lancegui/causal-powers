@@ -15,17 +15,11 @@ Code review asks "is this code correct?" Analysis review asks a harder question:
 
 ## Reviewing an analysis — the checklist
 
-Work down from the conclusion to the data. Each item is a class of silent error that survives ordinary code review:
+Start from **`result-verification`'s verification checklist** — reconcile to source, reproduce from a clean state with a fixed seed, joins/cardinality, missingness, units/grain, artifacts tied to prose — run it, don't re-derive it here. Review adds the adversarial lens (below), plus what that checklist doesn't cover:
 
 **The claim**
 - Is the **metric/estimand defined** precisely enough that you could recompute it the same way? (If "active users" or "the effect" is undefined, stop here — see `question-framing`.)
 - Does the **conclusion actually follow** from the number, or is it a causal claim resting on a descriptive estimate?
-
-**The data path**
-- **Joins:** is there a row-count check around every merge, and is the cardinality (1:1 / 1:m / m:m) what they intended? This is the highest-yield place to find a bug. Ask to see the counts before and after.
-- **Filters & missingness:** did any filter or aggregation silently drop `NA`/`missing` rows and bias the result? How is missing data handled, and was that decided by rule or by eye?
-- **Totals reconcile:** do the parts sum to a whole computed an independent way? If there's no reconciliation, the number is unverified by definition.
-- **Units & grain:** right unit of observation, right units (dollars/cents, proportion/percent), no double-counting.
 
 **Models & causal claims**
 - **Leakage:** any feature that encodes the target, any train/test overlap, any future information in a predictor? Leakage is the most common reason a model metric is "too good."
@@ -35,10 +29,6 @@ Work down from the conclusion to the data. Each item is a class of silent error 
 
 **Prediction models** (when the deliverable is a score / flag / ranking, not an effect — the `predictive-modeling` arm):
 - The class-by-class hunt list — leakage variants, deployment-mismatched splits, tuning-on-test, importance-read-as-causal, proxy labels, missing baselines, anomalous-read-as-guilty — lives in **`agents/analysis-reviewer.md`**, which the reviewer agent carries. Don't restate it here; dispatch the agent (below) or open that file when reviewing inline.
-
-**Reproducibility**
-- Does it **reproduce from a clean state** with a fixed seed, or only inside the author's live session?
-- Do the **numbers in the prose/figures match** what the code actually produces now?
 
 ## Run it as an independent agent
 
@@ -90,24 +80,6 @@ When someone critiques your analysis, the failure mode is reflexive agreement: "
 | "They flagged it, so it must be wrong — fixing." | Maybe. Verify it against the data first; agreeing without checking can introduce a new bug. |
 | "There's no time to ask for the intermediate checks." | Then there's no time to know whether the number is real. Reviewing only the output is reviewing nothing. |
 | "result-verification already covered all of this." | Verification proves the number reproduces and reconciles. Review hunts what reproducibility can't catch — leakage, bad controls, fished specs. Different failure classes; both run. |
-
-## When to Use → where this hands off
-
-Review is **not** terminal and it does **not** end at "looks good / here are my notes." It is the silent-failure sweep `result-verification` dispatches before shipping — every finding *propels* into a fixing skill. Route imperatively on what the review surfaced:
-
-```dot
-digraph analysis_review_next {
-    "Review surfaced a wrong number / data-integrity failure?" [shape=diamond];
-    "invoke wrong-number-debugging — bisect the pipeline to the bad step" [shape=box style=filled fillcolor=lightgreen];
-    "Review surfaced a design issue? (identification gap / spec search / misspecification)" [shape=diamond];
-    "invoke analysis-checkpoints — route the design decision to the user" [shape=box style=filled fillcolor=lightgreen];
-    "Clean — return to result-verification to ship" [shape=box style=filled fillcolor=lightgreen];
-    "Review surfaced a wrong number / data-integrity failure?" -> "invoke wrong-number-debugging — bisect the pipeline to the bad step" [label="yes"];
-    "Review surfaced a wrong number / data-integrity failure?" -> "Review surfaced a design issue? (identification gap / spec search / misspecification)" [label="no"];
-    "Review surfaced a design issue? (identification gap / spec search / misspecification)" -> "invoke analysis-checkpoints — route the design decision to the user" [label="yes"];
-    "Review surfaced a design issue? (identification gap / spec search / misspecification)" -> "Clean — return to result-verification to ship" [label="no"];
-}
-```
 
 ## The Process
 

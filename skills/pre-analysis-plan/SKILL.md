@@ -35,7 +35,7 @@ If none of those hold, you're exploring; label it exploratory and move on.
 
 ## Write it down and get sign-off before touching outcome data
 
-A pre-analysis plan that lives only in the chat isn't a commitment — it's a suggestion you can quietly edit later. **Persist the PAP to a file** in the project (e.g. `docs/pre-analysis-plan.md`) and register it in `docs/analysis/index.yaml` via `analysis-state-management`. Then **stop and get the user's explicit approval before you touch outcome data** — not merely before "estimation." Loading the outcomes, plotting their distribution, or peeking at the treatment–outcome relationship is *itself* the blinding violation: once you've seen the outcomes, every later "choice" is contaminated. This is a hard gate: the design, the primary spec, the sample rules, and the robustness suite lose their credibility if chosen (or changed) after the outcomes are visible, so the user signs off while everyone is still blind. Don't write the PAP and proceed straight into the data on your own reading of it.
+**The PAP's trigger line is stricter than the shared gate's** (`analysis-checkpoints` owns the write→sign-off mechanics): sign-off fires at touching outcome data, not merely at "estimation." Loading the outcomes, plotting their distribution, or peeking at the treatment–outcome relationship *is itself* the blinding violation — once seen, every later "choice" is contaminated, so the user signs off while everyone is still blind. Persist the PAP to a file (e.g. `docs/pre-analysis-plan.md`) and register it in `docs/analysis/index.yaml` via `analysis-state-management`; don't write it and proceed on your own reading.
 
 ## Confirmatory vs. exploratory — keep the line bright
 
@@ -62,27 +62,6 @@ Even with no conscious cheating, the sheer number of defensible choices — whic
 | "The data will tell me the right model." | The data will tell you a model that fits the data, including its noise. The question decides the model; commit it first. |
 | "We don't have time to write a plan." | The plan is a few lines. Re-running an analysis after someone catches the forking-paths problem costs far more. |
 | "I found something better than I planned." | Great — report it as exploratory and confirm it on fresh data. Don't relabel it as the test you ran. |
-
-## When to Use → where this hands off
-
-A PAP is **not** a terminal artifact. Once it's written to a file AND signed off while everyone is still blind, it *propels* into execution — route imperatively, don't just note the relationship:
-
-```dot
-digraph pre_analysis_plan_next {
-    "PAP written to a file AND signed off (still blind)?" [shape=diamond];
-    "Structural / counterfactual estimation?" [shape=diamond];
-    "invoke structural-estimation — lock the model card instead" [shape=box style=filled fillcolor=lightgreen];
-    "invoke executing-analysis-plans — carry out the locked plan" [shape=box style=filled fillcolor=lightgreen];
-    "Outcomes surprise you / departure tempting?" [shape=diamond];
-    "invoke analysis-checkpoints — bring the deviation to the user" [shape=box style=filled fillcolor=lightgreen];
-    "PAP written to a file AND signed off (still blind)?" -> "Structural / counterfactual estimation?" [label="yes"];
-    "keep locking — do NOT execute or touch outcomes" [shape=box];
-    "PAP written to a file AND signed off (still blind)?" -> "keep locking — do NOT execute or touch outcomes" [label="not yet"];
-    "Structural / counterfactual estimation?" -> "invoke structural-estimation — lock the model card instead" [label="yes"];
-    "Structural / counterfactual estimation?" -> "invoke executing-analysis-plans — carry out the locked plan" [label="no — reduced-form"];
-    "Outcomes surprise you / departure tempting?" -> "invoke analysis-checkpoints — bring the deviation to the user" [label="any time"];
-}
-```
 
 ## The Process
 

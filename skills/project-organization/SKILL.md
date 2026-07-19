@@ -86,11 +86,10 @@ A multi-hour analysis sitting at **zero commits** is a failure mode, not caution
 
 - Code, data, and generated outputs in one flat folder.
 - Diagnostic CSVs / check-plots committed beside the canonical figures, with nothing marking which is which.
-- `raw/` edited in place, or written to by analysis code.
+- `raw/` edited in place or written to by analysis code, or about to be touched (or any file deleted) in a cleanup without surfacing the plan first.
 - Secrets tracked in git; a large file gitignored without first trying to shrink it to parquet/tsv.
 - Filenames with dates, `final`/`v2`, spaces, or capitals.
 - No master script — "run them in the right order, they're in here somewhere" is not reproduction.
-- About to delete files in a cleanup without surfacing the plan, or about to touch `raw/`.
 
 ## Common rationalizations
 
@@ -100,24 +99,6 @@ A multi-hour analysis sitting at **zero commits** is a failure mode, not caution
 | "Gitignore all the data to be safe." | A research repo should ship the data a replicator needs. Ignore only the sensitive or the oversized — and shrink the oversized to parquet/tsv first. |
 | "Dates and `v2` track versions." | Git does. `results_final_v3_REALLY.csv` is how you lose the canonical one. One name per artifact. |
 | "Just delete the scratch to tidy up." | Deleting files the user might want is their call. Offer; prefer gitignore/move; never touch `raw/`. |
-
-## When to Use → where this hands off
-
-Organization is the **terminal** step — the chain *routes into* it and *ends* here. Don't propel to a successor; land the work as shippable:
-
-```dot
-digraph project_organization_next {
-    "Result verified? (reconciled / reproduced clean)" [shape=diamond];
-    "invoke result-verification — freeze before you organize" [shape=box style=filled fillcolor=lightyellow];
-    "About to delete/move files the user may want?" [shape=diamond];
-    "invoke analysis-checkpoints — moves/deletes are a gate" [shape=box style=filled fillcolor=lightgreen];
-    "TERMINAL: deliverables placed, scratch archived, names standardized → shippable" [shape=box style=filled fillcolor=lightgrey];
-    "Result verified? (reconciled / reproduced clean)" -> "invoke result-verification — freeze before you organize" [label="no — go back"];
-    "Result verified? (reconciled / reproduced clean)" -> "About to delete/move files the user may want?" [label="yes"];
-    "About to delete/move files the user may want?" -> "invoke analysis-checkpoints — moves/deletes are a gate" [label="yes"];
-    "About to delete/move files the user may want?" -> "TERMINAL: deliverables placed, scratch archived, names standardized → shippable" [label="no"];
-}
-```
 
 ## The Process
 

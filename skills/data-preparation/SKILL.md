@@ -70,14 +70,14 @@ The `docs/analysis/` folder is **disk-as-RAM**: you offload state to it continuo
 
 ## Consequential cleaning decisions go to the user — `analysis-checkpoints`
 
-Cleaning is where design changes get smuggled in as "just tidying the data." Resist it. A cleaning choice is **consequential** — and routes to `analysis-checkpoints`, the user's call, not a silent fix — whenever it:
+Cleaning is where design changes get smuggled in as "just tidying the data." A cleaning choice is **consequential** — `analysis-checkpoints` territory, not a silent fix — whenever it:
 
 - **drops, filters, or winsorizes rows** (changes the sample);
-- **dedups** in a way that removes more than a trivial, obviously-exact-duplicate count;
+- **dedups** beyond a trivial, obviously-exact-duplicate count;
 - **recodes or collapses** categories in a way that changes a grouping the analysis reports on;
 - **moves a number the user has already seen** (a total, a count, a rate they were shown last week).
 
-These are not bugs to fix on the way through; they are sample/spec decisions. Record your recommendation and the WHY in `decisions.yaml`, then **STOP and surface it** — "dropping the 412 negative-quantity rows takes the sample from 50,118 to 49,706 and lowers total revenue 2.1%; here's why I think they're reversals — do you want them dropped?" One sentence now beats a contradicted number in front of a stakeholder later. Routine, non-consequential tidying (parsing a date column, trimming whitespace that doesn't merge groups, fixing an obvious dtype) you just do, and log if it's interesting.
+These are sample/spec decisions, not bugs to fix on the way through. Record your recommendation and the WHY in `decisions.yaml`, then **STOP and surface it** — "dropping the 412 negative-quantity rows takes the sample from 50,118 to 49,706 and lowers total revenue 2.1%; here's why I think they're reversals — do you want them dropped?" Routine, non-consequential tidying (parsing a date column, trimming whitespace that doesn't merge groups, fixing an obvious dtype) you just do, and log if it's interesting.
 
 ## When a reconciliation fails — `wrong-number-debugging`
 
@@ -109,9 +109,8 @@ This skill triggers when **cleaning is more than a couple of steps or will span 
 - Cleaning across several steps with **no `docs/analysis/` state and no decisions ledger** — the *whys* are evaporating as you go.
 - A drop / dedup / winsorize / recode that **changes the sample or a number the user has seen**, applied silently instead of routed to `analysis-checkpoints`.
 - A join run **without a declared cardinality** asserted via `data-contracts` first.
-- "The dataset's built, the totals are close enough" — **close** on a reconciliation usually means rows are leaking; find out why before you round it away (`wrong-number-debugging`).
+- "The dataset's built, the totals are close enough" — patching a failed reconciliation by adjusting the total to match, instead of bisecting to the bad step (`wrong-number-debugging`).
 - Hand-rolling validation here instead of **calling `data-contracts`** — the doer reinventing the checker.
-- Patching a failed reconciliation by adjusting the total to match, instead of bisecting to the bad step.
 - Ceremony-planning a trivial load of one clean file — over-applying the skill instead of stating the waiver.
 
 ## Common rationalizations
@@ -124,36 +123,6 @@ This skill triggers when **cleaning is more than a couple of steps or will span 
 | "The join ran fine, no error." | A join is the one operation that changes your row count in either direction without erroring. Assert the cardinality. |
 | "I'll write the decisions ledger at the end." | At the end you've forgotten the whys and compaction may have eaten the session. Disk-as-RAM, every couple of actions. |
 | "Totals are off by a rounding-ish amount, I'll just align them." | Aligning the total hides the leak. A failed reconciliation is a bug to bisect, not a number to nudge. |
-
-## When to Use → where this hands off
-
-Data preparation is **not** a terminal step. It owns the cleaning phase, calls the checker on every step, stops for the user on consequential choices, bisects on a failed reconciliation, and — when the clean dataset is built — *propels back into the spine*. Route imperatively, don't just note the relationship:
-
-```dot
-digraph data_preparation_next {
-    "Single already-clean file, trivial load?" [shape=diamond];
-    "State the waiver out loud, load directly — no cleaning plan" [shape=box];
-    "Each cleaning step (ingest / join / dedup / recode / aggregate)" [shape=box style=filled fillcolor=lightblue];
-    "invoke data-contracts — assert cardinality + reconcile before trusting the step" [shape=box style=filled fillcolor=lightgreen];
-    "Reconciliation to source totals FAILS?" [shape=diamond];
-    "invoke wrong-number-debugging — bisect to the bad cleaning step" [shape=box style=filled fillcolor=lightgreen];
-    "Step drops/dedups/winsorizes/recodes or moves a number the user has seen?" [shape=diamond];
-    "invoke analysis-checkpoints — STOP, it's the user's sample/spec call" [shape=box style=filled fillcolor=lightgreen];
-    "Phase 1 checklist all ticked + clean dataset reconciled?" [shape=diamond];
-    "invoke executing-analysis-plans — clean dataset built, return to the spine" [shape=box style=filled fillcolor=lightgreen];
-
-    "Single already-clean file, trivial load?" -> "State the waiver out loud, load directly — no cleaning plan" [label="yes"];
-    "Single already-clean file, trivial load?" -> "Each cleaning step (ingest / join / dedup / recode / aggregate)" [label="no — real cleaning phase"];
-    "Each cleaning step (ingest / join / dedup / recode / aggregate)" -> "invoke data-contracts — assert cardinality + reconcile before trusting the step";
-    "invoke data-contracts — assert cardinality + reconcile before trusting the step" -> "Reconciliation to source totals FAILS?";
-    "Reconciliation to source totals FAILS?" -> "invoke wrong-number-debugging — bisect to the bad cleaning step" [label="yes"];
-    "Reconciliation to source totals FAILS?" -> "Step drops/dedups/winsorizes/recodes or moves a number the user has seen?" [label="no"];
-    "Step drops/dedups/winsorizes/recodes or moves a number the user has seen?" -> "invoke analysis-checkpoints — STOP, it's the user's sample/spec call" [label="yes"];
-    "Step drops/dedups/winsorizes/recodes or moves a number the user has seen?" -> "Phase 1 checklist all ticked + clean dataset reconciled?" [label="no"];
-    "Phase 1 checklist all ticked + clean dataset reconciled?" -> "Each cleaning step (ingest / join / dedup / recode / aggregate)" [label="no — more cleaning steps"];
-    "Phase 1 checklist all ticked + clean dataset reconciled?" -> "invoke executing-analysis-plans — clean dataset built, return to the spine" [label="yes"];
-}
-```
 
 ## The Process
 
