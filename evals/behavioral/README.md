@@ -241,3 +241,38 @@ report; the actionable lessons for every later per-skill agent:
    this pilot's 3 scenarios exercise it directly, so it was left untouched
    rather than trimmed on judgment alone — thin sections a probe can verify,
    flag (don't cut) the ones a probe can't.
+
+### P3 batch-1 findings (`data-preparation`) — two harness/probe pitfalls for later agents
+
+1. **A plant.md catch criterion scoped to "result.md's write-up" can wrongly
+   fail a MORE disciplined response.** `dp-decisions-log`'s original criterion
+   required the disclosure to appear in `result.md`; the real
+   `data-preparation` skill, working as designed, routes decisions that
+   change the sample to `analysis-checkpoints` and **stops to ask for
+   sign-off before writing any output** — so the disclosure-with-WHY landed
+   entirely in the chat turn and `result.md` was never written. The pi
+   harness has no second turn, so this genuinely-more-careful STOP-and-ask
+   behavior graded as a false "missed" under the narrow criterion. Fix:
+   grade the criterion against "chat and/or result.md" (`grade()` already
+   passes the grader both), and explicitly count a disclosed STOP-and-ask as
+   CAUGHT, not just a disclosed-then-applied choice. Re-grading the existing
+   transcripts (no new subject runs needed — only grader calls, which don't
+   count against the DeepSeek budget) flipped several "missed" reps to
+   "caught" and changed the discrimination read entirely. **Read the actual
+   transcripts before trusting an unexpectedly-low catch rate** — it may be
+   a criterion bug, not a skill failure.
+2. **A "before you act" process plant (roadmap-first, ask-before-diving-in)
+   cannot be reliably graded by this harness.** `run-skill-eval.py`'s
+   `run_pi_subject` extracts only the LAST assistant message's text from the
+   final `agent_end` event (see "Pi `--mode json` parsing notes" above); an
+   earlier turn's "here's my plan: 1)...2)...3)..." is silently discarded if
+   the final message doesn't repeat it. `pressure-roadmap-first` came back
+   0/3 for **baseline, main-skill, and working-tree-skill arms alike** — a
+   floor effect indistinguishable from "the skill doesn't induce this," and
+   the raw stdout isn't retained on disk to check post hoc. Treat a
+   process-plant scenario that scores 0 across EVERY arm (not just baseline)
+   as inconclusive/undiagnosable in this harness, not as "skill needs work" —
+   don't spend iteration budget chasing it. A durable fix (capturing all
+   assistant-turn text, not just the last) would need to touch
+   `scripts/run-skill-eval.py`, out of scope for a per-skill agent restricted
+   to `skills/<name>/` and scenario dirs.

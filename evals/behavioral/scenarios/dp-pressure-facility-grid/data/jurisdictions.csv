@@ -1,0 +1,7 @@
+jurisdiction,lat_min,lat_max,lon_min,lon_max
+precinct_A,34.0,34.1,-118.5,-118.4
+precinct_B,34.0,34.1,-118.4,-118.3
+precinct_C,34.1,34.2,-118.5,-118.4
+precinct_D,34.1,34.2,-118.4,-118.3
+precinct_E,34.2,34.3,-118.5,-118.4
+precinct_F,34.2,34.3,-118.4,-118.3

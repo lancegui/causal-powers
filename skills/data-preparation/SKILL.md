@@ -9,7 +9,7 @@ description: Use when building, cleaning, or assembling the DATASET an analysis 
 
 By the time you report a number, the riskiest decisions are already behind you — they were made while cleaning the data, and nobody wrote down why. A dropped duplicate, a collapsed category, a join that quietly fanned out, a missing-value rule chosen in a hurry: each one moves the eventual estimate, and none of them throws an error. The dangerous bug here is not the run that crashes. It's the clean run, on a cleaned dataset, that hands you a confident wrong answer because the sample was silently reshaped three steps before you ever fit a model.
 
-This skill owns the **data-ingest-and-cleaning phase** — the heaviest, most decision-dense stretch of an analysis. It is reached from `executing-analysis-plans`' sequential spine step 1 (*build / clean / join the analysis dataset*), which **delegates** that step here. When the clean, validated dataset is built, control **returns to `executing-analysis-plans`** for variable construction → primary specification → robustness → verification.
+This skill owns the **data-ingest-and-cleaning phase** — the heaviest, most decision-dense stretch of an analysis — reached from `executing-analysis-plans`' spine step 1 (*build / clean / join the dataset*), which **delegates** here. When the clean, validated dataset is built, control **returns to `executing-analysis-plans`** for variable construction → primary spec → robustness → verification.
 
 **Core principle:** Cleaning is analysis, not pre-analysis. Plan it, checkbox it, and record *why* for every consequential choice — because the decisions that reshape the sample are made here, and a sample you reshaped without a written reason is a result you can't defend.
 
@@ -18,11 +18,9 @@ This skill owns the **data-ingest-and-cleaning phase** — the heaviest, most de
 These two skills are complementary and must never compete:
 
 - **`data-contracts` is the CHECKER.** It asserts invariants — join cardinality, row counts, ranges, totals that reconcile — and freezes validated baselines. It fires on *"I'm about to trust a number / do a join."*
-- **`data-preparation` is the DOER and PLANNER for the cleaning phase.** It decomposes ingest → clean → join → dedup → recode → reconcile into a phased, checkboxed plan with a decisions log; it deliberates; it is resumable across a session. It fires on *"clean / build / assemble the dataset."*
+- **`data-preparation` is the DOER and PLANNER for the cleaning phase.** It decomposes ingest → clean → join → dedup → recode → reconcile into a phased, checkboxed, resumable plan with a decisions log. It fires on *"clean / build / assemble the dataset."*
 
-The relation is exactly the one `executing-analysis-plans` already has with `data-contracts`: **the doer uses the checker.** This skill OWNS the cleaning phase and **CALLS `data-contracts` to validate every step** — every join gets a cardinality assertion before it runs and a row reconciliation after; every recode gets a range/category check; every aggregation reconciles parts to the known whole. You do not hand-roll validation here. You sequence the work, and you let `data-contracts` enforce that each step held before the next builds on it.
-
-The division is clean: `data-preparation` decides *what cleaning steps happen and in what order and why*; `data-contracts` decides *whether each step is trustworthy*. Neither does the other's job.
+The doer uses the checker: this skill decides *what cleaning steps happen, in what order, and why*, then **calls `data-contracts` to validate every step** — cardinality asserted before each join and reconciled after, every recode range/category-checked, every aggregation reconciled to the known whole. You do not hand-roll validation here; you sequence the work and let `data-contracts` decide whether each step is trustworthy. Neither does the other's job.
 
 ## Phase 1 of durable analysis state
 
@@ -66,8 +64,6 @@ decisions:
 1. **It survives `/clear` and compaction.** A long, fix-heavy cleaning session will hit auto-compaction at a random, lossy moment, and the first things lost are exactly the cleaning gotchas and the *whys* you can least afford to lose. Durable state in the file is what lets the session compact safely.
 2. **It is the audit trail.** When a number later comes out wrong, the decisions ledger is what lets `wrong-number-debugging` bisect in minutes instead of re-deriving every choice from scratch. "Why is revenue down 8% from last quarter's pull?" is answerable in seconds when the dedup and the dropped-rows decisions are written with their reasons, and a multi-hour archaeology dig when they aren't.
 
-The `docs/analysis/` folder is **disk-as-RAM**: you offload state to it continuously so your working context stays clean and a fresh session can resume from `index.yaml` alone.
-
 ## Consequential cleaning decisions go to the user — `analysis-checkpoints`
 
 Cleaning is where design changes get smuggled in as "just tidying the data." A cleaning choice is **consequential** — `analysis-checkpoints` territory, not a silent fix — whenever it:
@@ -81,28 +77,26 @@ These are sample/spec decisions, not bugs to fix on the way through. Record your
 
 ## When a reconciliation fails — `wrong-number-debugging`
 
-The reconciliation-to-source-totals box is where silent damage announces itself. If the built dataset's totals **don't** tie back to the raw sources — revenue tripled after a join, a count is too high, parts don't sum to the whole — **do not patch and proceed, and do not "adjust" the total to match.** A failed reconciliation means a step in the cleaning pipeline corrupted the data, and the fix is to find *which* step. **STOP and invoke `wrong-number-debugging`** to bisect the pipeline backward to the exact bad step. `decisions.yaml` and the active phase YAML are your map for that bisection. Patching the symptom (filtering until the total looks right) is how a join bug becomes a permanent silent bias.
+The reconciliation-to-source-totals box is where silent damage announces itself. If the built dataset's totals **don't** tie back to the raw sources — revenue tripled after a join, a count is too high, parts don't sum to the whole — **do not patch and proceed, and do not "adjust" the total to match.** A failed reconciliation means a step in the cleaning pipeline corrupted the data, and the fix is to find *which* step. **STOP and invoke `wrong-number-debugging`** to bisect the pipeline backward to the exact bad step, using `decisions.yaml` and the active phase YAML as your map.
 
-## Resumability — docs/analysis is the source of truth
+## Resumability — what index.yaml must hold for Phase 1
 
-Because cleaning spans many small steps and often more than one session,
-`docs/analysis/index.yaml` must let a clean-slate session find the right state
-without rereading a giant plan. The test, borrowed from
-`executing-analysis-plans`: **if the conversation were compacted right now, could
-a fresh session resume from `index.yaml` plus the records it names?** That means
-the YAML state holds, at every save point:
+A fresh session must be able to resume Phase 1 from `docs/analysis/index.yaml`
+alone (the general resume rule and how-to-update-state mechanics are
+`analysis-state-management`'s; here's what Phase 1 specifically keeps current
+in it):
 
 - the checklist with boxes ticked (done ✓ / queued);
 - the decisions ledger up to date with every consequential choice and its WHY;
 - the concrete next step written as a resume-from-clean-slate instruction ("POST-COMPACT: assert m:1 on the orders→customers join, reconcile row count, then handle missing `region`").
 
-Update `index.yaml`, decisions, runs, handoffs, and artifact records after every couple of actions and at every phase boundary. Edit the active phase YAML only for pre-approval drafting or an explicit contract revision that will be re-approved, not merely to mark execution progress. Offer to `/compact` only at a clean boundary, never mid-step.
+Offer to `/compact` only at a clean boundary, never mid-step.
 
 ## Size threshold — and the waiver
 
-This skill triggers when **cleaning is more than a couple of steps or will span a session** — multiple sources, any join, a dedup, real missingness, recodes, anything that needs a reconciliation. That's when a phased plan and a decisions log earn their cost.
+This skill triggers when **cleaning is more than a couple of steps or will span a session** — multiple sources, any join, a dedup, real missingness, recodes, anything needing a reconciliation.
 
-**A single, already-clean file is waived.** If the user hands you one tidy CSV that just needs loading, do **not** ceremony-plan a trivial load. **State the waiver out loud** — "this is a single clean file, no cleaning phase needed; loading directly" — and proceed. The discipline is for real cleaning work, not for manufacturing process around a one-line `read_csv`. Stating the waiver is itself the audit trail: it records that you *considered* the cleaning phase and judged it unnecessary, rather than skipping it by accident.
+**A single, already-clean file is waived.** Don't ceremony-plan a trivial load — **state the waiver out loud** ("this is a single clean file, no cleaning phase needed; loading directly") and proceed. The stated waiver is itself the audit trail: it records that you considered the phase and judged it unnecessary, not that you skipped it by accident.
 
 ## Red flags — STOP
 
