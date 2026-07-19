@@ -93,3 +93,82 @@ When a scenario is caught by baseline consistently, it has stopped
 discriminating — replace it with a harder plant. Natural sources: the threat
 model in `docs/family-audit-and-map.md`, and your analysis projects' own
 `docs/LESSONS.md` files (the repo's copy ships deliberately empty).
+
+## Per-skill loop: `scripts/run-skill-eval.py` (Pi / DeepSeek subject)
+
+The per-skill thinning loop (`docs/plans/2026-07-19-skill-thinning-behavioral-loop.md`)
+needs two things `run-behavioral-eval.py` doesn't do: run the subject through
+**headless Pi on DeepSeek v4 Pro** instead of `claude -p`, and inject an
+**arbitrary skill file** as the arm's context instead of the fixed card. Rather
+than bend `run-behavioral-eval.py`'s baseline/card/plugin arm set to fit that
+(and risk changing its byte-for-byte behavior), the loop is a sibling script,
+`scripts/run-skill-eval.py`, which imports `run-behavioral-eval.py` as a module
+to reuse its `sh()`, `grade()`, and `isolated_config()` verbatim — grading
+still always runs through `claude -p`; only the subject changes.
+
+```bash
+# A vs B vs C for one skill: no skill / skill from main / working-tree candidate
+python3 scripts/run-skill-eval.py --scenarios fanout-join \
+    --arm none \
+    --arm 'file:@main:skills/data-contracts/SKILL.md' \
+    --arm file:skills/data-contracts/SKILL.md \
+    --reps 3 --jobs 1 --label data-contracts-p2
+```
+
+Arms (repeatable `--arm`, order preserved in the report):
+
+- `none` — no injected context.
+- `file:<path>` — a working-tree file, read via `pathlib` (absolute, or
+  relative to the repo root).
+- `file:@<gitref>:<path>` — `git show <gitref>:<path>` (read-only; the script
+  never writes to git). Use this for "the skill as it was on `main`" (arm B in
+  the plan) vs `file:skills/<name>/SKILL.md` for the thinned working-tree
+  candidate (arm C).
+
+Other flags: `--thinking {off,minimal,low,medium,high,xhigh,max}` (pi
+`--thinking`, default `off`); `--reps N` (default 3 — DeepSeek has no fixed
+seed, so reps are the variance control, not a single run); `--jobs` (default
+1 — Ollama Cloud can rate-limit concurrent requests; raise cautiously);
+`--model` (default `ollama/deepseek-v4-pro:cloud`); `--grader-model` (default
+`claude-sonnet-4-6`, unchanged grading path).
+
+Output lands in `runs/<timestamp>-<label>/`: `results.json` (flat list of
+per-rep records, each with the graded `caught`/`evidence`) and `report.md` (an
+arm x rep table per scenario plus a catch-rate-by-arm summary), matching
+`run-behavioral-eval.py`'s `results.json` + `report.md` shape. As in that
+script, the per-rep `<scenario>/<arm>-repN.json` files on disk are written
+*before* grading (so they lack `caught`/`evidence`); the graded truth lives
+only in the aggregated `results.json`.
+
+### Pi `--mode json` parsing notes (for future agents)
+
+- It's **JSONL**, not one JSON blob: one event object per line
+  (`session`, `agent_start`, `turn_start`, `message_start`, `message_update`,
+  `message_end`, `tool_execution_start/end`, `turn_end`, `agent_end`,
+  `agent_settled`).
+- The subject's final report is the last `text`-type content block of the
+  **last `assistant` message inside the final `agent_end` event's `messages`
+  array** (that array is the full transcript: user/assistant/toolResult
+  messages interleaved). Fallback if `agent_end` never arrives (e.g. a killed
+  process): the last `message_end` event with `role: "assistant"`.
+- Runner errors (bad model id, Ollama Cloud rate-limit, etc.) do **not**
+  raise a non-zero pi exit code — they show up as an assistant message with
+  `"stopReason": "error"` and an `"errorMessage"` field, empty `content`.
+  `run-skill-eval.py` surfaces this into `rec["error"]` and grades it as
+  `ungraded` rather than silently treating an empty report as a miss (or
+  retrying).
+- `--append-system-prompt` accepts either literal text or a file path;
+  `run-skill-eval.py` always passes a file path (skill text resolved to a temp
+  file first) so multi-KB skill files never hit shell-arg limits.
+- `--thinking` controls reasoning level but does not gate whether `thinking`
+  content blocks appear in messages — the parser only reads `type: "text"`
+  blocks, so `thinking` blocks are already ignored regardless of level.
+- Pi's own skill/extension/context-file autodiscovery on the host machine is
+  disabled (`--no-skills --no-extensions --no-context-files --no-approve`) so
+  an arm's only injected context is what `--append-system-prompt` supplies —
+  the Pi analogue of the isolated `CLAUDE_CONFIG_DIR` above.
+- `REPLY:` second-turn gates (see "Gate scenarios" above) are **not yet
+  automated** for the pi runner — `--no-session` makes `--resume` unavailable,
+  so the script strips the `REPLY:` line and runs turn 1 only, with a printed
+  warning. Automating it would mean dropping `--no-session` in favor of
+  `--session-id`/`--resume`.
