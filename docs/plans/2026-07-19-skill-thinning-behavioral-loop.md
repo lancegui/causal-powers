@@ -95,8 +95,13 @@ Add the Pi runner + skill-file arm to `run-behavioral-eval.py` (or a sibling
 Exit: runner works end-to-end on DeepSeek v4 Pro, grader agrees with manual
 reading on the pilot transcripts, pilot skills thinned with C ≥ B.
 
-**P3 — fan-out (sonnet subagents, batches of ~5, each owns only
+**P3 — fan-out (sonnet subagents, each owns only
 `skills/<name>/` + its scenario dirs).**
+*Mode change, user-directed 2026-07-19 night: run SEQUENTIALLY, one skill
+agent at a time; orchestrator reviews and commits each skill, then
+dispatches the next without waiting for per-skill user approval. If API
+quota exhausts, pause and resume after reset. The batch groupings below
+now define ORDER, not concurrency.*
 - Batch 1 (core loop): `question-framing`, `data-preparation`,
   `result-verification` (+ artifact-vs-chat + spec-conformance probes),
   `wrong-number-debugging`, `executing-analysis-plans`.
