@@ -1060,13 +1060,20 @@ PRESSURE_NAMES = ["pressure-prevalidated-join", "pressure-skip-robustness",
 QUESTION_FRAMING = [qf_ambiguous_metric, qf_stale_definition, qf_wrong_question_unit]
 QUESTION_FRAMING_NAMES = ["qf-ambiguous-metric", "qf-stale-definition",
                           "qf-wrong-question-unit"]
+# Hand-authored scenarios with data checked in directly (no generator here);
+# they must survive a manifest regen or they silently vanish from the suite.
+STATIC_CORE_NAMES = ["composition-simpson"]
 
 if __name__ == "__main__":
     SC.mkdir(parents=True, exist_ok=True)
     print("generating scenarios:")
     for fn in CORE + PRESSURE + QUESTION_FRAMING:
         fn()
-    (ROOT / "manifest.json").write_text(json.dumps(sorted(CORE_NAMES), indent=2) + "\n")
+    for name in STATIC_CORE_NAMES:
+        if not (SC / name / "plant.md").exists():
+            raise SystemExit(f"static scenario missing from disk: {name}")
+    (ROOT / "manifest.json").write_text(
+        json.dumps(sorted(CORE_NAMES + STATIC_CORE_NAMES), indent=2) + "\n")
     (ROOT / "manifest-pressure.json").write_text(json.dumps(sorted(PRESSURE_NAMES), indent=2) + "\n")
     (ROOT / "manifest-question-framing.json").write_text(
         json.dumps(sorted(QUESTION_FRAMING_NAMES), indent=2) + "\n")
