@@ -131,6 +131,19 @@ def run_pi_subject(task: str, cwd: pathlib.Path, model: str, thinking: str,
         except json.JSONDecodeError:
             continue  # e.g. a truncated trailing line if the process was killed
 
+    # Grade on ALL assistant text in turn order, not just the final message: a
+    # subject that states its roadmap/checkpoint early and ends with a short
+    # closing line would otherwise be invisible to the grader (observed floor
+    # effect on pressure-roadmap-first — 0/0/0 across all arms).
+    def _assistant_text(msgs):
+        parts = []
+        for i, m in enumerate(msgs):
+            texts = [c.get("text", "") for c in m.get("content", []) if c.get("type") == "text"]
+            body = "\n".join(t for t in texts if t).strip()
+            if body:
+                parts.append(f"--- assistant turn {i + 1} ---\n{body}")
+        return "\n\n".join(parts).strip()
+
     answer, error = None, None
     agent_ends = [e for e in events if e.get("type") == "agent_end"]
     if agent_ends:
@@ -139,14 +152,12 @@ def run_pi_subject(task: str, cwd: pathlib.Path, model: str, thinking: str,
             last = assistant_msgs[-1]
             if last.get("stopReason") == "error":
                 error = last.get("errorMessage", "unknown pi error (stopReason=error)")
-            texts = [c.get("text", "") for c in last.get("content", []) if c.get("type") == "text"]
-            answer = "\n".join(t for t in texts if t).strip()
+            answer = _assistant_text(assistant_msgs)
     if not answer:
         message_ends = [e["message"] for e in events
                          if e.get("type") == "message_end" and e.get("message", {}).get("role") == "assistant"]
         if message_ends:
-            texts = [c.get("text", "") for c in message_ends[-1].get("content", []) if c.get("type") == "text"]
-            answer = "\n".join(t for t in texts if t).strip()
+            answer = _assistant_text(message_ends)
     if not answer:
         answer = f"(no parseable pi report; stdout tail: {r.stdout[-1500:]!r})"
 
