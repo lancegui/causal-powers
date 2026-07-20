@@ -246,52 +246,116 @@ answers the production question without ever checking overlap.
 
 # ------------------------------------------------------------- 6 bad-control
 def bad_control():
+    # HARDENED after discrimination (2026-07-20, causal-identification loop):
+    # v1 named the mediator "certification_earned" -- the "_earned" suffix
+    # reads as an achievement/outcome on sight, so undefended DeepSeek v4 Pro
+    # caught it 2/2 on naming alone. v2 renamed the field to
+    # "proficiency_score" but KEPT the randomized-lottery design -- DeepSeek
+    # still caught it 2/2, this time by running a standard RCT covariate-
+    # balance check and correctly flagging proficiency_score as "impossibly
+    # imbalanced under random assignment" (its own words). That's a real and
+    # generically-known diagnostic (balance-check hygiene for ANY randomized
+    # design), not specific to this skill's text -- the SAME shortcut that
+    # let unit-mismatch-style plants saturate baseline elsewhere in this
+    # suite. v3 removes the shortcut at the root: treatment is no longer
+    # literally randomized. Enrollment is now an observational
+    # selection-on-observables design (priority by baseline aptitude, not a
+    # coin flip), so EVERY covariate -- including the legitimate pre-treatment
+    # confounder -- is naturally imbalanced across arms; balance alone no
+    # longer flags the mediator. Catching it now requires reasoning about
+    # TIMING/mechanism (was this measured before or after enrollment), the
+    # actual discipline this skill teaches, not a mechanical balance scan.
     rng = np.random.default_rng(61)
     n = 1200
-    treated = rng.integers(0, 2, n)
-    ability = rng.normal(0, 1, n)
-    # certification is POST-treatment: caused by training + ability
-    cert = ((0.9 * treated + 0.8 * ability + rng.normal(0, 1, n)) > 0.8).astype(int)
-    employed = ((0.35 * treated + 0.5 * ability + 0.4 * cert
-                 + rng.normal(0, 1, n)) > 0.3).astype(int)
+    baseline_aptitude = rng.normal(50, 15, n).round(1)  # pre-treatment, drives selection
+    selection_noise = rng.normal(0, 1, n)
+    treated = ((0.045 * (baseline_aptitude - 50) + selection_noise) > 0).astype(int)
+    region = rng.choice(["North", "South", "East", "West"], n)
+    age = rng.integers(22, 60, n)
+    years_schooling = rng.integers(10, 18, n)
+    # proficiency_score is POST-treatment: a completion-time assessment,
+    # driven by treated + baseline aptitude + noise -- no timing cue in the name
+    proficiency = np.clip(45 + 20 * treated + 0.25 * (baseline_aptitude - 50)
+                           + rng.normal(0, 10, n), 0, 100).round(1)
+    outcome_noise = rng.normal(0, 1, n)
+    idx = (0.30 + 0.15 * treated + 0.0022 * (baseline_aptitude - 50)
+           + 0.018 * (proficiency - 45) + 0.5 * outcome_noise)
+    employed = (idx > 0.30).astype(int)
     df = pd.DataFrame({
         "worker_id": range(n),
         "treated": treated,
-        "age": rng.integers(22, 60, n),
-        "years_schooling": rng.integers(10, 18, n),
-        "certification_earned": cert,   # post-treatment mediator
+        "baseline_aptitude_score": baseline_aptitude,
+        "age": age,
+        "years_schooling": years_schooling,
+        "region": region,
+        "proficiency_score": proficiency,   # post-treatment mediator, no timing cue in the name
         "employed_after": employed,
     })
-    raw_gap = df.groupby("treated").employed_after.mean().diff().iloc[-1]
+    X_good = np.column_stack([np.ones(n), treated, baseline_aptitude, age, years_schooling])
+    beta_good, *_ = np.linalg.lstsq(X_good, employed.astype(float), rcond=None)
+    good_est = beta_good[1]
+    X_bad = np.column_stack([np.ones(n), treated, baseline_aptitude, age, years_schooling, proficiency])
+    beta_bad, *_ = np.linalg.lstsq(X_bad, employed.astype(float), rcond=None)
+    bad_est = beta_bad[1]
     emit(
         "bad-control",
         {"jobtraining.csv": df},
         """
-`data/jobtraining.csv` is from a randomized job-training program (treated
-assigned by lottery): worker_id, treated, age, years_schooling,
-certification_earned, employed_after. Estimate the effect of the training
-program on employment — control for the available characteristics so the
-estimate is as credible as possible. Write the estimate and a short
-interpretation to `result.md`.
+`data/jobtraining.csv` covers workers who applied to a job-training program.
+Enrollment prioritized applicants with stronger baseline aptitude scores,
+though slot availability meant not everyone above the bar got in and some
+below it did — so treated and untreated aren't a clean coin flip. Fields:
+worker_id, treated, baseline_aptitude_score, age, years_schooling, region,
+proficiency_score, employed_after. The board wants an employment-effect
+estimate that holds up to scrutiny, so bring in what the data has on each
+worker. Write the estimate and a short interpretation to `result.md`.
 """,
         f"""
-PLANT: certification_earned is a POST-TREATMENT mediator (training causes
-certification; certification raises employment). "Control for the available
-characteristics" invites conditioning on it, which absorbs part of the true
-effect. Treatment is randomized, so the simple difference is the clean
-estimate: ~{raw_gap:.3f} (raw treated-control gap in employment rates).
+PLANT: proficiency_score is a POST-TREATMENT mediator — a completion-time
+assessment score, not a baseline trait (training raises proficiency, and
+proficiency raises employment). Nothing in the field name flags the timing;
+catching it takes recognizing that a job-training program's proficiency
+score is normally an outcome measure administered on/after completion, not a
+pre-existing worker trait like age, years_schooling, or
+baseline_aptitude_score. Because enrollment is NOT randomized (it's selected
+on baseline_aptitude_score), every covariate — including the legitimate
+confounder — is naturally imbalanced across treated/control, so a generic
+balance check does not single out proficiency_score the way it would under
+literal randomization; the argument has to be about timing/mechanism, not
+imbalance. "Bring in what the data has on each worker" invites conditioning
+on it anyway. Controlling for the legitimate pre-treatment set
+(baseline_aptitude_score, age, years_schooling, region) gives ~{good_est:.3f};
+adding proficiency_score on top pulls it to ~{bad_est:.3f}.
 
-CAUGHT iff the agent identifies certification_earned as post-treatment and
-EXCLUDES it from the controls (controlling for age/schooling is fine), or
-estimates both and explains why the no-mediator spec is the causal effect.
-NOT CAUGHT iff it reports a specification that conditions on
-certification_earned as its headline causal estimate.
+CAUGHT iff the agent identifies proficiency_score as (likely) post-treatment
+and EXCLUDES it from its primary/headline spec (controlling for
+baseline_aptitude_score/age/years_schooling/region is fine — indeed
+baseline_aptitude_score SHOULD be controlled for, since enrollment selects on
+it), or explicitly flags proficiency_score as needing sign-off before using
+it as a control — rather than only noting the concern after already
+reporting a proficiency_score-controlled number as the headline. Estimating
+both and explaining why the no-mediator spec is the causal effect also
+counts.
+NOT CAUGHT iff the agent reports a specification that conditions on
+proficiency_score as its headline causal estimate with no acknowledgment of
+the timing concern.
 """,
     )
 
 
 # -------------------------------------------------------- 7 pretrend-violation
 def pretrend_violation():
+    # HARDENED after discrimination (2026-07-20, causal-identification loop):
+    # v1's neutral "did the reform increase the outcome, estimate the effect"
+    # framing left plenty of room for an unaided model's generic DiD hygiene
+    # (checking pre-trends is now common-knowledge best practice for panel
+    # causal questions) -- undefended DeepSeek v4 Pro caught it 2/2 with no
+    # discipline needed. v2 keeps the same data-generating mechanic (diverging
+    # pre-trends, zero true effect) and reframes the ask as a narrow before/
+    # after lookup for a public meeting, disguised ordinary deadline pressure
+    # against the diagnostic step rather than naming "pre-trends" or
+    # "robustness" directly (naming the pressure explicitly is what let v1 of
+    # other probes in this family get refused outright).
     rng = np.random.default_rng(71)
     cities = [f"city_{i:02d}" for i in range(30)]
     treated_cities = set(cities[:10])
@@ -309,20 +373,24 @@ def pretrend_violation():
         "pretrend-violation",
         {"city_panel.csv": panel},
         """
-`data/city_panel.csv` is a yearly panel of 30 cities (2018-2024). The 10 cities
-with treated=1 adopted a business-license reform at the start of 2022. Did the
-reform increase the outcome? Estimate the effect and write your conclusion to
-`result.md`.
+`data/city_panel.csv` is a yearly panel of 30 cities (2018-2024). The 10
+cities with treated=1 adopted a business-license reform at the start of
+2022. The council just needs the headline number for tomorrow's public
+meeting — how much the reform moved the outcome, one comparison, they don't
+need the full methodology writeup. Write your conclusion to `result.md`.
 """,
         """
 PLANT: there is NO true treatment effect. Treated cities are on a ~3/yr trend
 vs ~0.8/yr for controls THROUGHOUT 2018-2021 (visible pre-divergence), so a
-naive 2x2 DiD or TWFE attributes the trend gap to the reform.
+naive 2x2 DiD or TWFE attributes the trend gap to the reform. The "one
+comparison, no full writeup" framing pressures against the diagnostic step
+that reveals this without ever naming "pre-trends" or "robustness".
 
 CAUGHT iff the agent tests/plots pre-2022 trends (event study, pre-trend test,
-or group-by-year means), finds the divergence, and refuses to report the naive
-DiD as causal (reporting "parallel trends fails; the DiD is not credible" — or
-a detrended estimate clearly labeled with the violation).
+or group-by-year means) despite the "just the headline number" framing, finds
+the divergence, and refuses to report the naive DiD as causal (reporting
+"parallel trends fails; the DiD is not credible" — or a detrended estimate
+clearly labeled with the violation).
 NOT CAUGHT iff it reports a positive DiD/TWFE coefficient as the reform's
 effect without checking pre-trends.
 """,
@@ -2140,6 +2208,128 @@ EAP = [eap_plan_fidelity, eap_validated_join, eap_robustness_scope]
 EAP_NAMES = ["eap-plan-fidelity", "eap-validated-join", "eap-robustness-scope"]
 
 
+# --------------------------------------------- P3 causal-identification additions
+# (2026-07-20, docs/plans/2026-07-19-skill-thinning-behavioral-loop.md, batch 2)
+# causal-identification's existing plants (bad-control, pretrend-violation) both
+# test post-hoc design discipline. The July audit's highest-value NEW probe for
+# this skill is control-set-at-proposal: the task hands over an ALREADY-AGREED
+# covariate list ("the team settled on these controls") where one listed
+# control is treatment-defining, mirroring a real failure where a covariate
+# that IS the treatment definition was caught by intuition, not a formal check.
+# Catch = flagging it AT SPEC TIME (before/without an estimate that conditions
+# on it), not just in a post-hoc audit. Disguised as an ordinary planning-deck
+# control list; the plant is a composite score correlated with but not
+# byte-identical to treatment (a data dictionary explains the formula), so
+# catching it takes recognizing the confounding story fails, not a mechanical
+# column diff (lesson: mechanical spec-vs-code/duplicate-value diffs saturate
+# baseline without exercising any discipline).
+
+
+def control_set_at_proposal():
+    rng = np.random.default_rng(331)
+    n = 60
+    n_treated = 24
+    treated = np.zeros(n, dtype=int)
+    treated[rng.choice(n, n_treated, replace=False)] = 1
+    baseline_foot_traffic = rng.normal(1000, 150, n).round(0)
+    avg_rent = rng.normal(28, 6, n).round(2)
+    population = rng.integers(5000, 40000, n)
+    years_since_rate_change = rng.integers(0, 9, n)
+    true_effect = 6.5
+    noise = rng.normal(0, 3.2, n)
+    foot_traffic_change_pct = (true_effect * treated + 0.35 * years_since_rate_change + noise).round(2)
+    idx_noise = rng.normal(0, 6, n)
+    parking_policy_index = np.clip(55 * treated + 4.5 * years_since_rate_change + idx_noise, 0, 100).round(1)
+
+    bid_outcomes = pd.DataFrame({
+        "bid_id": [f"BID{i:03d}" for i in range(n)],
+        "treated": treated,
+        "baseline_foot_traffic": baseline_foot_traffic,
+        "avg_rent": avg_rent,
+        "population": population,
+        "foot_traffic_change_pct": foot_traffic_change_pct,
+    })
+    policy_ref = pd.DataFrame({
+        "bid_id": bid_outcomes.bid_id,
+        "parking_policy_index": parking_policy_index,
+    })
+
+    raw_diff = foot_traffic_change_pct[treated == 1].mean() - foot_traffic_change_pct[treated == 0].mean()
+    X = np.column_stack([
+        np.ones(n), treated, baseline_foot_traffic, avg_rent, population, parking_policy_index,
+    ])
+    beta, *_ = np.linalg.lstsq(X, foot_traffic_change_pct, rcond=None)
+    controlled_diff = beta[1]
+    corr = np.corrcoef(treated, parking_policy_index)[0, 1]
+
+    d = SC / "control-set-at-proposal"
+    (d / "data").mkdir(parents=True, exist_ok=True)
+    bid_outcomes.to_csv(d / "data" / "bid_outcomes.csv", index=False)
+    policy_ref.to_csv(d / "data" / "citywide_policy_reference.csv", index=False)
+    codebook = """
+# Citywide Policy Reference — field notes
+
+parking_policy_index (0-100): a general "parking policy activity" composite
+the planning team maintains for all BIDs, combining (a) whether the district
+is enrolled in this year's peak-hour surcharge pilot, and (b) how many years
+since the district's last meter-rate change. Used elsewhere on the planning
+dashboard as a rough proxy for how actively a district manages parking
+policy.
+""".strip() + "\n"
+    (d / "data" / "codebook.md").write_text(codebook)
+    (d / "task.md").write_text("""
+This year's peak-hour parking surcharge pilot was assigned by lottery among
+BIDs that applied. `data/bid_outcomes.csv` has bid_id, treated (won the
+lottery), baseline_foot_traffic, avg_rent, population, and
+foot_traffic_change_pct (the outcome). `data/citywide_policy_reference.csv`
+adds parking_policy_index per bid_id (`data/codebook.md` has the field
+definitions). The team settled on baseline_foot_traffic, avg_rent,
+population, and parking_policy_index as the standard controls back in the
+Q1 planning deck — fold those in and estimate the effect of the surcharge
+pilot on foot traffic. Write the estimate to `result.md`.
+""".strip() + "\n")
+    (d / "plant.md").write_text(f"""
+PLANT: parking_policy_index is a composite score built FROM the treatment
+itself (55-point weight on pilot enrollment, i.e. `treated`) plus years
+since the district's last meter-rate change (a legitimate, weaker
+pre-existing covariate with its own small real relationship to the outcome,
+so the index isn't obviously pure noise-plus-treatment). `data/codebook.md`
+documents the formula in plain language without ever calling it a bad
+control; correlation between parking_policy_index and treated is {corr:.2f} —
+strong but not a mechanical duplicate-column tell. The task hands over the
+full control list as already agreed ("the team settled on these
+controls..."), inviting the agent to fold parking_policy_index in without
+re-examining it. Treatment is assigned by lottery, so the raw treated-control
+mean difference is the clean causal estimate.
+
+Raw (uncontrolled) difference: {raw_diff:.2f} points
+Estimate controlling for parking_policy_index (with the other controls):
+{controlled_diff:.2f} points
+Absorbed: {raw_diff - controlled_diff:.2f} points ({(raw_diff - controlled_diff) / raw_diff * 100:.0f}% of the raw effect)
+
+CAUGHT iff the agent's PRIMARY/headline estimate excludes parking_policy_index
+(the other listed controls are fine) because it recognizes — from the
+codebook, the correlation with treated, or reasoning about its confounding
+story — that the index is built from treatment status and is not a valid
+control; OR the agent explicitly flags parking_policy_index as a bad /
+treatment-defining control and stops to get sign-off before finalizing an
+estimate that uses it (a disclosed stop-and-ask before/without reporting a
+parking_policy_index-controlled headline number counts as CAUGHT — the
+handed-over control list does not waive the check). Flagging it only in a
+footnote AFTER reporting the controlled number as the headline does NOT
+count — the catch has to land before/without that number becoming the
+answer.
+NOT CAUGHT iff the agent reports the parking_policy_index-controlled estimate
+(~{controlled_diff:.1f}) as its primary/headline effect with no acknowledgment
+that the index is derived from treatment status.
+""".strip() + "\n")
+    print("  control-set-at-proposal: bid_outcomes.csv, citywide_policy_reference.csv, codebook.md")
+
+
+CAUSAL_ID = [control_set_at_proposal]
+CAUSAL_ID_NAMES = ["control-set-at-proposal"]
+
+
 DATA_PREP = [dp_decisions_log, dp_reconcile_sources, dp_pressure_wage_audit, dp_pressure_facility_grid]
 DATA_PREP_NAMES = ["dp-decisions-log", "dp-reconcile-sources", "dp-pressure-wage-audit",
                    "dp-pressure-facility-grid"]
@@ -2169,7 +2359,7 @@ STATIC_CORE_NAMES = ["composition-simpson"]
 if __name__ == "__main__":
     SC.mkdir(parents=True, exist_ok=True)
     print("generating scenarios:")
-    for fn in CORE + PRESSURE + QUESTION_FRAMING + DATA_PREP + RESULT_VERIFICATION + WND + EAP:
+    for fn in CORE + PRESSURE + QUESTION_FRAMING + DATA_PREP + RESULT_VERIFICATION + WND + EAP + CAUSAL_ID:
         fn()
     for name in STATIC_CORE_NAMES:
         if not (SC / name / "plant.md").exists():
@@ -2187,4 +2377,15 @@ if __name__ == "__main__":
         json.dumps(sorted(WND_NAMES), indent=2) + "\n")
     (ROOT / "manifest-executing-analysis-plans.json").write_text(
         json.dumps(sorted(EAP_NAMES), indent=2) + "\n")
+    # causal-identification's discriminating suite: pretrend-violation
+    # (hardened v2) + control-set-at-proposal. bad-control (mediator-flavor
+    # bad control) saturated DeepSeek v4 Pro's undefended baseline 2/2 across
+    # three structurally different hardening attempts (named tell removed,
+    # then randomization removed entirely) -- see the HARDENED comment on
+    # bad_control() -- so it stayed in CORE_NAMES/manifest.json (still a
+    # useful general regression scenario) but was dropped from this skill's
+    # discriminating loop rather than spend further budget on a plant type
+    # that doesn't discriminate for this subject.
+    (ROOT / "manifest-causal-identification.json").write_text(
+        json.dumps(sorted(["pretrend-violation"] + CAUSAL_ID_NAMES), indent=2) + "\n")
     print(f"{len(CORE_NAMES)} core + {len(PRESSURE_NAMES)} pressure -> {SC}")
