@@ -52,7 +52,8 @@ plausibility_threats:
       leave this empty; a genuinely low-risk phase still names the threat it
       considered and ruled out
     check: the check that would catch it
-    owner_node: build-panel
+    # owner_node: build-panel   # required only with causal-conductor installed —
+    # see analysis-state-management/references/conductor-integration.md
 topology:
   nodes:
     - id: build-panel

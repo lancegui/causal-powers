@@ -14,6 +14,10 @@ that points to the few records needed for the current task.
 **Core rule:** read `docs/analysis/index.yaml` first, then only the records it
 names. Do not read a whole legacy plan file by default.
 
+On OpenCode with causal-conductor installed, the phase contract carries
+additional required fields and binding semantics — see
+`references/conductor-integration.md`.
+
 ## Folder Layout (schema v2)
 
 Use this layout unless the repo already has an equivalent convention:
@@ -44,13 +48,13 @@ There is no separate `current.yaml` — the live-state fields it used to carry
 ```yaml
 updated: 2026-07-10
 active_phase: phase-2-primary-spec
-next_action: draft phase-2 topology, request oracle review
+next_action: draft phase-2 topology, request independent review
 blockers: []
 read_for_current_task:
   - phases/phase-2-primary-spec.yaml
   - evidence/label-rule-choice.yaml
 latest_handoffs:            # optional
-  fixer: handoffs/fixer_phase-1b_2026-07-08.yaml
+  robustness-runner: handoffs/robustness-runner_phase-1b_2026-07-08.yaml
 ```
 
 There are no constant pointer keys (`current:`, `decisions:`,
@@ -106,7 +110,6 @@ acceptance_checks:
 plausibility_threats:             # REQUIRED, non-empty (a waiver is still an entry)
   - threat: mortality denominator mixes county populations across vintages
     check: recompute rates with fixed-vintage denominators, compare
-    owner_node: sdid-main          # topology node that runs/verifies this check
 topology:                         # REQUIRED, non-empty — the enforcement surface
   nodes:
     - id: build-panel
@@ -125,31 +128,27 @@ outputs: []
 ```
 
 `plausibility_threats` and `topology.nodes` are both required and non-empty —
-a phase record without them is incomplete, not minimal. Every
-`plausibility_threats[]` item must carry `threat`, `check`, and `owner_node`;
-`owner_node` names the topology node that will run or verify the check. A threat
-check without an owner is not an advisory for later — it is a missing piece of
-the phase contract that must be fixed before approval. `topology.nodes` is what
-makes independent work visible as independent: **one leaf node per genuinely
-independent piece of work** (a robustness spec, a subsample cut, a placebo
-test); collapsing several independent leaves into one node is the mistake that
-turns a fan-out into a serial bottleneck (see `executing-analysis-plans`).
+a phase record without them is incomplete, not minimal. `topology.nodes` is
+what makes independent work visible as independent: **one leaf node per
+genuinely independent piece of work** (a robustness spec, a subsample cut, a
+placebo test); collapsing several independent leaves into one node is the
+mistake that turns a fan-out into a serial bottleneck (see
+`executing-analysis-plans`).
 
-Deleted from v1 phase records: `delegated_agents` (role theater — the lane
-architecture is standing config, not per-phase state), `budget:` (constants;
-they live in the standing prompt/discipline, not per phase), `lifecycle:`
-(duplicated the index / standing rules; keep a plain `depends_on:` reference
-into `decisions.yaml` at top level if a phase genuinely needs one).
+Deleted from v1 phase records: `delegated_agents` (which subagent runs a node
+is a per-task dispatch decision made at execution time, not standing phase
+state), `budget:` (constants; they live in the standing prompt/discipline, not
+per phase), `lifecycle:` (duplicated the index / standing rules; keep a plain
+`depends_on:` reference into `decisions.yaml` at top level if a phase genuinely
+needs one).
 
 **Approval is never stored in the phase file.** The model writes the file, so
 it could stamp its own approval — `status:` values are only
 `planned | in_progress | done | superseded`, never `approved`, and there is
-no `approved:` key. Approval truth lives outside the file: in the user's
-explicit sign-off in chat, and — when the causal-conductor spine plugin is
-installed (OpenCode) — additionally in the plugin's own state
-(`{ phaseId, sha256(contract), approvedAt }`), never in anything the model can
-edit. If you ever see a phase record with `status: approved` or an `approved:`
-key, that is a red flag, not a shortcut: fix it, don't rely on it.
+no `approved:` key. Approval truth lives outside the file, in the user's
+explicit sign-off in chat. If you ever see a phase record with
+`status: approved` or an `approved:` key, that is a red flag, not a shortcut:
+fix it, don't rely on it.
 
 ## How To Update State
 
@@ -178,24 +177,18 @@ Pre-approval writing is the normal path, not an exception:
 1. Draft or refine the active phase YAML directly under
    `docs/analysis/phases/<id>.yaml` — `goal`, `scope`, `out_of_scope`,
    `acceptance_checks`, `plausibility_threats`, `topology.nodes`. Independent
-   pieces of work are separate nodes from the start. Each plausibility threat's
-   `check` must name `owner_node` before approval, so an oracle finding like
-   "this check should run before completion" becomes a phase-draft fix, not a
-   mid-execution reapproval.
-2. Route the phase YAML to oracle review when the design is high-risk, render
-   a short human-readable summary in chat (the summary is *rendered from* the
-   file for the user to read — it is never itself the source of truth), and
-   ask the user to approve.
+   pieces of work are separate nodes from the start.
+2. Route the phase YAML to independent review when the design is high-risk
+   (a fresh reviewing session, or an agent such as `analysis-reviewer`),
+   render a short human-readable summary in chat (the summary is *rendered
+   from* the file for the user to read — it is never itself the source of
+   truth), and ask the user to approve.
 3. On approval, do not write anything into the phase file to record that fact
-   — approval lives in the user's words and, if present, the conductor
-   plugin's bound record. Implementation work may now proceed inside
-   `topology.nodes`.
-4. **Drift = the approved phase contract changing.** The conductor plugin
-   ignores pure phase bookkeeping (`updated`, `status`, `next_action`) but
-   binds the semantic contract: id, goal/scope/out-of-scope, acceptance checks,
-   plausibility threats, topology, and unknown non-bookkeeping fields. If you
-   need to change scope, topology, or acceptance checks after approval, that is
-   a new draft needing re-approval, not a quiet edit. Edits to `index.yaml`,
+   — approval lives in the user's words in chat. Implementation work may now
+   proceed inside `topology.nodes`.
+4. **Drift = the approved phase contract changing.** If you need to change
+   scope, topology, or acceptance checks after approval, that is a new draft
+   needing re-approval, not a quiet edit. Edits to `index.yaml`,
    `decisions.yaml`, other phase files, or run/handoff records are not drift
    and do not require re-approval.
 5. After approval, execution agents work inside the approved `topology.nodes`
@@ -236,7 +229,7 @@ A subagent handoff should be compact:
 
 ```yaml
 date: 2026-07-08
-agent: fixer
+agent: robustness-runner
 phase: phase-1b
 status: complete
 files_touched:
@@ -246,8 +239,8 @@ commands_run:
 large_outputs:
   - logs/phase-1b-smoke.log
 next_prompt: >
-  Fresh fixer should continue from docs/analysis/index.yaml and verify the
-  production run.
+  A fresh subagent should continue from docs/analysis/index.yaml and verify
+  the production run.
 budget_status:
   context_pressure: red
   continue_same_thread: false
@@ -255,12 +248,6 @@ budget_status:
 
 If context pressure is above 50 percent, handoff and stop. Do not continue the
 same subagent into a new phase.
-
-## Oracle Isolation
-
-Oracle may read `index.yaml` for navigation and the verification packet for
-paths, commands, claims, and expected invariants. Oracle must verify claims from
-source files, outputs, and commands, not from fixer/explorer prose.
 
 ## Resume Rule
 
@@ -281,8 +268,6 @@ On resume or after compaction:
 - A phase record with empty (or missing) `plausibility_threats` or
   `topology.nodes` — both are required, not optional, even for a
   single-node phase.
-- A `plausibility_threats[]` item with no `owner_node`, or an owner that is not
-  a declared topology node — the check has no execution home.
 - A phase record with `status: approved` or an `approved:` key — the model
   wrote its own approval; approval lives outside the file.
 - A live `docs/analysis/current.yaml` next to `index.yaml` — v1/v2 drift; the
