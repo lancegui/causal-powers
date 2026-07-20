@@ -9,3 +9,4 @@ docs/specs/
 
 # skill-creator eval workspaces (dev scratch: eval runs, synthetic data, viewer/loop logs)
 skills/*-workspace/
+__pycache__/
