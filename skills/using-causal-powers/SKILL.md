@@ -15,20 +15,20 @@ For any analysis task, **invoke the relevant discipline skill before acting** �
 
 **Re-trigger per request — a skill you used earlier does not stay satisfied.** Every new ask re-fires the relevant skill, *even on an already-locked, already-reviewed design.* A re-run or a finer reporting cut is still `executing-analysis-plans` (run the approved plan, fan independent work to subagents) **and `result-verification` before you write any result to a file**; "review it" re-fires `analysis-review`; a cut that changes the unit or estimand re-opens `question-framing` + `analysis-checkpoints`. "I already have the context" / "this is just running the locked plan" is the rationalization that skips the gate — and it's exactly how a reviewed design ships an unverified new cut. *But re-firing means re-applying the discipline, not reflexively reloading the file:* if the skill is still in this session's context, apply it and say so; re-invoke the Skill tool only when its body has scrolled out, was compacted away, or you need the details — the discipline is mandatory, the reload is not (it's wasted context to reload a skill you already hold).
 
-And the rule that the rest of the family rests on: **you execute autonomously toward the agreed goal, but you never change the goal behind the user's back** — the design, the estimand, the sample, the spec, or a metric. When execution wants to (it most often does mid-debugging), **STOP and bring it to them** (`analysis-checkpoints`, which owns the full checkpoint list and the write→sign-off→reconstruct mechanics behind every locked plan in the family). This is the discipline that was missing when an analysis quietly became one nobody agreed to.
+And the rule the rest of the family rests on: **you execute autonomously toward the agreed goal, but never change it behind the user's back** — the design, estimand, sample, spec, or a metric. When execution wants to (it most often does mid-debugging), **STOP and bring it to them** (`analysis-checkpoints` owns the full checkpoint list and the write→sign-off→reconstruct mechanics behind every locked plan). This is the discipline missing when an analysis quietly became one nobody agreed to.
 
 And the rule that keeps the work from drifting: **always work from a plan you agreed on, at whatever altitude the task is.** Two altitudes, same `write → agree → loop` pattern:
-- **Study altitude** (an estimand/design decision): commit the framing brief *and, for general/exploratory work, its data/approach/deliverable plan* (`question-framing`), the pre-analysis plan (`pre-analysis-plan`), or the structural **model card** (`structural-estimation`) to a file and confirm it.
-- **Task altitude** (the rung most often skipped): a multi-step chunk with no estimand decision — *merge these two messy sources, diagnose why this number is off, build this figure, refactor this pipeline step* — still gets a **short numbered roadmap, stated and agreed before you execute**, not a dive. A bisection or a merge **is** a multi-step plan; a plan the user can't see is one they can't redirect, and their local knowledge ("check Milwaukee first", "that join fans out") only reaches you if you show the steps. Agree once, then loop autonomously within the roadmap; re-stop only if a step becomes a design/sample/spec change (`analysis-checkpoints`). `wrong-number-debugging` (the bisection roadmap), `data-preparation` (the cleaning/merge phase plan), and `analysis-craft` (the build/refactor steps) each own this for their task type; a one-or-two-step edit you just do.
+- **Study altitude** (an estimand/design decision): the framing brief *(plus, for general/exploratory work, its data/approach/deliverable plan)* (`question-framing`), the pre-analysis plan (`pre-analysis-plan`), or the structural **model card** (`structural-estimation`) — written to a file and confirmed.
+- **Task altitude** (the rung most often skipped): a multi-step chunk with no estimand decision — *merge these sources, diagnose why this number is off, build this figure* — still gets a **short numbered roadmap, agreed before you execute**, not a dive; the user's local knowledge ("check Milwaukee first") only reaches you if you show the steps. Agree once, loop autonomously within it; re-stop only on a design/sample/spec change (`analysis-checkpoints`). Owned per task type — `wrong-number-debugging` (bisection), `data-preparation` (cleaning/merge phase), `analysis-craft` (build/refactor) — a one-or-two-step edit you just do.
 
-*Wherever you're dropped in*; "just estimate / fix / run / merge this" mid-stream is not a licence to dive in — and an approved study design does **not** waive the task-level roadmap. For anything beyond a quick query the plan becomes a **phased `docs/analysis/` state folder** (schema owned by `analysis-state-management`): Phase 0 the brief/PAP/card, **Phase 1 the data-ingest-&-cleaning sub-plan owned by `data-preparation`** (the heaviest phase — plan it, don't treat it as one line), then construction → primary spec → robustness → verification. Treat `docs/analysis/index.yaml` as the default resume surface: it points to small YAML records for current state, decisions, artifacts, phases, runs, and handoffs. That is what makes the work **resumable** without forcing every agent to reread a giant plan — it survives `/clear` and auto-compaction, and a fresh session reads the index plus only the records it names. A plan you can't point to is one that drifts; a plan that lives only in the chat is one that compaction silently deletes.
+*Wherever you're dropped in*: "just estimate / fix / run / merge this" mid-stream doesn't waive the roadmap — reconstruct and confirm it, even under an approved study design. Beyond a quick query, the plan becomes a **phased `docs/analysis/` state folder** (schema and resume mechanics owned by `analysis-state-management`): Phase 0 the brief/PAP/card, **Phase 1 the data-ingest-&-cleaning sub-plan owned by `data-preparation`** (the heaviest phase), then construction → primary spec → robustness → verification. `docs/analysis/index.yaml` is the default resume surface — a fresh session reads it plus only the named records, so the plan survives `/clear` and compaction instead of living only in the chat.
 
 ## The family — and when each fires
 
 | Skill | Use it when… |
 |---|---|
-| **`question-framing`** | Before any analysis **or any deliverable built from data — a number, table, *or a figure/map/chart/dashboard/interactive visualization*** — to pin the estimand/metric (for a visualization, what each mark encodes), population, unit (what each mark represents), the data sources + joins, and the decision it informs. The "what are we actually measuring / building" skill — the brainstorm-before-you-build gate for data work, so it fires on "plot/map/visualize this", not only "estimate this." For general/exploratory work it also **owns the everyday plan** — data sources, approach/spec, deliverable — written into `docs/analysis/` and signed off before building (no pre-analysis plan or model card on that branch). |
-| **`descriptive-evidence`** | The deliverable is a **description** of what's in the data, not an effect/counterfactual/prediction — a trend, distribution, summary-stats table (Table 1), stylized fact, or map. Fix the comparability choices (denominator, real-vs-nominal, per-capita, weighting) before plotting; run the **composition check** (within-vs-between — the signature artifact is a mix shift faking a within-group change; a raw-count choropleth just maps population); show the distribution, not just the mean; keep the verb descriptive (a stylized fact *motivates* the causal question, it doesn't answer it). The **descriptive** layer beneath the fork. |
+| **`question-framing`** | Before any analysis **or any deliverable built from data — a number, table, *or a figure/map/chart/dashboard/interactive visualization*** — pin the estimand/metric (for a visualization, what each mark encodes), population, unit (what each mark represents), the data sources + joins, and the decision it informs. The brainstorm-before-you-build gate — fires on "plot/map/visualize this", not only "estimate this." For general/exploratory work it also **owns the everyday plan** — data sources, approach/spec, deliverable — written into `docs/analysis/` and signed off before building (no PAP or model card on that branch). |
+| **`descriptive-evidence`** | The deliverable is a **description** of what's in the data, not an effect/counterfactual/prediction — a trend, distribution, summary-stats table (Table 1), stylized fact, or map. Fix comparability (denominator, real-vs-nominal, per-capita, weighting) before plotting; run the **composition check** (within-vs-between — a mix shift faking a within-group change; a raw-count choropleth just maps population); show the distribution, not just the mean; keep the verb descriptive (a stylized fact *motivates* the causal question, never answers it). The **descriptive** layer beneath the fork. |
 | **`pre-analysis-plan`** | Before a *confirmatory* study (experiment readout, policy eval, anything with stakes) — lock hypotheses, primary spec, and robustness suite before seeing outcomes. |
 | **`analysis-state-management`** | Creating, updating, resuming, or compacting durable analysis state — `docs/analysis/index.yaml`, the active phase's plan-and-topology YAML, decisions, artifacts, runs, and subagent handoffs. The replacement for growing and rereading one long plan file. |
 | **`data-contracts`** | Whenever you load, transform, clean, **join/merge**, aggregate, or model — assert invariants and join cardinality, reconcile totals, freeze baselines. The everyday workhorse (the **checker**). |
@@ -37,7 +37,7 @@ And the rule that keeps the work from drifting: **always work from a plan you ag
 | **`result-verification`** | Before reporting, presenting, or calling it done — reconcile, reproduce from a clean state, attack with robustness, tie figures to prose. |
 | **`causal-identification`** | Any causal claim or design (DiD, event study, IV, RDD, matching, FE, synthetic control) — state and test the identification assumptions; run the mandatory robustness battery. The **reduced-form** workflow. |
 | **`structural-estimation`** | Estimating the *primitives* of an economic model (preferences, costs, information/consideration, search, conduct) or needing a counterfactual the data doesn't contain (merger, new product, welfare, equilibrium re-pricing) — BLP/demand, dynamic discrete choice, entry/games, auctions, consideration, search. The **structural** workflow. |
-| **`predictive-modeling`** | The GOAL is a prediction, not an effect — predict/score/rank/flag/classify/forecast/detect-anomalies units to drive an action. Write the Prediction Spec (label+regime, prediction-time, deployment-matched split, leakage audit, metric-to-decision, baseline) before fitting; prove the eval honest (permutation-null + deployment-mirroring holdout) before trusting a metric; never read importance as causation. The **prediction** workflow. |
+| **`predictive-modeling`** | The GOAL is a prediction, not an effect — predict/score/rank/flag/classify/forecast/detect-anomalies units to drive an action. Write the Prediction Spec and get sign-off before fitting; prove the eval honest (permutation-null + deployment-mirroring holdout) before trusting a metric; never read importance as causation. The **prediction** workflow. |
 | **`analysis-review`** | Reviewing an analysis (yours or another's) for the silent-failure classes, or receiving review feedback and verifying it. |
 | **`analysis-craft`** | Whenever you write or edit analysis code — keep it the minimum that answers the question, edit existing notebooks surgically, surface approach tradeoffs instead of silently choosing. |
 | **`analysis-checkpoints`** | Throughout execution — to decide which calls are yours and which must STOP for the user (design/sample/spec/estimand changes, PAP deviations, dropping data). The human-in-the-loop guardrail. |
@@ -46,38 +46,31 @@ And the rule that keeps the work from drifting: **always work from a plan you ag
 
 ## The fork: why are you modeling?
 
-**Before the fork sits description.** If the deliverable is just a faithful picture of the data — a trend, distribution, summary-stats table, or map — that's `descriptive-evidence`, not a modeling arm at all. It's often the whole job; and when it isn't, a stylized fact is what *motivates* the question below (it never *answers* it). Then, for a *causal or modeling* question, decide which workflow you're in before you estimate — they answer different questions and lean on different assumptions:
+**Before the fork sits description.** If the deliverable is just a faithful picture of the data — a trend, distribution, summary-stats table, or map — that's `descriptive-evidence`, not a modeling arm. Often it's the whole job; when it isn't, a stylized fact *motivates* the question below, it never *answers* it. For a *causal or modeling* question, decide the workflow before you estimate — they answer different questions on different assumptions:
 
-- **The decision lives inside the data** ("did the policy work?", "what was the effect of the price cut we ran?") → the **reduced-form** workflow. A well-identified DiD / IV / RDD answers it and is *more* credible for leaning on fewer assumptions → **`causal-identification`**.
-- **The decision needs a world you haven't observed, a welfare number, or a mechanism the data can't separate** ("what price would the merged firm set?", "how much of low uptake is taste vs. not knowing the product exists?", "what's the surplus from a new entrant?") → the **structural** workflow. The reduced-form relationship *shifts* when the policy changes (Lucas critique), so there's no coefficient to extrapolate → **`structural-estimation`**.
-- **The decision is a prediction to act on** ("which pharmacy should we investigate?", "which account is likely fraud?", "rank these by risk") → the **prediction** workflow. The deliverable is a score/flag/ranking, not an effect or a counterfactual — and it is *not* a causal claim. Route by GOAL, not algorithm: if the goal is a causal effect, it stays reduced-form even when ML does the work (double ML, causal forests) → **`predictive-modeling`**.
+- **The decision lives inside the data** ("did the policy work?", "what was the effect of the price cut we ran?") → **reduced-form**: a well-identified DiD / IV / RDD answers it, and is *more* credible for leaning on fewer assumptions → **`causal-identification`**.
+- **The decision needs a world you haven't observed, a welfare number, or a mechanism the data can't separate** ("what price would the merged firm set?", "how much of low uptake is taste vs. not knowing the product exists?", "what's the surplus from a new entrant?") → **structural**: the reduced-form relationship *shifts* when the policy changes (Lucas critique), so there's no coefficient to extrapolate → **`structural-estimation`**.
+- **The decision is a prediction to act on** ("which pharmacy should we investigate?", "which account is likely fraud?", "rank these by risk") → **prediction**: the deliverable is a score/flag/ranking, not an effect or a counterfactual, and it is *not* a causal claim. Route by GOAL, not algorithm — a causal effect stays reduced-form even when ML does the work (double ML, causal forests) → **`predictive-modeling`**.
 
-Don't go structural for its own sake — if a quasi-experiment answers it, that wins. The three arms are partners with genuinely different pipelines: reduced form for effects inside the data, structural for counterfactuals outside it, prediction for scoring units to drive an action. Three arms, one question — are you measuring an effect, simulating an unobserved world, or predicting an outcome to act on?
+Don't go structural for its own sake — a quasi-experiment that answers the question always wins. Three arms, one question: are you measuring an effect, simulating an unobserved world, or predicting an outcome to act on?
 
 ## The typical flow
 
 ```
-question-framing  →  [pre-analysis-plan if confirmatory / model card if structural / else extend the brief into the data+approach+deliverable plan]  →  (approval gate)
+question-framing  →  [pre-analysis-plan if confirmatory / model card if structural / else the data+approach+deliverable plan]  →  (approval gate)
    →  executing-analysis-plans  →  data-preparation (build/clean/join PHASE) → data-contracts (validate each step)
    →  [ descriptive-evidence  if the deliverable is a description  |  causal-identification  if reduced-form  |  structural-estimation  if structural  |  predictive-modeling  if prediction ]
    →  [wrong-number-debugging when something's off]
    →  result-verification  →  [analysis-review + project-organization before it ships]
 ```
 
-After approval, **`executing-analysis-plans`** carries it out — running the dependent spine in order and fanning independent work (robustness specs, designs, cuts; or, structural, recovery reps and counterfactual scenarios; or, prediction, CV folds, candidate models, and subsample cuts) out to parallel subagents. Even when a task arrives as "just run the regression / estimate the model", route execution through it so the spine/fan-out and subagent dispatch actually happen.
+Even "just run the regression / estimate the model" routes through **`executing-analysis-plans`** — including its structural (recovery reps, counterfactual scenarios) and prediction (CV folds, subsample cuts) fan-out — so dispatch happens instead of one serial script.
 
-`analysis-craft` and `analysis-checkpoints` run *alongside* this whole flow — `analysis-craft` every time you write or edit the code, `analysis-checkpoints` every time a decision would change the design, sample, spec, or estimand (STOP and ask).
-
-Most work flows from **exploration** (hunt for the answer; validate every input and intermediate) into a **reusable, contracted rule** (lock it down with tests and a frozen baseline). The mistake is staying in exploration forever and shipping it as if it were production.
+`analysis-craft` and `analysis-checkpoints` run *alongside* the whole flow — craft on every write/edit, checkpoints on every design/sample/spec/estimand change (STOP and ask). Most work also moves from **exploration** to a **locked, tested rule** — `data-contracts`' regime split; the mistake is shipping exploratory code as production.
 
 ## The craft principles (apply throughout)
 
-Rigor keeps you from being *wrong*; craft keeps the analysis *legible and cheap to change*. Two stances, adapted from Andrej Karpathy's observations on how LLMs over-assume and overcomplicate, run through every skill above:
-
-- **Goal-driven execution.** A data contract *is* a success criterion. State what must be true, then loop until it's reconciled and verified — don't stop at "the code ran." This is what the whole `CONTRACT → … → FREEZE` loop is.
-- **Think before coding.** Don't assume the metric or the method. Surface tradeoffs, state your assumptions, and name confusion instead of quietly guessing and building on the guess.
-
-The simplicity-first and surgical-edit halves of that lineage live in **`analysis-craft`**.
+Rigor keeps you from being *wrong*; craft keeps it *legible and cheap to change* — two stances, after Andrej Karpathy's read on how LLMs over-assume and overcomplicate: **goal-driven execution** (a data contract *is* a success criterion — loop until reconciled and verified, not until "the code ran") and **think before coding** (don't assume the metric or method; surface tradeoffs, name confusion instead of guessing). The simplicity-first and surgical-edit halves live in **`analysis-craft`**.
 
 ## Language profile (which language for which task)
 
@@ -93,39 +86,34 @@ LLMs reach for Python by reflex. This discipline is **R-first for analysis**; pi
 | Web scraping, tooling, software-engineering tasks | **Python** |
 | Structural estimation / structural models | **Julia** |
 
-This is a **default preference, not a rule.** State the chosen language in the task plan/roadmap so the user can redirect early, and **never silently switch** languages mid-task. **Instruction priority holds:** a direct user request or a project's `CLAUDE.md`/`AGENTS.md` wins over this profile.
+This is a **default preference, not a rule** — state the chosen language in the plan so the user can redirect early, and **never silently switch** mid-task. Instruction priority holds (below): a user request or the project's `CLAUDE.md`/`AGENTS.md` wins over this profile.
 
-**Overriding the default.** The profile is configurable at two tiers (same pattern as the rest of the project's scar tissue):
-- **Per project** — record the override in the project's `docs/LESSONS.md` (travels with the repo; collaborators and future sessions see it). Use this for a repo that is, e.g., Python-only.
-- **Per user** — record it in your memory for a default that follows you across projects.
+**Overriding the default.** Configurable at two tiers: **per project**, record it in `docs/LESSONS.md` (e.g. a Python-only repo); **per user**, record it in your memory for a default that follows you across projects. Either replaces the matching rows above for that scope.
 
-When a project or user override exists, it replaces the matching rows of the table above for that scope.
-
-## Running on Codex / other agents
+## Running on Codex, OpenCode, Copilot, and other AGENTS.md agents
 
 These skills are plain `SKILL.md` files (`name` + `description` frontmatter) — the
-same format Claude Code and **Codex** both use — so they load and trigger natively
-on either: off the `description`, or by explicit `$<skill-name>` on Codex. What
-differs by platform is the *always-on* and *backstop* layer, which on Claude Code
-is hooks and on Codex is `AGENTS.md`:
+format Claude Code, Codex, OpenCode, and GitHub Copilot all load and trigger
+natively off the `description` (or `$<skill-name>` on Codex). What differs by
+platform is the *always-on/backstop* layer: hooks on Claude Code; elsewhere
+`AGENTS.md`, kept byte-identical to `hooks/session-context.md` and read
+automatically.
 
-- **Always-on discipline:** Claude Code injects it via a SessionStart hook; on
-  Codex the same block is `AGENTS.md` at the repo root, kept byte-identical to
-  `hooks/session-context.md`, and read automatically.
-- **Triggering:** Claude Code adds a keyword router + skill-chain as backstops; on
-  Codex, description-matching + each skill's own `## When to Use` / `## The Process`
-  do the routing — no hooks needed.
-- **Tool names:** when a skill says `Task` (dispatch a subagent), `TodoWrite`, or
-  `Skill`, translate to your platform via
-  [`references/codex-tools.md`](references/codex-tools.md). The robustness fan-out
-  uses `spawn_agent` on Codex (or degrades to inline if multi-agent is off).
-- **Resumability:** maintain `docs/analysis/index.yaml` plus its named YAML
-  records and flush them before compacting; on resume, read the index first and
-  only the records needed for the current task.
+- **Triggering:** Claude Code adds a keyword router + skill-chain as backstops;
+  elsewhere, description-matching + each skill's own `## When to Use` /
+  `## The Process` do the routing — no hooks needed.
+- **Tool names:** translate `Task`, `TodoWrite`, and `Skill` via
+  [`references/codex-tools.md`](references/codex-tools.md),
+  [`references/opencode-tools.md`](references/opencode-tools.md), or
+  [`references/copilot-tools.md`](references/copilot-tools.md); robustness
+  fan-out uses `spawn_agent` (Codex) or the platform's native multi-agent
+  primitive, degrading to inline where that's off.
+- **Resumability:** keep `docs/analysis/index.yaml` and its named records
+  current, flush before compacting, and on resume read the index first.
 
 ## Instruction priority
 
-These skills override default behavior, but **user instructions always win**. If the user (or a project's CLAUDE.md) says to skip a step, follow the user — they're in control. The skills tell you *how* to do rigorous analysis when rigor is wanted. One caveat: a user can *waive* a step, but you may never *silently* skip a confirmation gate — if you bypass framing, a PAP/model-card sign-off, or a checkpoint, say so explicitly so the waiver is the user's choice, not your omission.
+These skills override default behavior, but **user instructions always win** — if the user or a project's CLAUDE.md says skip a step, follow them; the skills tell you *how* to do rigorous analysis when rigor is wanted, not whether to. One caveat: a user can *waive* a step, but never *silently* skip a confirmation gate — say so explicitly (framing, a PAP/model-card sign-off, a checkpoint) so the waiver is the user's choice, not your omission.
 
 ## The bottom line
 
