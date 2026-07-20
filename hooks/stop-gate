@@ -68,9 +68,20 @@ proj="$(field cwd)"; proj="${proj:-${PWD:-.}}"
 # writes = Write/Edit tool calls whose file_path looks like a results artifact.
 tail_blob="$(tail -c 400000 "$transcript" 2>/dev/null || true)"
 wrote_results=0
-# NB: never use [^\n] in a bracket here — in the hook's C locale (no LANG) grep
-# reads it as 'not backslash, not n', which silently killed this detector in
-# production (0/62 ledger hits). grep is line-based; .* cannot cross lines.
+# NB: never use [^\n] in a bracket expression here. POSIX bracket expressions
+# give backslash NO escaping power inside [...] — [^\n] means "not backslash,
+# not the letter n", two literal characters, not "not a newline". BSD grep
+# (macOS, and this hook's own runtime: hooks execute with no LANG/LC_ALL, i.e.
+# the C locale) honors that POSIX reading strictly, so [^\n] silently killed
+# this detector in production (0/62 ledger hits) — every real transcript line
+# has an 'n' somewhere in the ,"input":{ gap between the tool name and
+# file_path (e.g. "input" itself), so the class match broke there every time.
+# GNU grep's glibc regex engine is the trap: in many locales it treats \n
+# inside a bracket expression as the GNU extension it also honors outside
+# one (a real newline escape), so the exact same pattern can look correct in
+# a typical GNU/Linux dev shell and only fail once it reaches this hook's
+# locale-less runtime. Fix: use .* instead (grep is line-based, so .* cannot
+# cross lines here anyway) or [^"]* scoped to the quoted JSON value.
 printf '%s' "$tail_blob" | grep -Eq '"name":[[:space:]]*"(Write|Edit|NotebookEdit)".*"file_path":[[:space:]]*"[^"]*((results?|summary|findings|estimates?|tables?|figures?|report|outputs?|deliverable|writeup|memo)[^"]*\.(md|csv|tex|txt|html|pdf|docx|xlsx|png)|/(output|outputs|results|tables|figures|reports)/[^"]*\.(md|csv|tex|txt|html|pdf|docx|xlsx|png))"' && wrote_results=1
 # verified needs EVIDENCE, not utterance: merely loading result-verification
 # satisfied the old check with zero verification performed. Now the LAST

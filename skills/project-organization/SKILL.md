@@ -69,12 +69,14 @@ The repo a collaborator sees should be code + manuscript + results + the shareab
 
 ## Checkpoint as you go — commit locally in phases
 
-A multi-hour analysis sitting at **zero commits** is a failure mode, not caution. `docs/analysis/` and validated intermediates are only durable as *disk-as-RAM* if checkpointed — otherwise one stray `git switch`, `reset`, or editor mishap loses the whole uncommitted tree. So **commit locally at phase boundaries, proactively, without being asked** — "only commit when asked" is the wrong default for a research repo.
+A multi-hour analysis sitting at **zero commits** is a failure mode, not caution. `docs/analysis/` and validated intermediates are only durable as *disk-as-RAM* if checkpointed — otherwise one stray `git switch`, `reset`, or editor mishap loses the whole uncommitted tree.
 
+- **Nudge once, then act.** At the first phase boundary, ask once whether to commit a checkpoint. If the user waves it off or doesn't answer, **do not ask again** — repeating "commit a checkpoint?" turn after turn trains the user to ignore it while the tree stays uncommitted regardless (observed: asked and ignored ~6 consecutive turns). Instead, state once, briefly, that uncommitted work is at risk, then **commit locally at every later phase boundary without asking** — "only commit when asked" is the wrong steady-state default for a research repo, but a single upfront nudge is not.
 - **When to checkpoint:** the plan is written and agreed; a `data-preparation` phase produces a clean dataset; a result is validated and frozen (`data-contracts` golden output); a debugging session lands a fix. Each is a natural restore point — close it with a commit.
 - **Commit ≠ push.** A **local commit** on your branch is cheap, private, and reversible — that's the checkpoint, and it's yours to make. **Pushing** (or opening a PR) is outward and shared, so *that* stays the user's explicit call (`analysis-checkpoints`). "Only when asked" governs **push**, never the local checkpoint.
 - **Name the milestone:** say what phase closed — `data: clean panel assembled, 1:1 join asserted`, `did: primary spec estimated + verified` — so the history reads as progress and is recoverable at any step. Label work-in-progress `wip:` so a half-done state isn't mistaken for validated.
 - **Don't checkpoint junk:** the Track/Gitignore rule above still holds — never commit secrets, `raw/` data, or oversized files, even at a checkpoint.
+- **Promote lessons at the checkpoint, not at session end.** As part of each phase-boundary checkpoint, scan what the phase surfaced — a construct-validity flaw, a bad control identified, a data quirk — for anything durable and reusable, and write it to `docs/LESSONS.md` then. A finding left in a throwaway working ledger and never promoted is a finding lost — this is exactly how two paper-relevant lessons died in a session's scratch audit notes instead of reaching `docs/LESSONS.md`.
 
 ## Enforce throughout, tidy before git
 
