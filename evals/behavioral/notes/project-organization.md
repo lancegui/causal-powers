@@ -189,3 +189,114 @@ those two sections, this report does **not** claim behavioral validation —
 the remaining ~8 sections were thinned for wordiness only, with every
 distinct obligation preserved, and are flagged above rather than presented
 as probe-verified.
+
+## Follow-up: regression-isolation loop (2026-07-20)
+
+A separate, narrower investigation returned specifically to isolate what the
+P1 family-dedup pass (commit `04529d1`) cut from *this file*, and to test
+whether restoring it recovers `po-placement`'s catch rate back toward main's
+6/6.
+
+### What P1 actually cut here
+
+`git show 04529d1 -- skills/project-organization/SKILL.md` shows the P1
+commit's entire diff for this file is two hunks, and nothing else — 157
+words total, exactly matching the 1899->1742 delta:
+
+1. **Red-flags bullet merge** (word-count-neutral, 28 words either way): "`raw/`
+   edited in place, or written to by analysis code." + "About to delete
+   files in a cleanup without surfacing the plan, or about to touch
+   `raw/`." were merged into one bullet. No fact dropped, pure dedup.
+2. **Deleted "When to Use → where this hands off"** (157 words, the entire
+   delta): a `dot` digraph stating organization is the **terminal** step —
+   routes in from `result-verification` (if unverified) or
+   `analysis-checkpoints` (if about to delete/move files), doesn't propel to
+   a successor — capped by "TERMINAL: deliverables placed, scratch
+   archived, names standardized → shippable."
+
+Neither hunk contains the "place/name new artifacts as you create them" or
+"discover the existing convention first" language flagged as the prime
+suspect going in — that language (the "Enforce throughout" bullet's "when
+you create a script, dataset, table, or figure, put it in its folder and
+name it by convention *then* — not 'in the root for now'", the "Read the
+repo's `README.md` first" line, and the Naming section's concrete examples)
+is untouched by P1 and is still present, verbatim or near-verbatim, in the
+current 1560-word file. The terminal-step framing that P1 *did* cut is also
+largely redundant with **The Process** step 5, which already states
+"deliverables placed, scratch archived, names standardized → shippable" and
+survived P1 intact. So by inspection, P1's diff for this file is close to
+content-neutral — consistent with this file's own P1 commit message ("all
+15 dot digraphs deleted, each restated the adjacent Process list").
+
+### Candidates tested
+
+- **Candidate A** — restore hunk 2 only (the "When to Use" section),
+  verbatim, in its original position (after "Common rationalizations",
+  before "The Process"). 1560 → 1717 words.
+- **Candidate B** — restore both hunks (full P1 revert for this file: hunk 2
+  + un-merge the red-flags bullet). Also 1717 words (the bullet merge/split
+  nets to zero).
+
+### Provider incident
+
+The specified subject, `ollama/deepseek-v4-pro:cloud`, hit a genuine,
+persistent Ollama Cloud 429 (`"you (lanceguixiaofan) have reached your
+session usage limit... ollama.com/upgrade"`) on the very first baseline
+batch — all 3 reps errored, ungraded. A retry one cycle later 429'd again,
+confirming it wasn't transient (likely the prior loop's 45 runs plus this
+one's early attempts exhausted a daily/session quota). Per this branch's own
+established precedent for this exact failure mode
+(`evals/behavioral/notes/pre-analysis-plan.md`,
+`evals/behavioral/notes/descriptive-evidence.md`): smoke-tested the direct
+DeepSeek API fallback (`deepseek/deepseek-v4-pro`, 1 rep, clean), then ran
+the *entire* follow-up on that provider for internal consistency. **The
+numbers below are therefore not directly comparable to the 6/6 (main) vs.
+50–67% (post-P1 variants) table earlier in this file**, which was all
+`ollama/deepseek-v4-pro:cloud` — a different serving route for nominally the
+same weights. Flagging rather than reconciling: the baseline re-confirm
+below lands far above the historical post-P1 band on this provider, which is
+itself part of the finding below.
+
+### Results (subject `deepseek/deepseek-v4-pro`, `--jobs 1`)
+
+| version | po-placement | words |
+|---|---|---|
+| baseline — current file, unedited | **3/3** | 1560 |
+| Candidate A — restore hunk 2 (dot-graph section) | 2/3, confirm 1/3 → **3/6** | 1717 |
+| Candidate B — restore both hunks (full P1 revert) | **0/3** | 1717 |
+
+`po-raw-data-guard` re-run on the final (unchanged) file: **2/3** (same
+provider caveat; historically 3/3 on Ollama Cloud for this identical
+content — not a new regression, since this follow-up made no edits).
+
+Run dirs: `evals/behavioral/runs/20260720-*-po-fix-*` (8 batches, 20 subject
+invocations total — 3 errored/ungraded on `ollama/deepseek-v4-pro:cloud`
+before the provider switch, 17 graded on `deepseek/deepseek-v4-pro` — well
+under the 30-run budget).
+
+### Decision
+
+Neither candidate reached the ≥5/6 bar. Worse: restoring *more* of the P1
+cut correlated with a *lower* catch rate in this batch (baseline 3/3 >
+Candidate A 3/6 > Candidate B 0/3) — the opposite of what the "load-bearing
+cut" hypothesis predicted. n=3–6 per arm is too small to call the restored
+text actively harmful, but it is enough to rule it out as the missing
+ingredient: if the "When to Use" section (or the red-flags bullet split)
+were what was keeping `main` at 6/6, restoring it should have moved
+candidates toward baseline-or-better, not below it.
+
+**`skills/project-organization/SKILL.md` is left unchanged** (1560 words,
+byte-identical to its state at the start of this follow-up). The mechanism
+behind the P1-era `po-placement` regression was not isolated. Combined with
+the original loop's own finding above — differently-worded 1560- and
+1644-word variants landing on the identical 3/6, and the untouched post-P1
+content itself swinging from 3/3 to 1/3 across two batches on the *same*
+text — the weight of evidence across both loops now points at batch-level
+subject/grader noise on this specific exact-string-matching probe as the
+dominant driver, not a specific sentence P1 deleted from this file. P1's
+actual cut here is fully accounted for (2 hunks, both tested, one alone and
+one combined) — there is no untested textual suspect left within `04529d1`'s
+change to this file. A future loop chasing this further should treat it as
+a probe/measurement problem (more reps in one unrate-limited sitting, a
+fixed single provider throughout) rather than more skill-text archaeology on
+this file.
