@@ -7,11 +7,11 @@ description: Use when reviewing a data analysis, notebook, script, model, or res
 
 ## Overview
 
-Code review asks "is this code correct?" Analysis review asks a harder question: "is this *conclusion* correct?" — and the two come apart completely. Analytics code can be clean, idiomatic, well-tested, and pass any software review while delivering a confidently wrong number, because the bugs that matter here don't live in the syntax. They live in a join that fanned out, a metric nobody defined, a feature that leaked the target, a specification that was fished. This skill is a review lens aimed at exactly those.
+Code review asks "is this code correct?" Analysis review asks a harder question: "is this *conclusion* correct?" — and the two come apart completely. Analytics code can be clean, well-tested, and pass any software review while still delivering a confidently wrong number, because the bugs that matter here don't live in the syntax. They live in a join that fanned out, a metric nobody defined, a feature that leaked the target, a specification that was fished. This skill is a review lens aimed at exactly those.
 
 **Core principle:** Review the path from data to claim, not just the code. The question is never "does it run?" — it's "would I bet the decision on this number?"
 
-**"Review it" re-fires this skill every time — including mid-session.** A design you reviewed last week, or earlier in this conversation, doesn't stay reviewed: a new cut, a re-run, or a fresh "does this look right?" is a new artifact to review from scratch. Don't answer from loaded context ("I already looked at this") — re-run the checklist against *this* result.
+**"Review it" re-fires this skill every time, including mid-session** — a design reviewed last week, or earlier in this conversation, doesn't stay reviewed. A new cut, a re-run, or a fresh "does this look right?" is a new artifact to review from scratch. Don't answer from loaded context ("I already looked at this") — re-run the checklist against *this* result.
 
 ## Reviewing an analysis — the checklist
 
@@ -33,10 +33,10 @@ Start from **`result-verification`'s verification checklist** — reconcile to s
 ## Run it as an independent agent
 
 **For your OWN analysis, pre-ship, dispatching the `analysis-reviewer` agent is
-REQUIRED — an inline self-review does not satisfy this skill.** You cannot supply
+REQUIRED — inline self-review does not satisfy this skill.** You can't supply
 your own independence: the reviewer's value is fresh context hunting what the
-author rationalized, and it returns concrete findings with severity rather than
-a rubber stamp. Reviewing someone else's work, you already are the fresh
+author rationalized, and it returns concrete findings with severity, not a
+rubber stamp. Reviewing someone else's work, you're already the fresh
 context — inline is fine. Either way, use it in addition to, not instead of,
 reviewing as you go.
 
@@ -52,7 +52,7 @@ If you're the author, make the analysis reviewable:
 - Flag what's **confirmatory vs. exploratory**, and which robustness checks you ran.
 - Point the reviewer at the **load-bearing assumption** and ask them to attack it specifically.
 
-A review of a polished output with no visible checks can only catch typos. Hand over the checks.
+A review of a polished output with no visible checks only catches typos. Hand over the checks.
 
 ## Receiving review feedback — verify, don't perform
 
@@ -63,12 +63,12 @@ When someone critiques your analysis, the failure mode is reflexive agreement: "
 
 ## Red flags — STOP
 
-- A review that signed off on "clean, readable code" without ever seeing a single data-integrity check.
-- A headline number with no reconciliation and no row-count checks around its joins, presented as final.
+- A review that signed off on "clean, readable code" without seeing a single data-integrity check.
+- A headline number with no reconciliation, no row-count checks around its joins, presented as final.
 - A model metric that's suspiciously good and no one has looked for leakage.
 - A causal claim whose identification assumptions were never stated.
 - Robustness checks that are exactly the ones that agreed with the headline.
-- Agreeing to a review comment (or rejecting it) without running the check that would settle it.
+- Agreeing to (or rejecting) a review comment without running the check that would settle it.
 
 ## Common rationalizations
 
@@ -83,12 +83,12 @@ When someone critiques your analysis, the failure mode is reflexive agreement: "
 
 ## The Process
 
-1. **Run the checklist against *this* artifact** — claim, data path, models/causal claims, reproducibility. Don't answer from loaded context.
-2. **For each headline number, form the failure hypothesis and demand the evidence that rules it out** — row-counts, reconciliation, missingness, leakage check, identification statement.
+1. **Run the checklist above against *this* artifact** — claim, data path, models/causal claims, reproducibility.
+2. **Apply the adversarial lens above to each headline number** — row-counts, reconciliation, missingness, leakage check, identification statement.
 3. **Route every finding to a fixing skill — never stop at "here are my notes":**
    - Wrong number / unreconciled total / fanned-out join → **STOP and invoke `wrong-number-debugging`** to bisect to the bad step.
-   - Design issue — identification gap, fished spec, structural misspecification → **STOP and invoke `analysis-checkpoints`** to route the decision to the user (it in turn hands to `causal-identification`, `pre-analysis-plan`, or `structural-estimation`).
-4. **Log each confirmed finding's failure class** — one line per finding to the project's `docs/LESSONS.md` (symptom, cause, the check that would have caught it; create the file if absent). A review that only fixes this artifact fixes one artifact; the logged pattern hardens every future one (`result-verification` → "Capture what bit you").
+   - Design issue — identification gap, fished spec, structural misspecification → **STOP and invoke `analysis-checkpoints`**, which hands to `causal-identification`, `pre-analysis-plan`, or `structural-estimation`.
+4. **Log each confirmed finding's failure class** — one line to the project's `docs/LESSONS.md` (symptom, cause, the check that would have caught it; create the file if absent). A review that only fixes this artifact fixes one artifact; the logged pattern hardens every future one (`result-verification` → "Capture what bit you").
 5. **If it's clean** — metric defined, joins checked, totals reconciled, leakage ruled out, identification stated, reproduces from a clean seed → **return to `result-verification`** to ship.
 
 ## The bottom line
