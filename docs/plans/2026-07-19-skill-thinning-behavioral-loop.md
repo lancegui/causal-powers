@@ -102,6 +102,12 @@ agent at a time; orchestrator reviews and commits each skill, then
 dispatches the next without waiting for per-skill user approval. If API
 quota exhausts, pause and resume after reset. The batch groupings below
 now define ORDER, not concurrency.*
+*Second mode change, user-directed 2026-07-20: PARALLEL fan-out of all
+remaining skills at once. To avoid shared-file races, parallel agents do
+not edit `generate_all.py` or the behavioral README — each new scenario
+carries a self-contained `generate.py` in its own directory and per-skill
+notes go to `evals/behavioral/notes/<skill>.md`; the orchestrator
+consolidates registries and notes in an integration commit afterward.*
 - Batch 1 (core loop): `question-framing`, `data-preparation`,
   `result-verification` (+ artifact-vs-chat + spec-conformance probes),
   `wrong-number-debugging`, `executing-analysis-plans`.
