@@ -2361,6 +2361,18 @@ if __name__ == "__main__":
     print("generating scenarios:")
     for fn in CORE + PRESSURE + QUESTION_FRAMING + DATA_PREP + RESULT_VERIFICATION + WND + EAP + CAUSAL_ID:
         fn()
+    # Scenario-local generators (the parallel-fan-out convention): any
+    # scenarios/<name>/generate.py is self-contained — it writes its own
+    # data/ and computes plant.md's numbers. Run each so one command
+    # regenerates the whole suite; their per-skill manifests are written by
+    # the agents that own them, not here.
+    import subprocess, sys as _sys
+    for gen in sorted(SC.glob("*/generate.py")):
+        r = subprocess.run([_sys.executable, gen.name], cwd=gen.parent,
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            raise SystemExit(f"scenario-local generator failed: {gen}\n{r.stderr[-800:]}")
+        print(f"  {gen.parent.name}: local generate.py OK")
     for name in STATIC_CORE_NAMES:
         if not (SC / name / "plant.md").exists():
             raise SystemExit(f"static scenario missing from disk: {name}")

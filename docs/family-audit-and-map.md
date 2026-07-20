@@ -233,3 +233,38 @@ supersedes the original Map 4 for every row it touches.
 STOP-gate) while the family total fell ~10.5%; the remaining path to the plan's
 ≤~30k target is the per-skill thinning agents in P3, working inside these
 conventions.
+
+## Map 4''' — P3 behavioral-loop outcomes (2026-07-20)
+
+Every skill ran (or was assigned) a per-skill behavioral loop on DeepSeek v4
+Pro through headless Pi: A (no skill) vs B (pre-P1 `main`) vs C (thinned
+candidate), gated on C >= B per discriminating probe. Final SKILL.md counts:
+
+| Skill | main | post-P1 | final | vs main | gate evidence |
+|---|--:|--:|--:|--:|---|
+| analysis-checkpoints | 2033 | 2133 | 2069 | +1.8% | hosts canonical gate; pilot probes |
+| analysis-craft | 2358 | 2045 | 2045 | -13.3% | further cut REGRESSED, reverted |
+| analysis-review | 1836 | 1513 | 1483 | -19.2% | ar-* probes at ceiling |
+| analysis-state-management | 1800 | 1800 | 1630 | -9.4% | split; +730w conductor reference |
+| causal-identification | 2808 | 2485 | 2130 | -24.1% | 15/15 across passes |
+| data-contracts | 2603 | 2434 | 2163 | -16.9% | pilot, 2 pressure probes |
+| data-preparation | 2874 | 2446 | 2230 | -22.4% | dp-decisions-log anchor |
+| descriptive-evidence | 4713 | 4178 | 3505 | -25.6% | final C 9/9 beats B 8/9 |
+| executing-analysis-plans | 2959 | 2655 | 2285 | -22.8% | inverted-pressure probe |
+| pre-analysis-plan | 1692 | 1436 | 1352 | -20.1% | 6/6 both probes |
+| predictive-modeling | 4228 | 3513 | 2903 | -31.3% | 0/9 baseline vs 9/9 |
+| project-organization | 1899 | 1742 | 1560 | -17.9% | P1-era placement regression flagged |
+| question-framing | 2737 | 2411 | 2211 | -19.2% | 8/9 vs B 7/9; one merge reverted |
+| result-verification | 2739 | 2536 | 2476 | -9.6% | hosts canonical checklist |
+| structural-estimation | 4674 | 4046 | 3042 | -34.9% | 9/9 -> 8/9 noise-band accepted |
+| using-causal-powers | 2804 | 2799 | 2391 | -14.7% | routing rows verified (no loop) |
+| wrong-number-debugging | 2282 | 1935 | 1657 | -27.4% | wnd-bisect anchor |
+| **Family total** | **47039** | **42090** | **37132** | **-21.1%** | |
+
+The always-on card sits at 1206 words (<=1215 ceiling). The ~30k aspiration
+was NOT reached, deliberately: two skills proved un-cuttable under their
+probes (analysis-craft's trim regressed and was reverted; project-organization
+carries an unexplained P1-era gap under investigation), and reference files
+(~12.1k words) were left intact where the harness cannot verify cuts. The
+behavioral gates, not the word target, are the binding constraint — that is
+the system working as designed.

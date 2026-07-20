@@ -276,3 +276,25 @@ report; the actionable lessons for every later per-skill agent:
    assistant-turn text, not just the last) would need to touch
    `scripts/run-skill-eval.py`, out of scope for a per-skill agent restricted
    to `skills/<name>/` and scenario dirs.
+
+## P3 parallel-mode conventions (2026-07-20)
+
+When multiple per-skill agents share this working tree, none may edit
+`generate_all.py` or this README. Instead:
+
+- Each new scenario is fully self-contained: `scenarios/<name>/generate.py`
+  deterministically writes its own `data/` and computes `plant.md`'s numbers.
+  `generate_all.py` discovers and runs every scenario-local generator, so one
+  command still regenerates the whole suite; a full regen must leave a clean
+  `git status` (drift = a generator that no longer matches its committed
+  output — fix the generator, not the artifact).
+- Per-skill discriminating suites live in `manifest-<skill>.json`, written by
+  the skill's agent (or by `generate_all.py` for the sequential-era skills).
+- Per-skill methodology reports live in `notes/<skill>.md` — that directory is
+  the accumulated lessons archive; read the relevant note before re-running
+  any skill's loop.
+- The three grading conventions that recur in every note: anchor catch
+  criteria to the FINAL ARTIFACT (a subject can name the bug in prose while
+  shipping the fudge); credit a disclosed stop-and-ask as CAUGHT where the
+  skill mandates stopping; re-grade saved transcripts (free) before
+  re-running subjects (budgeted).
