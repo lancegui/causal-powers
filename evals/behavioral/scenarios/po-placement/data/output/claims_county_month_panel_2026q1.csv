@@ -1,0 +1,13 @@
+county,month,total_amount,n_claims
+Adams,1,8532.12,12
+Adams,2,11600.1,13
+Adams,3,9947.65,14
+Baker,1,9115.08,13
+Baker,2,9490.52,14
+Baker,3,8291.36,12
+Clay,1,5631.93,6
+Clay,2,7917.19,12
+Clay,3,4762.55,10
+Dodge,1,9478.16,12
+Dodge,2,7836.42,14
+Dodge,3,5115.32,8
