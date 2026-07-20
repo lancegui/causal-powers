@@ -1,0 +1,9 @@
+{
+  "alpha_hat": 8.962,
+  "beta_hat": -1.472,
+  "gamma_hat": 0.544,
+  "r_squared": 0.9913,
+  "n_obs": 70,
+  "converged": true,
+  "note": "NLS converged cleanly; gradient norm ~1e-9."
+}
