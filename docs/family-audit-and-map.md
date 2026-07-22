@@ -253,13 +253,13 @@ candidate), gated on C >= B per discriminating probe. Final SKILL.md counts:
 | executing-analysis-plans | 2959 | 2655 | 2285 | -22.8% | inverted-pressure probe |
 | pre-analysis-plan | 1692 | 1436 | 1352 | -20.1% | 6/6 both probes |
 | predictive-modeling | 4228 | 3513 | 2903 | -31.3% | 0/9 baseline vs 9/9 |
-| project-organization | 1899 | 1742 | 1560 | -17.9% | P1-era placement regression flagged |
+| project-organization | 1899 | 1742 | 1713 | -9.8% | P5 doctrine additions (ask-once nudge, LESSONS promotion); noisy-probe regression not reproduced |
 | question-framing | 2737 | 2411 | 2211 | -19.2% | 8/9 vs B 7/9; one merge reverted |
 | result-verification | 2739 | 2536 | 2476 | -9.6% | hosts canonical checklist |
 | structural-estimation | 4674 | 4046 | 3042 | -34.9% | 9/9 -> 8/9 noise-band accepted |
 | using-causal-powers | 2804 | 2799 | 2391 | -14.7% | routing rows verified (no loop) |
 | wrong-number-debugging | 2282 | 1935 | 1657 | -27.4% | wnd-bisect anchor |
-| **Family total** | **47039** | **42090** | **37132** | **-21.1%** | |
+| **Family total** | **47039** | **42090** | **37285** | **-20.7%** | |
 
 The always-on card sits at 1206 words (<=1215 ceiling). The ~30k aspiration
 was NOT reached, deliberately: two skills proved un-cuttable under their

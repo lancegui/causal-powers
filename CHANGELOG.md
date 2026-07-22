@@ -2,6 +2,48 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.30.0 — evidence-gated family thinning (P1–P5, behavioral loops)
+
+Every skill ran a per-skill behavioral loop on DeepSeek v4 Pro through
+headless Pi (arms: no skill / pre-thin `main` / thinned candidate), gated on
+candidate ≥ original per discriminating probe. Family SKILL.md prose
+47,039 → 37,285 words (−20.7%); the always-on card 1243 → 1206 (under its
+≤1215 ceiling); real-session bundle footprint −16–17% (extended causal
+bundle 28.6k → 24.0k tokens). Full per-skill table and evidence:
+`docs/family-audit-and-map.md` (Map 4''') and `evals/behavioral/notes/`.
+
+- **P1 shared-pattern dedup**: locked-document gate mechanics stated once in
+  `analysis-checkpoints` (was 5×); STOP-gate stated once (was 16×); all 15
+  dot digraphs deleted; red-flag/rationalization tails capped; verification
+  checklist canonical in `result-verification`.
+- **Per-skill loops (P2–P3)**: 14 skills thinned 9–35% vs main with catch
+  rates held or improved; `analysis-craft` deliberately NOT thinned (its
+  trim measurably regressed the surgical-edit probe and was reverted);
+  `analysis-state-management` split into a generic core plus
+  `references/conductor-integration.md` (nothing weakens when the conductor
+  is installed).
+- **~30 new behavioral probes** with per-skill manifests and self-contained
+  scenario generators (`generate_all.py` runs them all; a full regen leaves
+  a clean tree). New audit-derived probes include spec-conformance,
+  artifact-vs-chat reconciliation, control-set-at-proposal,
+  counterfactual-no-resolve, recovery-before-trust, deployment-split,
+  importance-not-causal, proportionality, and surgical-edit.
+- **P4 integration check**: card + five thinned skills stacked pass C ≥ B on
+  a three-plant composite scenario; trigger suite 0 violations; every
+  `description:` frontmatter byte-identical to main.
+- **P5 mechanics**: stop-gate `[^\n]` bracket bug (fixed in 1904c2c)
+  now has detector-level regression tests extracting the live regex (15/15);
+  `project-organization` checkpoint doctrine: nudge once then act, silent
+  local commits at later phase boundaries (commit ≠ push), and promotion of
+  durable lessons to `docs/LESSONS.md` at each checkpoint.
+
+Known-open, recorded honestly: visible-consequence-forecast and
+pressure-skip-robustness probes sit at/near floor even with skills loaded
+(card-level strengthening candidates); pressure-roadmap-first is a genuine
+single-turn model floor; render-and-look QA remains un-probed (headless
+harness); reference files (~12k words) left intact as unverifiable by the
+harness; five analysis-craft candidate cuts recorded for individual re-test.
+
 ## 0.29.1 — stale v1 execution-mode/contract language, post-v2 sweep
 
 0.29.0 shipped the v2 schema but left two spots still describing v1 behavior:
