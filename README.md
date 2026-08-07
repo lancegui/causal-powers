@@ -56,6 +56,7 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 | `data-contracts` | Invariants, join-cardinality checks, totals reconciliation, frozen baselines — the **checker** | `test-driven-development` |
 | `data-preparation` | Owns the data ingest & cleaning **phase** (the heaviest one): ingest→clean→join→dedup→recode→reconcile as a phased YAML checklist with a decisions ledger; the **doer** that *calls* `data-contracts` per step and routes consequential cleaning choices to `analysis-checkpoints` | `writing-plans` (for the cleaning phase) |
 | `analysis-craft` | Minimum analysis that answers the question; surgical edits to notebooks/pipelines | Karpathy: simplicity + surgical |
+| `figure-craft` | Presentation-ready figures in any language (R/ggplot2, Python/matplotlib, Julia/Makie): clean theme + colorblind-safe Paul-Tol palette, 16.5pt fonts, no y-label (title carries it), B&W-legible (shape/linetype redundancy), right geom (dots for estimates, lines for series, stacks for composition), dashed treatment line for DiD, mandatory visual self-check, at most 1-2 enhancing annotations, metadata in LaTeX notes, saved to `results/figures/` at 5×3 in | (none — domain core) |
 | `analysis-checkpoints` | Stop and ask before changing design/sample/spec/estimand; loop toward the agreed goal, never redefine it | superpowers review gates |
 | `executing-analysis-plans` | Drive an approved plan: sequential spine validated in order, independent specs/designs fanned out to parallel subagents | `executing-plans` / `subagent-driven-development` |
 | `wrong-number-debugging` | Bisect the pipeline to the step where the number went bad | `systematic-debugging` |
@@ -286,7 +287,7 @@ its named records yourself. Full mapping in
 
 ```
 causal-powers/
-├── skills/        # the 15 disciplines; plain SKILL.md — also Codex-native
+├── skills/        # the 18 disciplines; plain SKILL.md — also Codex-native
 ├── agents/        # robustness-runner, analysis-reviewer
 ├── hooks/         # Claude Code: always-on block + trigger router + skill-chain + plan resumability
 ├── evals/         # trigger/ (router CI corpus + baseline) · behavioral/ (planted-silent-failure benchmark)

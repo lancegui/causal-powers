@@ -1,6 +1,6 @@
 ---
 name: using-causal-powers
-description: Use when starting any data analysis, econometrics, or causal-inference task in R, Julia, or Python — establishes the Causal Powers discipline and routes to the right skill (question-framing, descriptive-evidence, pre-analysis-plan, analysis-state-management, data-contracts, data-preparation, analysis-craft, analysis-checkpoints, executing-analysis-plans, wrong-number-debugging, result-verification, causal-identification, structural-estimation, predictive-modeling, analysis-review, project-organization). Invoke this whenever someone asks you to analyze data, compute a metric, clean or merge datasets, fit a model, estimate an effect or a structural model, simulate a counterfactual, check a number, or **build a deliverable from data — a figure, map, chart, dashboard, or interactive visualization** — even if they only say "analyze this", "what's the trend", "did it work", or "plot/map/visualize this" — so the right discipline skill fires before you touch the data.
+description: Use when starting any data analysis, econometrics, or causal-inference task in R, Julia, or Python — establishes the Causal Powers discipline and routes to the right skill (question-framing, descriptive-evidence, pre-analysis-plan, analysis-state-management, data-contracts, data-preparation, analysis-craft, figure-craft, analysis-checkpoints, executing-analysis-plans, wrong-number-debugging, result-verification, causal-identification, structural-estimation, predictive-modeling, analysis-review, project-organization). Invoke this whenever someone asks you to analyze data, compute a metric, clean or merge datasets, fit a model, estimate an effect, simulate a counterfactual, check a number, or **build a deliverable from data — a figure, chart, dashboard, or visualization** — even if they only say "analyze this", "what's the trend", or "plot this" — so the right discipline skill fires before you touch the data.
 ---
 
 # Using Causal Powers
@@ -40,6 +40,7 @@ And the rule that keeps the work from drifting: **always work from a plan you ag
 | **`predictive-modeling`** | The GOAL is a prediction, not an effect — predict/score/rank/flag/classify/forecast/detect-anomalies units to drive an action. Write the Prediction Spec and get sign-off before fitting; prove the eval honest (permutation-null + deployment-mirroring holdout) before trusting a metric; never read importance as causation. The **prediction** workflow. |
 | **`analysis-review`** | Reviewing an analysis (yours or another's) for the silent-failure classes, or receiving review feedback and verifying it. |
 | **`analysis-craft`** | Whenever you write or edit analysis code — keep it the minimum that answers the question, edit existing notebooks surgically, surface approach tradeoffs instead of silently choosing. |
+| **`figure-craft`** | When making a presentation-ready figure/chart/plot in ANY language (R/ggplot2, Python/matplotlib, Julia/Makie) — the house style as PRINCIPLES: clean high-contrast theme, colorblind-safe Paul-Tol palette, 16.5pt fonts, no y-axis label (title/subtitle carries the meaning), concise axis labels, the right geom (dots+error bars for estimates, lines for series, stacks for composition), dashed treatment line for DiD, B&W-safe (shape/linetype redundancy, not color alone), and a MANDATORY visual self-check (render → open → verify no clipping/overlap + grayscale legible). At most 1-2 inside-canvas annotations that enhance understanding (absolute counts on percentage bars, pretreatment level label for relative scale); metadata (N, source, p-values) goes in LaTeX figure notes. Standard output: 5×3 in, saved to `results/figures/` per project-organization. Fires **after** the data is validated; a polished figure of a wrong number is still wrong. |
 | **`analysis-checkpoints`** | Throughout execution — to decide which calls are yours and which must STOP for the user (design/sample/spec/estimand changes, PAP deviations, dropping data). The human-in-the-loop guardrail. |
 | **`executing-analysis-plans`** | Once the plan is approved — drive execution step by step, validate each step, and fan independent pieces (robustness specs, designs, cuts) out to parallel subagents. |
 | **`project-organization`** | Setting up or tidying a research repo, and at the end of a workflow before committing — paper-centric structure (pipeline stages × subject subfolders, `data/{raw,intermediate,output}`), standardized naming, gitignore the scratch. Place files right *throughout*; tidy before git. |
@@ -62,6 +63,7 @@ question-framing  →  [pre-analysis-plan if confirmatory / model card if struct
    →  [ descriptive-evidence  if the deliverable is a description  |  causal-identification  if reduced-form  |  structural-estimation  if structural  |  predictive-modeling  if prediction ]
    →  [wrong-number-debugging when something's off]
    →  result-verification  →  [analysis-review + project-organization before it ships]
+   →  figure-craft (if a presentation figure is the deliverable — after the number is verified, never before)
 ```
 
 Even "just run the regression / estimate the model" routes through **`executing-analysis-plans`** — including its structural (recovery reps, counterfactual scenarios) and prediction (CV folds, subsample cuts) fan-out — so dispatch happens instead of one serial script.
@@ -81,7 +83,7 @@ LLMs reach for Python by reflex. This discipline is **R-first for analysis**; pi
 | Data cleaning / wrangling | **R** — tidyverse / `dplyr` |
 | Descriptive evidence, summary stats, Table 1 | **R** |
 | Reduced-form & causal analysis (regressions, DiD, IV, RD, event study) | **R** |
-| Visualization (figures, maps, charts) | **R** — `ggplot2` + `ggthemes` (Paul-Tol palettes) |
+| Visualization (figures, maps, charts) | **R** — `ggplot2` + `ggthemes` (Paul-Tol palettes); see `figure-craft` for the house style |
 | Prediction / ML | **R** — *unless* it's deep learning (transformers, neural nets) where **PyTorch** is the natural fit → **Python** |
 | Web scraping, tooling, software-engineering tasks | **Python** |
 | Structural estimation / structural models | **Julia** |
