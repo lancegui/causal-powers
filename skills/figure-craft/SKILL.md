@@ -1,7 +1,7 @@
 ---
 name: figure-craft
 description: >-
-  Use when making a FIGURE / CHART / PLOT for a paper, deck, or presentation — in ANY language (R/ggplot2, Python/matplotlib, Julia/Makie). Governs the visual style: 16.5pt fonts, no y-label (the title carries the y-axis meaning; paper figures get no headline title), concise axis labels, clean theme with colorblind-safe Paul-Tol palette, B&W-legible (shape/linetype redundancy), and a mandatory visual self-check (no clipped text, no overlapping labels). Covers DiD/event-study plots (dots + error bars, dashed treatment line), trend lines, stacked bars, distributions, scatter — and the layout each forces (spacing a busy x-axis, wrapping a legend to two rows, dots vs. lines vs. stacks). At most 1-2 inside-canvas annotations that ENHANCE understanding (absolute counts on pct bars, pretreatment-level label on DiD); metadata (N, source, p-values) goes in LaTeX notes. Output: 5×3 in, saved to results/figures/. Fires on "make a figure", "plot this", "chart", "draw", "visualize" — AFTER the data is framed and verified.
+  Use when making a FIGURE / CHART / PLOT for a paper, deck, or presentation — in ANY language (R/ggplot2, Python/matplotlib, Julia/Makie). Governs the visual style: 16.5pt text throughout (axes, legend, title), no y-label (the title carries the y-axis meaning; paper figures get no headline title), concise axis labels, clean theme with colorblind-safe Paul-Tol palette, B&W-legible (shape/linetype redundancy), and a mandatory visual self-check (no clipped text, no overlapping labels). Covers DiD/event-study plots (dots + error bars, dashed treatment line), trend lines, stacked bars, distributions, scatter — and the layout each forces. At most 1-2 inside-canvas annotations that ENHANCE understanding (absolute counts on pct bars, pretreatment-level label on DiD); metadata (N, source, p-values) goes in LaTeX notes. Output: 5×3 in, saved to results/figures/. Fires on "make a figure", "plot this", "chart", "draw", "visualize" — AFTER the data is framed and verified.
 ---
 
 # Figure Craft
@@ -64,14 +64,14 @@ A figure that reads in color but falls apart in grayscale is not done. Papers ge
 
 ### Fonts — sized for the back row
 
-Presentation figures need **large** text. The defaults below are calibrated for a figure ~5 inches wide (the standard output size, below); scale up proportionally for larger canvases.
+Presentation figures need **large** text. The defaults below are calibrated for a figure ~5 inches wide (the standard output size, below); scale up proportionally for larger canvases. The title sits at the same 16.5 as the axis text: under the y-axis label rule below, the title *is* the y-axis label, so it carries axis-level information and gets axis-level size.
 
 | Element | Size (pt) | R | Python | Julia |
 |---|---|---|---|---|
 | Axis title (x) | 16.5 | `axis.title = element_text(size = 16.5)` | `ax.set_xlabel(..., fontsize=16.5)` | `xlabel(..., fontsize=16.5)` |
 | Axis tick labels | 16.5 | `axis.text = element_text(size = 16.5)` | `ax.tick_params(labelsize=16.5)` | tick label font size |
 | Legend text | 16.5 | `legend.text = element_text(size = 16.5)` | `legend.get_texts()` → `set_fontsize(16.5)` | legend font size |
-| Plot title / subtitle | 13.5 | `plot.title = element_text(size = 13.5)` | `ax.set_title(..., fontsize=13.5)` | title font size |
+| Plot title / subtitle | 16.5 | `plot.title = element_text(size = 16.5)` | `ax.set_title(..., fontsize=16.5)` | title font size |
 | **Y-axis title** | — | `axis.title.y = element_blank()` — **never set** | **do not call `set_ylabel`** | **no ylabel** |
 
 ### The y-axis label rule
@@ -210,7 +210,7 @@ ggplot(data, aes(x = ..., y = ..., color = ..., shape = ...)) +    # shape = B&W
         axis.title = element_text(size = 16.5),
         axis.text = element_text(size = 16.5),
         legend.text = element_text(size = 16.5),
-        plot.title = element_text(size = 13.5),
+        plot.title = element_text(size = 16.5),
         axis.title.y = element_blank(),
         legend.position = "bottom") +
   scale_color_ptol() +

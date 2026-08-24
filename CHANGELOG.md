@@ -92,6 +92,9 @@ Follow-up (same field report + a contradiction audit and a DeepSeek probe):
   is the y-axis meaning only; the headline lives in `\caption`. Deck figures
   may still headline (y-meaning moves to subtitle). Description updated
   (sanctioned).
+- figure-craft: plot title bumped 13.5 → 16.5pt — it is the y-axis label now
+  and carries axis-level information; description trimmed back under the
+  1024-char frontmatter cap.
 
 ## 0.30.0 — evidence-gated family thinning (P1–P5, behavioral loops)
 
