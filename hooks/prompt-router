@@ -89,8 +89,11 @@ m "effect of|did it work|impact of|\bregress(ing)? .{0,28}\bon\b|regression (of|
 m "drop (them|those)\b|drop (the |these |those |all |any )?((two|three|four|[0-9]+) )?(weakest |strongest |extreme )?(outlier|row|observation|obs\b|missing|na\b|nan|duplicate|extreme|top|bottom|instrument|control|covariate|variable|firm|unit|group|state|count(y|ies)|year)|drop .{0,24}from the (sample|panel|dataset|data)|winsoriz|trim the|remove (the )?outlier|exclude (the|these|those)|\bfilter out\b|should i drop|change the (spec|sample|definition)|redefine|re-?run with" \
   "causal-powers:analysis-checkpoints — this changes sample/spec/a seen number; STOP and surface options, don't decide it silently."
 
-m "report this|final (number|result|estimate|figure|table|answer)|final .{0,10}check|the answer is|put(ting)? (it|this|these|that|the (number|result|estimate|figure|table)) in (the |a )?([a-z]+ )?(deck|slide|paper|report|memo)|send this to|in the (deck|slide|paper|table)|looks right|i'?m done|ready to ship" \
-  "causal-powers:result-verification — reconcile to source + reproduce from a clean seed before this number leaves the room."
+# result-verification is USER-INVOKED ONLY. This rule matches a DIRECT ask to
+# verify/check/reconcile/reproduce — never the ambient ship-time phrases
+# ("i'm done", "the answer is", "put this in the deck") that used to fire it.
+m "\bre-?verify\b|\bverify\b|\bvalidate (this|that|these|the|my)\b|gut check|double.?check (this|that|these|the|my)|reconcile (this|that|these|the|my|it|them|prose)|\btie out\b|reproduce (my|the|this) |(confirm|check) (that )?(every|each|all|both|the) [a-z]{3,12}s? .{0,30}(match|matches|tie)|(that'?s|is that) the (right |correct )?number" \
+  "causal-powers:result-verification — the user asked for verification: reconcile to source + reproduce from a clean seed. (Only ever on a direct ask.)"
 
 m "\bblp\b|demand estimation|counterfactual|structural (model|estimat)|merger sim|discrete choice|\bgmm\b|equilibrium|recover( the)? parameters" \
   "causal-powers:structural-estimation — write/confirm the model card (per-parameter identification + recovery test) before estimating."

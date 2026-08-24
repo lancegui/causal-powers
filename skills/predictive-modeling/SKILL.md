@@ -125,7 +125,7 @@ The model-attribution row (SHAP / DALEX) carries the standing caveat above: it e
 2. **Spec approved → invoke `executing-analysis-plans`** — fan the CV folds, candidate models, and subsample cuts to parallel subagents rather than one slow serial loop.
 3. **Prove the evaluation is honest before trusting any metric** — permutation/null probe, deployment-mirroring holdout (nested CV when tuning), calibration if load-bearing, beat-the-baseline. Freeze the harness as a regression baseline.
 4. **If a metric looks suspicious → invoke `wrong-number-debugging`, suspecting leakage first** — bisect to the feature or join carrying the answer before blaming anything else.
-5. **Estimation + honest eval complete → invoke `result-verification`** before reporting — reproduce from a clean state, confirm the split mirrored deployment, confirm no internals are reported as causal.
+5. **Estimation + honest eval complete → offer `result-verification`** before reporting (the user's call) — reproduce from a clean state, confirm the split mirrored deployment, confirm no internals are reported as causal.
 6. **If the label, split, metric, threshold, or method needs changing after seeing results → STOP and invoke `analysis-checkpoints`.** The user's decision, never a silent re-cut to make a number look better.
 
 ## The bottom line

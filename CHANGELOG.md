@@ -32,6 +32,13 @@ R and Julia (was Python-only) and framed as the at-first-load NA map; Stata
 block gains `misstable summarize`. `data-preparation`'s missingness checklist
 item now requires the NA map at first load of every source.
 
+- **`result-verification` is now strictly user-invoked**: the stop-gate no
+  longer forces it (the ledger still records it), the router no longer fires it
+  ambiently — only on a direct ask to verify/check/reconcile/reproduce — sibling
+  skills and the skill-chain nudges offer it instead of invoking it, and its
+  description gates on a direct user ask. Requested by the user: verification
+  runs only when asked.
+
 Follow-up (same field report + a contradiction audit and a DeepSeek probe):
 
 - **Verification no longer initiates robustness**: `result-verification` item 4

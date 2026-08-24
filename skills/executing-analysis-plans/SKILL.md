@@ -15,7 +15,7 @@ A plan that's been approved is a commitment, and execution is where it either ge
 
 Don't start here from a cold "analyze this." If there's no approved brief/PAP yet, go back to `question-framing` (and `pre-analysis-plan` for confirmatory work) first — executing a plan nobody approved is just the behind-the-back problem wearing a schedule.
 
-**A new request on an already-locked plan still triggers this skill — re-fire, don't coast.** A re-run, a finer reporting cut, "now do the other radii / the facility-year version" is exactly this skill's job, and it still ends in `result-verification` before any result is written to a file. "The design was locked last week, I'll just run it" is how a new cut ships unverified — the lock covers the *design*, not this *run*. If the new cut changes the unit or estimand, it's a `question-framing`/`analysis-checkpoints` change first, not a re-run.
+**A new request on an already-locked plan still triggers this skill — re-fire, don't coast.** A re-run, a finer reporting cut, "now do the other radii / the facility-year version" is exactly this skill's job, and verification is still worth offering before any result is written to a file (`result-verification` runs only if the user asks). "The design was locked last week, I'll just run it" is how a new cut ships unverified — the lock covers the *design*, not this *run*. If the new cut changes the unit or estimand, it's a `question-framing`/`analysis-checkpoints` change first, not a re-run.
 
 ## The sequential spine vs. the parallel fan-out
 
@@ -94,7 +94,7 @@ When the fan-out completes, assemble — don't just dump:
 - Build the **robustness table**: primary estimate beside every alternative, so stability (or fragility) is visible at a glance.
 - **Reconcile across specs**: if the headline swings under a reasonable alternative, that's a finding to surface, not a result to bury.
 - Note which subagents' contracts **failed** — a robustness spec that violated an invariant is not a clean "it's robust."
-- Hand off to **`result-verification`** before any of this is reported.
+- Before any of this is reported, **offer** verification (`result-verification`) — running it is the user's call.
 
 ## Red flags — STOP
 
@@ -123,7 +123,7 @@ When the fan-out completes, assemble — don't just dump:
 3. **Fork by design as you estimate** — reduced-form → *invoke `causal-identification`* for the robustness suite; structural → *invoke `structural-estimation`* for recovery reps, starts, and counterfactuals.
 4. **Keep the code minimal and surgical on every write → invoke `analysis-craft`.**
 5. **Any decision that changes design/sample/spec/estimand — or any number the user has already seen — STOP and invoke `analysis-checkpoints`.** A surprising result is a checkpoint, not a step; a number that looks wrong is `wrong-number-debugging`, not a silent patch.
-6. **Spine + fan-out complete, before any result is written → invoke `result-verification`.** Don't end at "here are the results" — reconcile, reproduce, then hand off.
+6. **Spine + fan-out complete → offer verification (`result-verification`) in one line — the user's call.** `result-verification` is user-invoked; offer it before a result ships, never run it unasked.
 ## The bottom line
 
 ```

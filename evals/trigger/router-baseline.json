@@ -141,11 +141,13 @@
   },
   "result-verification": {
     "hits": [
+      "before i drop these revenue-per-cohort numbers into the quarterly readout, can we make sure they actually tie out to the ledger?",
+      "deck's basically done. last thing \u2014 i regenerated the data last week, can you confirm every chart in the pptx still matches the current run.py output",
       "final gut check on the treatment effect before it goes to the exec team \u2014 does 8% recidivism drop survive dropping outliers and a clean rerun?",
       "i want to reproduce my whole pipeline from a clean kernel with the seed fixed before i report this, the notebook's been open for hours and i don't trust the cached state",
-      "ok the lift is 4.2% and i'm putting it in the board deck tomorrow morning. anything i should do before that slide is final?",
-      "the answer is the price elasticity is -1.8. wrapping up the memo now",
-      "think i'm done with the churn analysis. the headline is 11.3% monthly churn for the SMB segment. about to send the summary to the VP of sales"
+      "i'm about to tell finance our blended margin is 34.6%. that's the number, right? want to be sure before i hit send",
+      "presenting the A/B results at standup in 20 min, conversion went from 3.1 to 3.6. just want to validate this is solid before i claim it's a win",
+      "the figures in my draft and the table in section 4 should match but i pasted some numbers by hand a few revisions ago \u2014 reconcile the prose against what the code actually outputs before i submit"
     ],
     "violations": []
   },

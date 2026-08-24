@@ -25,9 +25,11 @@ run_case() { # $1 name  $2 expect: block|silent  $3 transcript-file  $4 session-
 
 PROJ="$WORK/proj"; mkdir -p "$PROJ"; : > "$PROJ/analysis-plan.md"
 
-# 1: real-world deliverable names, no verification -> block
+# 1: real-world deliverable names, no verification -> SILENT.
+#    result-verification is user-invoked; the hook records it in the ledger but
+#    must never block on it. This case guards against re-adding that gate.
 T="$WORK/t1.jsonl"; { write_line Write "$PROJ/output/tab_did_main.tex"; write_line Write "$PROJ/figures/fig1_trend.png"; } > "$T"
-run_case "deliverable-paths-block" block "$T" "s1-$$"
+run_case "deliverable-paths-never-block" silent "$T" "s1-$$"
 
 # 2: results write + verification skill + execution after -> silent
 T="$WORK/t2.jsonl"; { write_line Write "$PROJ/results-summary.md"; skill_line "causal-powers:result-verification"; bash_line; } > "$T"
@@ -45,10 +47,10 @@ run_case "lesson-written-silent" silent "$T" "s4-$$"
 T="$WORK/t4b.jsonl"; skill_line "causal-powers:wrong-number-debugging" > "$T"
 run_case "lesson-missing-nudges" block "$T" "s4b-$$"
 
-# 5: results write + verification skill invoked but NOTHING ran after -> block
-#    (invoking the skill alone is not evidence)
+# 5: results write + verification skill invoked but NOTHING ran after -> silent
+#    (the ledger records verified=0 here, but an unverified result never blocks)
 T="$WORK/t5.jsonl"; { write_line Write "$PROJ/results-summary.md"; skill_line "causal-powers:result-verification"; } > "$T"
-run_case "verified-without-evidence-blocks" block "$T" "s5-$$"
+run_case "verified-without-evidence-still-silent" silent "$T" "s5-$$"
 
 # 6: a Write to a non-deliverable path (scratch note) -> silent
 #    (must NOT match the wrote_results detector; nothing else fires either)

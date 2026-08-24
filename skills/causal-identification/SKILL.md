@@ -152,4 +152,4 @@ silently falling back to biased TWFE.
 1. **Earn the estimate** — design named, untestable assumption argued, testable diagnostics passed, modern estimator used, threat-relevant robustness/placebo/sensitivity survived, reconciled with the raw data.
 2. **If any diagnostic fails or the design needs to change → STOP** (see "Choosing or changing the design" above — never a silent upgrade).
 3. **If the estimate has the wrong sign or magnitude → invoke `wrong-number-debugging` first** — rule out a data bug before blaming identification.
-4. **Once the design holds → invoke `result-verification`** — it confirms what already ran; it does not re-run or add robustness. Do not end at "the coefficient is X".
+4. **Once the design holds → offer `result-verification`** before any number leaves the building — the user's call; it confirms what already ran, it does not re-run or add robustness. Do not end at "the coefficient is X".

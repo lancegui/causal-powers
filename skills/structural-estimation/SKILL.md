@@ -152,6 +152,6 @@ Picking or changing the utility functional form, the random-coefficient distribu
 
 1. **Get the model card written and approved** — primitives, per-parameter identification, the estimand (target counterfactual + decision), estimation plan. Mandatory before any machinery. The *scenario design* is sketched but **not** gated — finalize it at the counterfactual stage, after recovery and fit are proven.
 2. **Card approved → invoke `executing-analysis-plans`** — fan the recovery reps, starting values, and per-mechanism counterfactual scenarios out to parallel subagents rather than one slow serial loop.
-3. **Estimation + counterfactuals complete → invoke `result-verification`** — confirm fit out-of-sample and that equilibrium was *re-solved*. Never report a structural number unverified.
+3. **Estimation + counterfactuals complete → offer `result-verification`** (the user's call) — confirm fit out-of-sample and that equilibrium was *re-solved*.
 4. **A counterfactual comes out implausible → invoke `wrong-number-debugging` first** to rule out a data bug before blaming the model.
 5. **The model misfits, a parameter won't identify, or an assumption needs changing → STOP and invoke `analysis-checkpoints`.** Never a silent re-spec to fix a magnitude.

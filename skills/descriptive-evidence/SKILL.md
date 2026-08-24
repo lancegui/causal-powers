@@ -34,7 +34,7 @@ This is **not** a fork into other skills — one skill at several polish levels.
 
 ## Where this sits
 
-`question-framing` fires **first** (or alongside) — it pins the unit, population, decision, and joins that assemble the data. Descriptive-evidence is the **execution craft** once you know the output is a description: how to compute and present it so the fact is real. Joins get the same scrutiny any join does — hand them to `data-contracts`; a stylized fact built on a fan-out join is a fabricated fact. A fact you will publish gets reconciled and reproduced by `result-verification` before it lands in a deck or paper. For a **map**, the split holds the same way: `question-framing` frames what each mark represents and which joins assemble it; descriptive-evidence makes it *honest* (rate-not-count, spatial unit, color breaks, the silently-dropping spatial join — see *Descriptive maps*). The write-up itself is `econ-writing`'s job; this skill produces the facts, not the prose.
+`question-framing` fires **first** (or alongside) — it pins the unit, population, decision, and joins that assemble the data. Descriptive-evidence is the **execution craft** once you know the output is a description: how to compute and present it so the fact is real. Joins get the same scrutiny any join does — hand them to `data-contracts`; a stylized fact built on a fan-out join is a fabricated fact. A fact you will publish is worth reconciling and reproducing — offer `result-verification` before it lands in a deck or paper; it runs on the user's ask. For a **map**, the split holds the same way: `question-framing` frames what each mark represents and which joins assemble it; descriptive-evidence makes it *honest* (rate-not-count, spatial unit, color breaks, the silently-dropping spatial join — see *Descriptive maps*). The write-up itself is `econ-writing`'s job; this skill produces the facts, not the prose.
 
 ## Fix the comparability choices — before you plot
 
@@ -163,7 +163,7 @@ Reach for the simplest row that answers the question. The decomposition row is s
 4. **Show the distribution, not just the center** — median + percentiles + shape for anything heavy-tailed; log scale where multiplicative.
 5. **For a fact you'll report, prove it's robust** — re-cut it three reasonable ways; report the robustness as credibility, or downgrade the claim to the range where it holds.
 6. **Visualize honestly** — faithful axes/scales, index for growth comparisons, don't smooth or zoom away the variation you're claiming. **For a map**, shade a rate not a count, choose the unit and color breaks deliberately, hand the join to `data-contracts`.
-7. **Keep the verbs descriptive** — "rose alongside," not "raised." Route an emerged question to the fork as *motivated*; hand a shipping fact to `result-verification` first.
+7. **Keep the verbs descriptive** — "rose alongside," not "raised." Route an emerged question to the fork as *motivated*; offer `result-verification` on a fact you're about to ship (the user's call).
 
 ## The bottom line
 

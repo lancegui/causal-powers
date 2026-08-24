@@ -1,11 +1,13 @@
 ---
 name: result-verification
-description: Use BEFORE reporting a number, presenting a finding, sending an analysis to a stakeholder, putting a figure in a deck or paper, or claiming an analysis is "done" or "the result is X". Reconciles totals to source, reproduces the result from a clean session with a fixed seed, confirms the user-approved robustness ran (never initiating new checks itself), and confirms every figure and table matches the numbers in the prose — evidence before assertion. Use whenever the user says "the answer is", "let's report this", "put this in the slide", "I'm done with the analysis", "send this to", or is about to treat a computed result as final — in R, Julia, Python, or Stata. NOT the adversarial pre-ship review — that's analysis-review, which follows once these checks pass.
+description: Use ONLY when the user directly asks to verify, check, reconcile, or reproduce a result ("verify this", "check these numbers", "does this tie out?", "is this right?", "reproduce it from a clean kernel", "confirm the figures match the text") — never auto-fire it before reporting, shipping, or calling an analysis done. Reconciles totals to source, reproduces the result from a clean session with a fixed seed, confirms the user-approved robustness ran (never initiating new checks itself), and confirms every figure and table matches the numbers in the prose — evidence before assertion. In R, Julia, Python, or Stata. When a result is about to ship unverified, OFFER it in one line; the user decides. NOT the adversarial pre-ship review — that's analysis-review, which follows once these checks pass.
 ---
 
 # Result Verification
 
 ## Overview
+
+**This skill is user-invoked.** When a result is about to ship unverified, offer verification in one line — never run it unasked (and never widen it: see below).
 
 The last mile is where good analyses die. The number is computed, it looks right, the deadline is close — and "looks right" becomes "is right" without anything in between. This skill is the something in between: the checks that stand between a computed number and a claimed result.
 

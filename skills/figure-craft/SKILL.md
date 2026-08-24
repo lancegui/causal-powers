@@ -14,7 +14,7 @@ The discipline skills keep you from being **wrong**; this skill keeps the figure
 
 **This guide applies to EVERY figure, in every language.** The house style is defined by its *principles* (clean theme, colorblind-safe palette, large fonts, no y-axis label, concise labels, right geom, B&W-safe, visual self-check); the *implementation* differs by language. The R implementation — `theme_hc()` + `scale_color_ptol()` from `ggthemes` — is the reference because it's the most direct, but the same principles map to Python and Julia. Don't skip the style because you're not in R; translate it.
 
-This skill fires **after** the data is right — after `question-framing` (what each mark encodes, the unit, the joins), after `descriptive-evidence` or `causal-identification` (the number is real), and after `result-verification` (it reproduces). It governs only the *rendering* — the bridge from a verified result to a presentation-ready exhibit. If the data hasn't been validated yet, route there first; a beautiful figure of a wrong number is still a wrong number.
+This skill fires **after** the data is right — after `question-framing` (what each mark encodes, the unit, the joins), after `descriptive-evidence` or `causal-identification` (the number is real), and after `result-verification` (it reproduces). It governs only the *rendering* — the bridge from a verified result to a presentation-ready exhibit. If the data hasn't been validated yet, route there first (`result-verification` itself runs only if the user asks for it); a beautiful figure of a wrong number is still a wrong number.
 
 ## Where this sits
 
@@ -253,7 +253,7 @@ ggsave("results/figures/fig_<name>.pdf", width = 5, height = 3)     # then OPEN 
 
 ## The Process
 
-1. **Confirm the data is validated first.** The figure is the last step, not the first. If the numbers haven't been through `result-verification`, route there — a polished figure of an unverified number is still an unverified number.
+1. **Confirm the data is validated first.** The figure is the last step, not the first. If the numbers haven't been verified, say so and offer `result-verification` — a polished figure of an unverified number is still an unverified number.
 2. **Pick the geom by the message, not by habit.** Dots for discrete estimates (DiD, event study); lines for continuous observed series; stacked bars for composition; dodged bars for cross-sectional comparison. The dot-vs-line choice is a claim about what the data is — get it right.
 3. **Apply the house style in your language.** Clean theme + Paul-Tol palette + large fonts (16.5pt floor) + no y-axis label (meaning in the title/subtitle) + concise x-axis label + dashed treatment line for DiD + zero line + dodged points. Use the language tables above to translate the R reference to Python or Julia.
 4. **Ensure black-and-white legibility.** Every group distinction needs a redundant non-color channel — shape for points, linetype for lines, hatch for bars, or direct labels. Render in grayscale and verify you can still tell groups apart.

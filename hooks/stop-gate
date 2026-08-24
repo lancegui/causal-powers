@@ -2,12 +2,16 @@
 # Stop hook for the causal-powers plugin — a once-per-session SOFT GATE plus a
 # tiny JSONL run ledger.
 #
-# WHY THIS EXISTS: the two obligations most often skipped at the END of work are
-# (a) result-verification before a deliverable is written, and (b) logging the
-# failure class after a debugging session (the lessons loop). Prompt-time nudges
-# can't catch these — they're end-of-turn omissions. This hook checks for them
-# at Stop and, at most ONCE per session, blocks the stop with a precise reason
-# so the model closes the gap (or states in one line why it doesn't apply).
+# WHY THIS EXISTS: the obligation most often skipped at the END of work is
+# logging the failure class after a debugging session (the lessons loop).
+# Prompt-time nudges can't catch it — it's an end-of-turn omission. This hook
+# checks for it at Stop and blocks the stop with a precise reason so the model
+# closes the gap (or states in one line why it doesn't apply).
+#
+# NOT A GATE: result-verification. It is strictly user-invoked — verification
+# runs only when the user directly asks for it, so this hook never blocks on it.
+# The ledger still RECORDS whether results were written and whether verification
+# fired, as provenance; recording is not enforcing.
 #
 # LOOP SAFETY (the reason Stop gates are dangerous, adopted from
 # planning-with-files v3's five-condition design): this hook blocks only when
@@ -16,14 +20,12 @@
 #   2. the project opted in (docs/analysis/index.yaml or docs/LESSONS.md exists in cwd);
 #   3. the session transcript is readable;
 #   4. that specific obligation hasn't been satisfied/exhausted (per-obligation
-#      state, NOT one shared marker — the results gate and the lesson gate fire
-#      independently);
+#      state, not one shared marker);
 #   5. a concrete obligation is provably open (patterns below).
 # The block reason always includes an OUT: if the obligation was already met in
 # substance or doesn't apply, say so in one line and stop — never loop.
 #
-# The RESULTS gate fires once/session. The LESSON gate RE-FIRES as new debugging
-# accumulates without a lesson (capped at 2 nudges/session, and only when the
+# The LESSON gate RE-FIRES as new debugging accumulates without a lesson (capped at 2 nudges/session, and only when the
 # debugging-invocation count has grown since the last nudge) — because a single
 # once-per-session nudge let sessions rack up many debugging passes with zero
 # lessons logged. Its OUT is to write one line to LESSONS.md (the lesson OR a
@@ -115,12 +117,9 @@ block() {  # $1 = reason
   exit 0
 }
 
-# Results gate — once per session (its own marker, independent of the lesson gate).
-results_marker="${state}/cp-stop-results-${session_id}"
-if [ "$wrote_results" = 1 ] && [ "$verified" = 0 ] && [ ! -f "$results_marker" ]; then
-  : > "$results_marker" 2>/dev/null || true
-  block "A results artifact was written this session but causal-powers:result-verification never fired. Before stopping: verify the result (reconcile to source, reproduce, check figures-vs-prose) or invoke the skill — OR, if verification already effectively happened or this file isn't an analysis deliverable, state that in one line and stop. Do not loop on this."
-fi
+# NO results gate. wrote_results / verified are ledger fields only: verification
+# is the user's call, and a hook that blocks on it would be running the skill
+# unasked. Do not re-add a block here.
 
 # Lesson gate — RE-FIRES as NEW debugging accumulates without a lesson, capped at 2
 # nudges/session. The escape hatch is to write ONE line to LESSONS.md — the lesson,

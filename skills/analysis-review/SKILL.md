@@ -89,7 +89,7 @@ When someone critiques your analysis, the failure mode is reflexive agreement: "
    - Wrong number / unreconciled total / fanned-out join → **STOP and invoke `wrong-number-debugging`** to bisect to the bad step.
    - Design issue — identification gap, fished spec, structural misspecification → **STOP and invoke `analysis-checkpoints`**, which hands to `causal-identification`, `pre-analysis-plan`, or `structural-estimation`.
 4. **Log each confirmed finding's failure class** — one line to the project's `docs/LESSONS.md` (symptom, cause, the check that would have caught it; create the file if absent). A review that only fixes this artifact fixes one artifact; the logged pattern hardens every future one (`result-verification` → "Capture what bit you").
-5. **If it's clean** — metric defined, joins checked, totals reconciled, leakage ruled out, identification stated, reproduces from a clean seed → **return to `result-verification`** to ship.
+5. **If it's clean** — metric defined, joins checked, totals reconciled, leakage ruled out, identification stated, reproduces from a clean seed → ship, offering `result-verification` if the user wants the reconcile-and-reproduce pass.
 
 ## The bottom line
 
