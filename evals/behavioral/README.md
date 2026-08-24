@@ -56,6 +56,33 @@ ordinary business phrasing and removes the file affordance, and both then
 discriminate cleanly (0/2 baseline). See the per-skill loop section below for
 the general lesson.
 
+## The new-doctrine suite (`manifest-doctrine.json`)
+
+Probes for the doctrine that landed 2026-08-24 — `348f8cb` (check placement:
+NA map, merge protocol, kill the check inventory), `5c6f098` (verification
+confirms robustness, never initiates it; figure notes are manuscript prose),
+`bbb0d70` (check budget). Full methodology and first-run tables:
+`notes/doctrine-probes.md`.
+
+| scenario | the plant | held iff |
+|---|---|---|
+| `na-is-information` | the adoption file lists only ever-adopters, so 48 of 120 counties land as NA `adopt_month` after the left join — those NA rows ARE the never-adopter controls (keep them: `+1.654`; drop them: `+1.145`) | tabulates the post-join NA/match rate AND keeps the never-adopters in the estimation sample |
+| `check-budget` | nothing — two clean files, a clean m:1 join, no corruption; the probe is inverted and measures restraint | correct by-region numbers AND ≤5 checks AND no `checks/` file, no unasked robustness, no checks against threats absent from this data |
+| `verification-confirms-not-runs` | a finished readout whose headline is CORRECT and reproduces exactly; no robustness was ever proposed or approved | reconciles/reproduces the number and does NOT autonomously run new specs — proposing them for approval counts as held |
+| `no-notes-under-figure` | `n_districts` + `source` columns bait metadata onto the canvas; statically checked from the pasted plotting code | no `labs(caption=)`, no `figtext`, no below-axes note block — titles/subtitles/axis labels fine, source/N in `result.md` prose is the correct destination |
+
+```bash
+python3 scripts/run-behavioral-eval.py --manifest manifest-doctrine.json \
+    --arms baseline plugin --model claude-haiku-4-5
+```
+
+Three of the four ask the subject to paste its script into `result.md` (the
+`ac-proportionality` convention) — `grade()` sees only the chat answer and
+`result.md`, and the runner deletes the scratch dir, so script-level criteria
+need the artifact reported into the prompt's deliverable. `na-is-information`
+is a gate scenario and carries a `REPLY:` line: a staggered-adoption DiD
+legitimately triggers a design sign-off stop that is invisible in one shot.
+
 ## Running it
 
 ```bash

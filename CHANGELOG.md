@@ -63,6 +63,19 @@ Follow-up (same field report + a contradiction audit and a DeepSeek probe):
 - **Sanctioned description edit**: `causal-identification` frontmatter no
   longer calls placebo/sensitivity "mandatory" — trigger evals re-run
   required (Part A + Part B live).
+- **Four new-doctrine behavioral probes** (`na-is-information`,
+  `check-budget`, `verification-confirms-not-runs`, `no-notes-under-figure`)
+  + first run results — new `manifest-doctrine.json`, subject
+  `claude-haiku-4-5`, arms baseline vs plugin, 2 reps each (24 subject runs).
+  Headline: `no-notes-under-figure` baseline 0/2 vs plugin 2/2 and
+  `check-budget` 1/2 vs 2/2 both discriminate; `na-is-information` 1/2 vs 1/2
+  after hardening (2/2 baseline before — the v1 prompt handed over the
+  answer); **`verification-confirms-not-runs` is a floor at 0/2 vs 0/2 —
+  both arms verified the headline correctly and then ran unapproved
+  site-by-site and leave-one-out specs, so the "never initiate robustness"
+  rule is not yet inducing the behavior it specifies.** Full tables,
+  the two saturation reworks, and the `REPLY:`-gate harness fix:
+  `evals/behavioral/notes/doctrine-probes.md`.
 
 ## 0.30.0 — evidence-gated family thinning (P1–P5, behavioral loops)
 
