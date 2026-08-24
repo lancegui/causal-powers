@@ -76,6 +76,15 @@ Follow-up (same field report + a contradiction audit and a DeepSeek probe):
   rule is not yet inducing the behavior it specifies.** Full tables,
   the two saturation reworks, and the `REPLY:`-gate harness fix:
   `evals/behavioral/notes/doctrine-probes.md`.
+- **Probe-driven fix**: `result-verification`'s description still advertised
+  "runs robustness and sensitivity checks" while the body forbade initiating
+  them — the trigger-layer text the probe showed winning. Description
+  reworded (sanctioned); body prohibition reinforced (overview line +
+  red flag).
+- **figure-craft**: paper figures carry no headline title — the title slot
+  is the y-axis meaning only; the headline lives in `\caption`. Deck figures
+  may still headline (y-meaning moves to subtitle). Description updated
+  (sanctioned).
 
 ## 0.30.0 — evidence-gated family thinning (P1–P5, behavioral loops)
 

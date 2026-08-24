@@ -1,6 +1,6 @@
 ---
 name: result-verification
-description: Use BEFORE reporting a number, presenting a finding, sending an analysis to a stakeholder, putting a figure in a deck or paper, or claiming an analysis is "done" or "the result is X". Reconciles totals to source, reproduces the result from a clean session with a fixed seed, runs robustness and sensitivity checks, and confirms every figure and table matches the numbers in the prose — evidence before assertion. Use whenever the user says "the answer is", "let's report this", "put this in the slide", "I'm done with the analysis", "send this to", or is about to treat a computed result as final — in R, Julia, Python, or Stata. NOT the adversarial pre-ship review — that's analysis-review, which follows once these checks pass.
+description: Use BEFORE reporting a number, presenting a finding, sending an analysis to a stakeholder, putting a figure in a deck or paper, or claiming an analysis is "done" or "the result is X". Reconciles totals to source, reproduces the result from a clean session with a fixed seed, confirms the user-approved robustness ran (never initiating new checks itself), and confirms every figure and table matches the numbers in the prose — evidence before assertion. Use whenever the user says "the answer is", "let's report this", "put this in the slide", "I'm done with the analysis", "send this to", or is about to treat a computed result as final — in R, Julia, Python, or Stata. NOT the adversarial pre-ship review — that's analysis-review, which follows once these checks pass.
 ---
 
 # Result Verification
@@ -9,7 +9,7 @@ description: Use BEFORE reporting a number, presenting a finding, sending an ana
 
 The last mile is where good analyses die. The number is computed, it looks right, the deadline is close — and "looks right" becomes "is right" without anything in between. This skill is the something in between: the checks that stand between a computed number and a claimed result.
 
-This is the analytics counterpart of verification-before-completion. The rule is identical: **evidence before assertions, always.** You do not say "the result is X"; you say "the result is X, here is the reconciliation, here is the clean-room reproduction, here is what the approved robustness showed."
+This is the analytics counterpart of verification-before-completion. The rule is identical: **evidence before assertions, always.** You do not say "the result is X"; you say "the result is X, here is the reconciliation, here is the clean-room reproduction, here is what the approved robustness showed." Verification **confirms**; it never widens — running a spec, cut, or placebo nobody approved is not extra diligence, it's an unapproved analysis decision (`analysis-checkpoints`).
 
 **Core principle:** A result is not done when it appears; it's done when it has been reconciled, reproduced from scratch, and survived being attacked.
 
@@ -98,6 +98,7 @@ Once it passes, snapshot it as a golden output (see `data-contracts`). The verif
 - Reporting a point estimate with no idea whether it survives dropping a few outliers.
 - A magnitude — especially one that surprised you, high or low — never checked against anything external (a known shock, a benchmark, a wider definition).
 - Writing "the numbers check out" instead of showing the output that checks them out.
+- Verification that quietly grows extra specifications — a subsample re-estimate, a leave-one-out, a placebo — that no one approved. Propose them if you think they're needed; never run them on your own.
 
 ## Common rationalizations
 

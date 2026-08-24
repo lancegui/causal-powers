@@ -1,7 +1,7 @@
 ---
 name: figure-craft
 description: >-
-  Use when making a FIGURE / CHART / PLOT for a paper, deck, or presentation — in ANY language (R/ggplot2, Python/matplotlib, Julia/Makie). Governs the visual style: 16.5pt fonts, no y-label (meaning in title/subtitle), concise axis labels, clean theme with colorblind-safe Paul-Tol palette, B&W-legible (shape/linetype redundancy), and a mandatory visual self-check (no clipped text, no overlapping labels). Covers DiD/event-study plots (dots + error bars, dashed treatment line), trend lines, stacked bars, distributions, scatter — and the layout each forces (spacing a busy x-axis, wrapping a legend to two rows, dots vs. lines vs. stacks). At most 1-2 inside-canvas annotations that ENHANCE understanding (absolute counts on pct bars, pretreatment-level label on DiD); metadata (N, source, p-values) goes in LaTeX notes. Output: 5×3 in, saved to results/figures/. Fires on "make a figure", "plot this", "chart", "draw", "visualize" — AFTER the data is framed and verified.
+  Use when making a FIGURE / CHART / PLOT for a paper, deck, or presentation — in ANY language (R/ggplot2, Python/matplotlib, Julia/Makie). Governs the visual style: 16.5pt fonts, no y-label (the title carries the y-axis meaning; paper figures get no headline title), concise axis labels, clean theme with colorblind-safe Paul-Tol palette, B&W-legible (shape/linetype redundancy), and a mandatory visual self-check (no clipped text, no overlapping labels). Covers DiD/event-study plots (dots + error bars, dashed treatment line), trend lines, stacked bars, distributions, scatter — and the layout each forces (spacing a busy x-axis, wrapping a legend to two rows, dots vs. lines vs. stacks). At most 1-2 inside-canvas annotations that ENHANCE understanding (absolute counts on pct bars, pretreatment-level label on DiD); metadata (N, source, p-values) goes in LaTeX notes. Output: 5×3 in, saved to results/figures/. Fires on "make a figure", "plot this", "chart", "draw", "visualize" — AFTER the data is framed and verified.
 ---
 
 # Figure Craft
@@ -78,7 +78,7 @@ Presentation figures need **large** text. The defaults below are calibrated for 
 
 **No y-axis label.** The y-axis meaning goes in the **title/subtitle**, not beside the axis. This frees vertical space, avoids rotated text, and lets the title carry the full description in a readable horizontal orientation.
 
-The **title IS the y-axis label.** If the chart also needs a headline, use a title for the headline and a subtitle for the y-axis meaning (R: `labs(title = "<headline>", subtitle = "<y-axis>")`; Python: `fig.suptitle` + `ax.set_title`; Julia: `title!` + `subtitle!`).
+The **title IS the y-axis label** — and for a **paper figure that is all the title ever is**: the headline belongs in the manuscript's `\caption`, never on the figure. Only a deck/presentation figure (no caption to carry it) may add a headline, as title with the y-axis meaning moving to the subtitle (R: `labs(title = "<headline>", subtitle = "<y-axis>")`; Python: `fig.suptitle` + `ax.set_title`; Julia: `title!` + `subtitle!`).
 
 ### Axis labels — concise to the point of abbreviation
 
