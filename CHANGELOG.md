@@ -2,6 +2,36 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## Unreleased — economist-not-engineer check placement (field report: Github_AI run)
+
+Field report from a real run (55 check scripts vs 9 estimation scripts, while
+the bugs that actually bit were silent-NA class with no check at all) drove
+three doctrine changes in `data-contracts`:
+
+- **Merge protocol replaces cardinality-only doctrine**: every join now gets
+  three lines — cardinality assert, **match rate + NA tabulation of the
+  merged-in columns** (who didn't match, systematic vs noise), totals
+  reconcile. Checking NA is explicitly NOT dropping NA — the tabulation is
+  script-embedded and mandatory; dropping/imputing stays a sample decision
+  (`analysis-checkpoints`).
+- **The NA map**: every dataframe gets a per-column missingness tabulation at
+  first load, inline in the script — because `lm`/`feols`, group `min()`, and
+  means all handle NA silently, an early NA map makes every downstream drop
+  predictable. This is what covers estimation: estimation scripts need no
+  checks of their own (claim-enforcing asserts like identical-sample `nobs`
+  comparisons remain welcome).
+- **Check placement kills the check inventory**: checks live at data
+  boundaries (ingest / merge / sample construction / report), each must name
+  the silent failure it catches, style/hygiene checks don't count as
+  validation, and a standalone `checks/` directory that grows a file per
+  anxiety is named as theater.
+
+Helpers (`contract-helpers.md`): `assert_join` now reports merged-in-column
+NA when unmatched rows are allowed (all four languages); `na_audit` added to
+R and Julia (was Python-only) and framed as the at-first-load NA map; Stata
+block gains `misstable summarize`. `data-preparation`'s missingness checklist
+item now requires the NA map at first load of every source.
+
 ## 0.30.0 — evidence-gated family thinning (P1–P5, behavioral loops)
 
 Every skill ran a per-skill behavioral loop on DeepSeek v4 Pro through

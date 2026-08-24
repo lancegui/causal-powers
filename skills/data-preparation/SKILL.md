@@ -39,7 +39,7 @@ plus a decisions ledger:
 - [ ] **Sources + provenance** — each raw source named (file / table / extract / API), its grain stated, and any upstream surgery you know about (a sample already taken, rows pre-filtered, categories pre-collapsed). An analyst who doesn't know a 30% sample was drawn upstream over-counts by 3×.
 - [ ] **Each join** — declared cardinality (1:1 / 1:m / m:1; an unintended m:m is a stop-the-line bug) asserted *before* the merge via `data-contracts`, and a **row reconciliation** after (did rows fan out or vanish?).
 - [ ] **Dedup rule** — the exact key that defines a duplicate, which record wins when several collide, and how many rows the dedup removed.
-- [ ] **Missingness handling** — count the `NA`/`missing`/`NaN` per column, decide the rule (drop / impute / flag / leave) *explicitly*, and state what the rule does to the sample.
+- [ ] **Missingness handling** — tabulate the NA map per column **at first load of every source** (`data-contracts`), then decide the rule (drop / impute / flag / leave) *explicitly* and state what the rule does to the sample. Checking NA is mandatory and lives in the script; dropping is a sample decision (`analysis-checkpoints`).
 - [ ] **Coding / recodes** — every category collapse, bucketing, unit conversion, and derived variable, with its exact rule and units.
 - [ ] **Reconciliation to source totals** — the built dataset's key totals (row counts, sums, group counts) tie back to the raw sources. This is the single check that catches the majority of silent join/filter/dedup damage.
 

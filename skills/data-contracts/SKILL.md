@@ -40,9 +40,11 @@ CONTRACT  →  CHECK IT BITES  →  COMPUTE  →  RECONCILE  →  FREEZE
 4. **RECONCILE** — Run the contract against the result. Reconcile totals back to the source ("do my segment revenues sum to the grand total I started with?"). Mismatch = **stop; route to `wrong-number-debugging`** to bisect to the bad step — don't patch and proceed. And if the "fix" would drop/winsorize/filter rows or move a number the user has already seen, that's a *sample/spec change*, not an autonomous fix → **`analysis-checkpoints`**.
 5. **FREEZE** — Once a result is validated, snapshot it as a **golden / reference output** (a small committed CSV/parquet, or stored summary stats). Future re-runs and refactors diff against it — the regression test of data work, converting *"the number changed three weeks ago and nobody noticed"* into an immediate, obvious failure instead.
 
-## Join cardinality — the single highest-yield contract
+## The merge protocol — three lines around every join
 
-More silent analytics disasters come from joins than from anything else, because a join is the one operation that can *change your row count in either direction without erroring*. Before **every** merge, declare the relationship you expect, then assert it:
+More silent analytics disasters come from joins than from anything else, because a join is the one operation that can *change your row count in either direction without erroring*. Every merge gets three lines, written into the pipeline script itself:
+
+**1. Cardinality — declare the relationship you expect, then assert it:**
 
 - **1:1** — both keys unique; row count must not change. (Two tables keyed on the same entity.)
 - **1:m / m:1** — one side unique; rows on the many side preserved, none duplicated by accident.
@@ -56,9 +58,34 @@ Say out loud what you expect, then let the tool enforce it:
 | Catch dropped/added rows | assert `len(out) == len(left)` for a left join that must not fan out | `stopifnot(nrow(out) == nrow(left))` | `@assert nrow(out) == nrow(left)` |
 | Catch unmatched keys | check `indicator=True` value counts | `anti_join()` to see what failed to match | `antijoin(left, right, on=:id)` |
 
-The row-count assertion around a join is the cheapest, highest-value check in all of data work. Write it every time.
+**2. Match rate + NA tabulation of the merged-in columns.** The cardinality assert is necessary but not sufficient: a left join can hold its row count, pass the assert, and still fill the columns it brought in with `NA` on every unmatched row — your regressors are quietly missing and nothing errored. After the join, tabulate the match rate and the `NA` counts of the columns that came from the right side, then look at *who* didn't match — unmatched rows concentrated in one year, one region, one category are a systematic gap, not noise:
+
+| | Python (pandas) | R | Julia |
+|---|---|---|---|
+| NA of merged-in cols | `out[new_cols].isna().sum()` | `colSums(is.na(out[new_cols]))` | `count.(ismissing, eachcol(out[!, new_cols]))` |
+
+**Checking NA is not dropping NA.** The tabulation is mandatory and lives in the script; silently dropping, imputing, or filtering the unmatched rows is a *sample decision* → `analysis-checkpoints`.
+
+**3. Totals reconcile** through the join back to the source (see the catalog below) — the check that catches what the first two miss.
+
+These three lines around a join are the cheapest, highest-value checks in all of data work. Write them every time.
 
 **Before a merge in an established project, consult `docs/LESSONS.md`** for prior join failures in *this* data — a fan-out that bit last month, a vintage mismatch, a key that wasn't as unique as it looked. (Capture lives in `result-verification`; this is the recall half — a logged bug only stops recurring if you read it back before repeating it.)
+
+## The NA map — tabulate missingness early, once per dataframe
+
+Every dataframe gets an explicit per-column missingness tabulation **at first load or build** — one line, inline in the script, before any transform touches it:
+
+| Python | R | Julia |
+|---|---|---|
+| `df.isna().sum()` | `colSums(is.na(df))` | `describe(df, :nmissing)` |
+
+Why early: nearly everything downstream handles `NA` **silently**. `lm`/`feols` drop incomplete rows without erroring — the "observations removed" note scrolls past in a log while the estimation sample recomposes; `min()`/`max()` over a group return `NA` for the whole group from one bad value; a mean quietly computes over fewer rows than you think. With the NA map known at load, every downstream drop is *predictable* — you can say "this spec will lose 212 rows to missing `region`" before the estimator does it to you. Without it, the sample silently reshapes and nobody notices.
+
+Two rules:
+
+- **The check is mandatory; the drop is not.** `NA` is information — often it *is* the finding (which units don't report, which years are uncovered). Surfacing it is part of the script; removing it (drop / impute / filter) is a sample decision → `analysis-checkpoints`.
+- **This is what covers estimation.** An estimation script needs no checks of its own: by the time a model is fit, the NA map and the merge protocol upstream have already determined the estimation sample. (An assert that enforces a *claim* — e.g. `stopifnot(m_a$nobs == m_b$nobs)` for two specs sold as "identical sample" — is a contract on the claim, not ritual, and is welcome.)
 
 ## The invariant catalog — what to assert
 
@@ -71,7 +98,7 @@ These are the things that hold regardless of the answer. Reach for the ones that
 - **Totals reconcile** — Parts sum to the known whole. Pre-aggregation total == post-aggregation total. This catches the majority of silent join/filter bugs.
 - **Categories** — The set of category levels matches expectations; no surprise new levels (`"N/A"`, `"unknown"`, mojibake, trailing-space duplicates).
 - **Types & units** — dtype/`eltype`/class is what you think; dollars not cents; seconds not ms; the percent column really is a percent.
-- **Missingness** — How many `NA`/`missing`/`NaN`? Did an operation silently drop them? Is the missingness rate stable vs. last run?
+- **Missingness** — The NA map (above), tabulated at load and re-checked after any operation that can mint new `NA` (joins, recodes, reshapes). Is the missingness rate stable vs. last run?
 - **Temporal** — Date ranges sane, no future timestamps, timezone explicit, no duplicated periods after a resample.
 - **Determinism / reproducibility** — Same input + same seed → same output. If it doesn't, you have hidden state.
 - **Leakage** — For any model: no target leakage, no train/test overlap, no future information in features.
@@ -100,12 +127,22 @@ Use the idioms native to each stack rather than bolting on a framework you don't
 
 Use floating-point-aware comparison (`np.isclose` / `all.equal` / `isapprox`) for any reconciliation — exact `==` on floats will betray you.
 
-The table above covers one check at one line. The moment a script has **two or more joins, a reconciliation, or a baseline to freeze**, don't re-derive helper functions from scratch — copy the canonical prelude for your language from [`references/contract-helpers.md`](references/contract-helpers.md): `assert_join` (declared cardinality + row-count bracket + unmatched-key report), `reconcile`, `na_audit`, and `freeze_baseline`/`check_baseline`, in Python, R, Julia, **and Stata** (where `isid`, `merge, assert()`, and `datasignature` are built in).
+The table above covers one check at one line. The moment a script has **two or more joins, a reconciliation, or a baseline to freeze**, don't re-derive helper functions from scratch — copy the canonical prelude for your language from [`references/contract-helpers.md`](references/contract-helpers.md): `assert_join` (declared cardinality + row-count bracket + unmatched-key and merged-in-NA report), `na_audit` (the NA map, at first load), `reconcile`, and `freeze_baseline`/`check_baseline`, in Python, R, Julia, **and Stata** (where `isid`, `merge, assert()`, and `datasignature` are built in).
+
+## Check placement — a few checks at boundaries, not an inventory
+
+Checks concentrate where silence lives: **ingest** (the NA map, types/units), **every merge** (the three-line protocol), **sample construction** (totals reconcile, the golden freeze), and **once at report time** (figures/tables tie to the prose). That is the whole surface.
+
+- **Every check names the silent failure it catches.** Can't name one → don't write it.
+- **Inline in the pipeline script, not a parallel check-script inventory.** A standalone `checks/` directory that grows a file per anxiety is software-engineering theater, not rigor — observed in the wild at 55 check scripts against 9 estimation scripts, while the bugs that actually bit (an NA-amplifying group `min()`, silently dropped rows) had no check at all. Check *placement* is rigor; check *count* is not.
+- **Style and hygiene checks are not data contracts.** Figure styling, repo tidiness, docs freshness — fine as project tooling if the user wants them, but they live outside the analysis-check surface and never count as validation.
+- **Estimation scripts are exempt** — the NA map and merge protocol upstream cover them (see above).
 
 ## Red flags — STOP and validate
 
 - "The pipeline ran without errors, so the numbers are right" / "I'll just eyeball the head() / summary() and move on." Neither a clean run nor an eyeball is a contract — neither re-runs.
-- A join, merge, filter, or group-by with no row-count check before and after.
+- A join, merge, filter, or group-by with no row-count check before and after — or a merge nobody inspected for where the `NA`s landed.
+- A dataframe headed into a model whose NA map was never tabulated.
 - Reporting a figure you computed but never reconciled against the source.
 - Building step N on top of step N-1's output without having validated step N-1.
 - A check that has never once failed — you don't know it works.
@@ -122,7 +159,7 @@ The table above covers one check at one line. The moment a script has **two or m
 
 ## The Process
 
-1. **Write the contract and watch it bite** — keys, ranges, totals, join cardinality; feed it one broken row and confirm the assertion fires before you trust it.
+1. **Write the contract and watch it bite** — keys, ranges, totals, the NA map at first load, the merge protocol per join; feed it one broken row and confirm the assertion fires before you trust it.
 2. **Compute, then reconcile against the source.** A clean run is not a correct result.
 3. **If a reconciliation / total / cardinality assertion FAILS → STOP and invoke `wrong-number-debugging`** — bisect the pipeline to the exact bad step; do not patch and proceed.
 4. **If the "fix" would drop/filter/winsorize rows, change a join's grain, or move a number the user has already seen → STOP and invoke `analysis-checkpoints`** — that's a sample/spec redesign, not an autonomous bug fix; don't smuggle it in.
