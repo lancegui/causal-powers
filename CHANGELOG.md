@@ -2,7 +2,10 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
-## Unreleased — economist-not-engineer check placement (field report: Github_AI run)
+## 0.32.0 — economist-not-engineer discipline + user-invoked verification (field report: Github_AI run)
+
+(0.31.0 was the figure-craft skill release, ac1b9d3, which shipped without
+its own changelog entry.)
 
 Field report from a real run (55 check scripts vs 9 estimation scripts, while
 the bugs that actually bit were silent-NA class with no check at all) drove
