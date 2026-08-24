@@ -1,6 +1,6 @@
 ---
 name: causal-identification
-description: Use whenever an analysis makes or implies a CAUSAL claim — "the effect of", "X caused Y", "the policy raised", "the treatment increased", "because we did X, Y changed" — or whenever you're running difference-in-differences, event studies, instrumental variables, regression discontinuity, matching, synthetic control, or panel fixed-effects models. Forces the identification strategy and its assumptions to be stated and tested BEFORE estimating, and treats the design-specific robustness suite (parallel trends, first-stage strength, manipulation tests, balance, placebo, sensitivity) as mandatory, not optional. Use in R, Julia, or Python even when the user just says "regress Y on X", "did it work", or "estimate the impact" — a regression coefficient is not a causal effect until the design earns it.
+description: Use whenever an analysis makes or implies a CAUSAL claim — "the effect of", "X caused Y", "the policy raised", "the treatment increased", "because we did X, Y changed" — or whenever you're running difference-in-differences, event studies, instrumental variables, regression discontinuity, matching, synthetic control, or panel fixed-effects models. Forces the identification strategy and its assumptions to be stated and tested BEFORE estimating, and treats the design-specific diagnostics (parallel trends, first-stage strength, manipulation tests, balance) as mandatory — placebo and sensitivity checks are a user-approved ~3-check shortlist, not an automatic battery. Use in R, Julia, or Python even when the user just says "regress Y on X", "did it work", or "estimate the impact" — a regression coefficient is not a causal effect until the design earns it.
 ---
 
 # Causal Identification
@@ -34,6 +34,16 @@ Entering mid-stream ("just run the DiD") does not waive the card: "the user alre
 4. **Estimate** with inference appropriate to the design (clustering, weak-IV-robust, etc.).
 5. **Attack it** — propose the ~3 threat-relevant robustness/placebo checks, get approval, then run them (see "Robustness, placebo, sensitivity" below — not the whole catalogue).
 6. **Reconcile** the causal estimate with the raw descriptive picture. An effect that's invisible in the raw data and only appears after heavy modeling deserves suspicion.
+
+## Presenting a design — spell it out
+
+A design presented to the user is a decision document. Every presentation of a specification — in a plan, a checkpoint, a results write-up — carries five things:
+
+- **The estimating equation, written out.** Display math (or plain text), not a name-drop: $y_{it} = \beta D_{it} + \alpha_i + \gamma_t + \varepsilon_{it}$ — with **every subscript defined** (what is $i$, what is $t$, what population, what period) and **the level of variation stated**: what level treatment varies at, what level the outcome is measured at, what the fixed effects absorb, what level you cluster at and why. "TWFE DiD" is a family, not a specification.
+- **The economic intuition.** Nearly every model and estimator has one — the comparison in plain language and why it recovers the effect ("adopting counties are compared to never-adopters in the same month, netting out anything fixed about a county and anything common to a month; identification rests on the two groups trending together absent the policy"). If you can't state the intuition, you don't understand the design well enough to run it. Convince the reader; don't assert.
+- **The literature precedent.** Name the published design this follows — the nearest antecedent, top-5-journal focus (AER, QJE, JPE, ECMA, ReStud, plus the field's flagship). **Don't invent a design when the literature has one.** A specification with no named precedent is a flag: either you haven't done the literature review (do it — `econ-writing:literature-review` when the stakes warrant a real one) or the design is genuinely novel, which you state explicitly and justify as a deliberate departure the user signs off on.
+- **No shorthand.** Never refer to a specification, hypothesis, or plan node by a bare internal id — "a1", "h1", "spec 3" mean nothing to a reader who didn't watch the plan being built. Restate what it is in words every time ("the reviewer-capacity event study"); an id may follow in parentheses, never stand alone.
+- **Interpretable from the start.** State up front what units $\beta$ will be in and what magnitude would be economically meaningful (ties to the reporting red-line).
 
 ## Choosing or changing the design is the user's decision
 

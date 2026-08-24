@@ -51,6 +51,18 @@ Follow-up (same field report + a contradiction audit and a DeepSeek probe):
   battery mandatory — mandatory design diagnostics + user-approved shortlist.
 - **figure-craft**: notes are manuscript prose, never rendered into the figure
   file (`labs(caption=)`, `figtext` banned); red flag added.
+- **Design presentation standard** (`causal-identification`, pointers in
+  `pre-analysis-plan` and `structural-estimation`): every presented
+  specification carries the written-out estimating equation with all
+  subscripts defined and the level of variation stated, the economic
+  intuition, the literature precedent (top-5 focus; invention flagged, never
+  silent), and no bare shorthand ids ("a1"/"h1") in human-facing prose.
+- **Check budget rule**: ~4 checks for a single-join script; every check
+  beyond the protocol answers to a named threat in this data. Helpers pointer
+  moved to the merge protocol's point of use.
+- **Sanctioned description edit**: `causal-identification` frontmatter no
+  longer calls placebo/sensitivity "mandatory" — trigger evals re-run
+  required (Part A + Part B live).
 
 ## 0.30.0 — evidence-gated family thinning (P1–P5, behavioral loops)
 

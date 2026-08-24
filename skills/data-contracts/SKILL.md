@@ -42,7 +42,9 @@ CONTRACT  →  CHECK IT BITES  →  COMPUTE  →  RECONCILE  →  FREEZE
 
 ## The merge protocol — three lines around every join
 
-More silent analytics disasters come from joins than from anything else, because a join is the one operation that can *change your row count in either direction without erroring*. Every merge gets three lines, written into the pipeline script itself:
+More silent analytics disasters come from joins than from anything else, because a join is the one operation that can *change your row count in either direction without erroring*. Every merge gets three lines, written into the pipeline script itself.
+
+(About to hand-write more than a couple of asserts, or facing two-plus joins? Copy `assert_join` and `na_audit` from [`references/contract-helpers.md`](references/contract-helpers.md) instead — one-line calls, pre-tested, terser than free-hand `stopifnot` blocks.)
 
 **1. Cardinality — declare the relationship you expect, then assert it:**
 
@@ -127,7 +129,7 @@ Use the idioms native to each stack rather than bolting on a framework you don't
 
 Use floating-point-aware comparison (`np.isclose` / `all.equal` / `isapprox`) for any reconciliation — exact `==` on floats will betray you.
 
-The table above covers one check at one line. The moment a script has **two or more joins, a reconciliation, or a baseline to freeze**, don't re-derive helper functions from scratch — copy the canonical prelude for your language from [`references/contract-helpers.md`](references/contract-helpers.md): `assert_join` (declared cardinality + row-count bracket + unmatched-key and merged-in-NA report), `na_audit` (the NA map, at first load), `reconcile`, and `freeze_baseline`/`check_baseline`, in Python, R, Julia, **and Stata** (where `isid`, `merge, assert()`, and `datasignature` are built in).
+Past two or more joins, a reconciliation, or a baseline to freeze, don't re-derive helper functions from scratch — copy the canonical prelude for your language from [`references/contract-helpers.md`](references/contract-helpers.md): `assert_join` (declared cardinality + row-count bracket + unmatched-key and merged-in-NA report), `na_audit` (the NA map, at first load), `reconcile`, and `freeze_baseline`/`check_baseline`, in Python, R, Julia, **and Stata** (where `isid`, `merge, assert()`, and `datasignature` are built in).
 
 ## Check placement — a few checks at boundaries, not an inventory
 
@@ -135,6 +137,7 @@ Checks concentrate where silence lives: **ingest** (the NA map, types/units), **
 
 - **Every check names the silent failure it catches.** Can't name one → don't write it.
 - **One check per failure mode — the strongest one.** Prefer the tool's enforcing argument (`validate=`, `relationship=`, `merge, assert()`) over a separate assert; don't stack a dup-key assert, a row-count assert, and a reconcile against the same fan-out. Redundant asserts are the inventory in miniature. And no ceremony: a check is one or two lines in place, not a banner-titled section.
+- **Check budget scales with the task.** A single-join analysis script needs ~4 checks total: the NA map, one cardinality guard on the join, the merged-in NA tabulation, one reconcile. Nine checks on a two-file task is the inventory reborn inline. Any check beyond the protocol must answer to a **named threat in this data** — a comparison that a format drift would silently break, a key the join argument doesn't already enforce — not to a hypothetical.
 - **Inline in the pipeline script, not a parallel check-script inventory.** A standalone `checks/` directory that grows a file per anxiety is software-engineering theater, not rigor — observed in the wild at 55 check scripts against 9 estimation scripts, while the bugs that actually bit (an NA-amplifying group `min()`, silently dropped rows) had no check at all. Check *placement* is rigor; check *count* is not.
 - **Style and hygiene checks are not data contracts.** Figure styling, repo tidiness, docs freshness — fine as project tooling if the user wants them, but they live outside the analysis-check surface and never count as validation.
 - **Estimation scripts are exempt** *within a pipeline whose boundaries were checked in the same run* — the NA map and merge protocol upstream cover them. A spec script that re-loads data fresh (a fanned-out robustness subagent, a standalone re-run) is a new ingest boundary: re-assert its input contracts before fitting.

@@ -71,6 +71,8 @@ The card states (its filled-in instance of the five rows in `references/model-cl
 - **Estimation plan** — estimator (GMM/MoM, NLS, MSL…), moments/likelihood, instruments, and the Monte-Carlo-recovery design that validates it.
 - **Counterfactual design** — one scenario per mechanism, primitives changed vs. held fixed. *This row starts as a sketch and is completed after estimation* — the gate needs the **target** counterfactual (row 1), not the finished scenario set; don't let designing scenarios block Monte-Carlo recovery or estimation.
 
+The model card meets the same presentation standard as reduced-form designs (`causal-identification`): equations with every subscript defined, the economic intuition for each mechanism, and the literature precedent for the model class — no shorthand.
+
 **The card is living** — refining as you learn is the point — but a **load-bearing change** (conduct, the random-coefficient distribution, primitive-vs-fixed, the estimand) still routes through `analysis-checkpoints`, never a quiet edit. Every fix beyond a trivial edit gets its own three-line mini-spec first — *what's wrong, what changes, what "fixed" looks like* (recovers θ from a distant start; gradient matches finite differences) — before you touch code. Trivial = a rename/typo/one-liner with no estimand/spec/sample/model decision; that you just do (`analysis-craft`).
 
 ## Prove the algorithm recovers truth — Monte Carlo, before real data
