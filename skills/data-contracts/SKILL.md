@@ -85,7 +85,7 @@ Why early: nearly everything downstream handles `NA` **silently**. `lm`/`feols` 
 Two rules:
 
 - **The check is mandatory; the drop is not.** `NA` is information — often it *is* the finding (which units don't report, which years are uncovered). Surfacing it is part of the script; removing it (drop / impute / filter) is a sample decision → `analysis-checkpoints`.
-- **This is what covers estimation.** An estimation script needs no checks of its own: by the time a model is fit, the NA map and the merge protocol upstream have already determined the estimation sample. (An assert that enforces a *claim* — e.g. `stopifnot(m_a$nobs == m_b$nobs)` for two specs sold as "identical sample" — is a contract on the claim, not ritual, and is welcome.)
+- **This is what covers estimation.** An estimation script needs no checks of its own: by the time a model is fit, the NA map and the merge protocol upstream have already determined the estimation sample (in the same validated run — a script that re-loads data fresh is a new ingest boundary; see check placement below). (An assert that enforces a *claim* — e.g. `stopifnot(m_a$nobs == m_b$nobs)` for two specs sold as "identical sample" — is a contract on the claim, not ritual, and is welcome.)
 
 ## The invariant catalog — what to assert
 
@@ -131,12 +131,13 @@ The table above covers one check at one line. The moment a script has **two or m
 
 ## Check placement — a few checks at boundaries, not an inventory
 
-Checks concentrate where silence lives: **ingest** (the NA map, types/units), **every merge** (the three-line protocol), **sample construction** (totals reconcile, the golden freeze), and **once at report time** (figures/tables tie to the prose). That is the whole surface.
+Checks concentrate where silence lives: **ingest** (the NA map, types/units), **every merge** (the three-line protocol), **sample construction** (totals reconcile, the train/test split & leakage check for any model, the golden freeze), and **once at report time** (figures/tables tie to the prose). That is the whole pipeline surface — plus three sanctioned checks that live off the pipeline: regime-2 fixture tests of reusable rules (above), the structural estimator's Monte-Carlo recovery harness (`structural-estimation`), and the frozen eval-harness probe (`predictive-modeling`).
 
 - **Every check names the silent failure it catches.** Can't name one → don't write it.
+- **One check per failure mode — the strongest one.** Prefer the tool's enforcing argument (`validate=`, `relationship=`, `merge, assert()`) over a separate assert; don't stack a dup-key assert, a row-count assert, and a reconcile against the same fan-out. Redundant asserts are the inventory in miniature. And no ceremony: a check is one or two lines in place, not a banner-titled section.
 - **Inline in the pipeline script, not a parallel check-script inventory.** A standalone `checks/` directory that grows a file per anxiety is software-engineering theater, not rigor — observed in the wild at 55 check scripts against 9 estimation scripts, while the bugs that actually bit (an NA-amplifying group `min()`, silently dropped rows) had no check at all. Check *placement* is rigor; check *count* is not.
 - **Style and hygiene checks are not data contracts.** Figure styling, repo tidiness, docs freshness — fine as project tooling if the user wants them, but they live outside the analysis-check surface and never count as validation.
-- **Estimation scripts are exempt** — the NA map and merge protocol upstream cover them (see above).
+- **Estimation scripts are exempt** *within a pipeline whose boundaries were checked in the same run* — the NA map and merge protocol upstream cover them. A spec script that re-loads data fresh (a fanned-out robustness subagent, a standalone re-run) is a new ingest boundary: re-assert its input contracts before fitting.
 
 ## Red flags — STOP and validate
 

@@ -32,6 +32,26 @@ R and Julia (was Python-only) and framed as the at-first-load NA map; Stata
 block gains `misstable summarize`. `data-preparation`'s missingness checklist
 item now requires the NA map at first load of every source.
 
+Follow-up (same field report + a contradiction audit and a DeepSeek probe):
+
+- **Verification no longer initiates robustness**: `result-verification` item 4
+  now only confirms an already-approved suite ran and bit (or the PAP suite, for
+  confirmatory work); proposing robustness is an upstream user decision. The
+  "internal number" rationalization row is gone. Resolves the three-owners
+  overlap with `causal-identification` step 5 and `executing-analysis-plans`.
+- **RDD bandwidth-sensitivity red flag removed** — discretionary robustness
+  can't be a STOP flag (it deadlocked against the approval gate).
+- **Check placement hardened**: one check per failure mode (prefer the tool's
+  enforcing argument; no stacked asserts, no banner ceremony); leakage/split
+  named under the sample-construction boundary; sanctioned off-pipeline checks
+  enumerated (regime-2 fixture tests, structural recovery harness, predictive
+  eval probe); estimation exemption scoped — a script that re-loads data fresh
+  is a new ingest boundary.
+- **Router reword**: `using-causal-powers` no longer calls the whole robustness
+  battery mandatory — mandatory design diagnostics + user-approved shortlist.
+- **figure-craft**: notes are manuscript prose, never rendered into the figure
+  file (`labs(caption=)`, `figtext` banned); red flag added.
+
 ## 0.30.0 — evidence-gated family thinning (P1–P5, behavioral loops)
 
 Every skill ran a per-skill behavioral loop on DeepSeek v4 Pro through

@@ -141,6 +141,8 @@ What is NOT an annotation — these belong in **LaTeX figure notes** (`\caption`
 - The regression equation, control variable lists, specification notes
 - Anything that is **metadata about the analysis** rather than **part of the visual message**
 
+"In LaTeX notes" means in the manuscript, **never rendered into the figure file**: no `labs(caption =)` / ggplot captions, no matplotlib `figtext` under the axes, no note text below the plot. The saved figure contains zero note text — write the note as manuscript prose only if the user asks for it.
+
 **The rule:** at most 1–2 annotations. Each must pass the test: "does removing this make the figure harder to understand?" If yes, it stays; if it's merely informative, it goes in the notes.
 
 ## Chart-type decisions
@@ -228,6 +230,7 @@ ggsave("results/figures/fig_<name>.pdf", width = 5, height = 3)     # then OPEN 
 - **Overlapping x-axis labels.** A busy axis with every tick shown is unreadable. Reduce breaks or rotate — but prefer fewer breaks.
 - **More than 2 inside-canvas annotations.** Annotations enhance understanding — they are not decoration. If you're reaching for a third, one of them is metadata that belongs in the LaTeX notes.
 - **Metadata (N, source, p-values, equations) inside the plot.** They go in the LaTeX figure notes, not on the canvas.
+- **Note text rendered below the plot** (`labs(caption =)`, `fig.text`) — the figure file carries no notes; notes are manuscript prose.
 - **Fonts too small for presentation.** If the audience is more than arm's length from the screen, default text is invisible. The floor is 16.5pt for axis/legend text.
 - **A legend with one entry.** If there's one series, the title already names it; drop the legend.
 - **Saving a figure to the project root or a non-standard path.** Deliverable figures go to `results/figures/fig_<name>.pdf` per `project-organization`.
@@ -257,7 +260,7 @@ ggsave("results/figures/fig_<name>.pdf", width = 5, height = 3)     # then OPEN 
 5. **Add at most 1–2 annotations that enhance understanding.** Absolute values on percentage bars, a "pretreatment treatment group" label for relative scale. Each must pass: "does removing this make the figure harder to understand?"
 6. **Save to the standard path at the standard size.** `results/figures/fig_<name>.pdf`, 5×3 inches — unless the user asked otherwise.
 7. **Render and visually examine.** Open the saved file and run the visual self-check: no clipping, no overlap, legend fits, markers visible, palette distinguishable, B&W-safe, annotations placed cleanly. Fix and re-render until clean.
-8. **Move all metadata to LaTeX figure notes.** N, source, sample restrictions, p-value conventions — they go in `\caption` or a `note`, never on the canvas.
+8. **Move all metadata to LaTeX figure notes — in the manuscript, not the image.** N, source, sample restrictions, p-value conventions — they go in `\caption` or a `note`, never on the canvas and never rendered into the figure file (no `labs(caption =)`, no `figtext`).
 9. **Hand off to `project-organization`** — confirm the figure is named and placed per convention; commit the checkpoint.
 
 ## The bottom line
@@ -266,7 +269,7 @@ ggsave("results/figures/fig_<name>.pdf", width = 5, height = 3)     # then OPEN 
 Presentation figure  →  clean theme + Paul-Tol palette + 16.5pt fonts + no y-label (title carries it) +
                          concise axis labels + right geom (dots for estimates, lines for series, stacks for composition) +
                          dashed treatment line for DiD + zero line + B&W-safe (shape/linetype redundancy) +
-                         at most 1-2 enhancing annotations + metadata in LaTeX notes +
+                         at most 1-2 enhancing annotations + metadata in LaTeX notes (in the paper, not the image) +
                          saved to results/figures/ at 5×3 in + visually checked (no clip, no overlap) — in ANY language
 Otherwise             →  a plot that runs clean but is unreadable from the back row, or from a photocopier —
                          labels clipped, text overlapping, wrong geom inventing a trend, color-only distinctions

@@ -9,7 +9,7 @@ description: Use BEFORE reporting a number, presenting a finding, sending an ana
 
 The last mile is where good analyses die. The number is computed, it looks right, the deadline is close — and "looks right" becomes "is right" without anything in between. This skill is the something in between: the checks that stand between a computed number and a claimed result.
 
-This is the analytics counterpart of verification-before-completion. The rule is identical: **evidence before assertions, always.** You do not say "the result is X"; you say "the result is X, here is the reconciliation, here is the clean-room reproduction, here is the robustness."
+This is the analytics counterpart of verification-before-completion. The rule is identical: **evidence before assertions, always.** You do not say "the result is X"; you say "the result is X, here is the reconciliation, here is the clean-room reproduction, here is what the approved robustness showed."
 
 **Core principle:** A result is not done when it appears; it's done when it has been reconciled, reproduced from scratch, and survived being attacked.
 
@@ -23,7 +23,7 @@ Run these before any result leaves your hands. Each maps to a real way final num
 
 3. **Confirm determinism.** Same input + same seed → same output, twice. If the number wiggles between runs, there's uncontrolled randomness or ordering dependence, and the figure you're about to report is one sample from a distribution you didn't mean to draw from.
 
-4. **Attack it with robustness.** For confirmatory work, run the suite pre-committed in `pre-analysis-plan` — all of it. Otherwise propose the ~3 perturbations that probe the main threat (dropping outlier percentiles, a clean subsample, the obvious alternative definition) and **get a nod before running any that changes the sample** (`analysis-checkpoints` — which checks to run is the user's call). If the headline swings wildly under a reasonable perturbation, it is fragile and you must say so. **Confirm each variant actually moved something:** a robustness check that returns a number *identical* to the baseline didn't perturb anything — a "leave-one-out" that re-added the row, a subsample filter that matched everything, a flag never read — and is a silent no-op, not evidence of robustness. A check has to *bite* to count.
+4. **Confirm the robustness that already ran — never initiate robustness here.** For confirmatory work, confirm the suite pre-committed in `pre-analysis-plan` ran — all of it. Otherwise, if the user approved a robustness shortlist (`causal-identification`, `analysis-checkpoints`), confirm it ran and what it showed; if none was approved, verification proceeds without one — proposing robustness is an analysis decision that belongs upstream with the user, not a verification step. If the headline swings wildly under a reasonable perturbation, it is fragile and you must say so. **Confirm each variant actually moved something:** a robustness check that returns a number *identical* to the baseline didn't perturb anything — a "leave-one-out" that re-added the row, a subsample filter that matched everything, a flag never read — and is a silent no-op, not evidence of robustness. A check has to *bite* to count.
 
 5. **Read it like an economist** — interpretable units, economic (not just statistical) significance, magnitude plausibility, mechanism, and a benchmark against known estimates. This is the heart of verification for any effect you'll interpret; the full discipline is below.
 
@@ -105,14 +105,13 @@ Once it passes, snapshot it as a golden output (see `data-contracts`). The verif
 |---|---|
 | "It ran fine, it's done." | Running and being correct are different claims. Only one of them protects the stakeholder. |
 | "It reproduces — I just ran it." | Re-running in the same session with cached state isn't reproduction. Restart and run from raw. |
-| "Robustness is overkill for an internal number." | The internal number drives the decision. Fragile-but-unchecked is how a bad decision gets made confidently. |
 | "analysis-review will catch whatever I miss." | Review assumes verification already passed — an unverified number wastes the reviewer on arithmetic. Verify first, then dispatch review. |
 | "Every check passed, the number's solid." | Those checks prove it's computed right (reliability), not that it measures what you named (validity). Anchor the level to something outside the data. |
 | "The deadline is now." | A wrong number presented on time is worse than a right one presented late, and far worse than a caveated one on time. |
 
 ## The Process
 
-1. **Run the checklist** — reconcile to source, reproduce clean, confirm determinism, attack with robustness, read it like an economist, tie artifacts to prose, freeze the golden output.
+1. **Run the checklist** — reconcile to source, reproduce clean, confirm determinism, confirm the approved robustness, read it like an economist, tie artifacts to prose, freeze the golden output.
 2. **If any check fails and you can't resolve it → STOP and invoke `wrong-number-debugging`** to bisect (or `analysis-checkpoints` if the fix is a design/sample/spec change). Do not footnote a failed check.
 3. **All checks pass → invoke `analysis-review`** — dispatch the independent `analysis-reviewer` to catch the silent failures you rationalized, *before* you ship.
 4. **Then invoke `project-organization`** — tidy scratch from deliverables before you commit or push. Don't end at "the result is X" — route to the review and the tidy-up.
@@ -120,6 +119,6 @@ Once it passes, snapshot it as a golden output (see `data-contracts`). The verif
 ## The bottom line
 
 ```
-Reported result  →  reconciled by an independent path, reproduced from a clean state, survived robustness, artifacts tied to prose
+Reported result  →  reconciled by an independent path, reproduced from a clean state, approved robustness confirmed (if any), artifacts tied to prose
 Otherwise         →  not verified, just submitted
 ```
