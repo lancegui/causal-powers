@@ -1,0 +1,41 @@
+  region treated_states never_treated_states
+1  North              5                    5
+2  South              5                    5
+3   East              5                    5
+4   West              5                    5
+                 specification                  term            estimate
+1       pooled_region_specific policy_on:regionNorth -5.3942881095077500
+2       pooled_region_specific policy_on:regionSouth -1.9717746322529048
+3       pooled_region_specific  policy_on:regionEast -6.4758696306547101
+4       pooled_region_specific  policy_on:regionWest -3.5008434638632187
+5 state_specific_linear_trends             policy_on -4.0310912402065142
+            std_error              t_value                p_value
+1 0.22690387393907288 -23.7734509149729085 8.1366292818753788e-25
+2 0.21323482547557285  -9.2469634256754265 2.2389123798334515e-11
+3 0.40070139958404255 -16.1613351921833512 7.0606466042223642e-19
+4 0.27802315094237640 -12.5919134863298137 2.5621028380450814e-15
+5 0.52838967401309500  -7.6290121447502255 2.9802960594261542e-09
+          conf_low_95        conf_high_95 n_obs n_states
+1 -5.8532445150454784 -4.9353317039700215  2400       40
+2 -2.4030827775779695 -1.5404664869278404  2400       40
+3 -7.2863647132393750 -5.6653745480700453  2400       40
+4 -4.0631983668343734 -2.9384885608920643  2400       40
+5 -5.0998602360739849 -2.9623222443390431  2400       40
+                                                      formula cluster_variable
+1      opioid_rate ~ policy_on:region | state_id + month_date         state_id
+2      opioid_rate ~ policy_on:region | state_id + month_date         state_id
+3      opioid_rate ~ policy_on:region | state_id + month_date         state_id
+4      opioid_rate ~ policy_on:region | state_id + month_date         state_id
+5 opioid_rate ~ policy_on | month_date + state_id[time_index]         state_id
+    input_file                        input_md5 fixest_version ssc_K_adj
+1 panel_v1.csv a81bc8b766a03a9d963fdc83152f3bf4         0.14.2      TRUE
+2 panel_v1.csv a81bc8b766a03a9d963fdc83152f3bf4         0.14.2      TRUE
+3 panel_v1.csv a81bc8b766a03a9d963fdc83152f3bf4         0.14.2      TRUE
+4 panel_v1.csv a81bc8b766a03a9d963fdc83152f3bf4         0.14.2      TRUE
+5 panel_v1.csv a81bc8b766a03a9d963fdc83152f3bf4         0.14.2      TRUE
+  ssc_K_fixef ssc_G_adj ssc_G_df ssc_t_df inference_df
+1   nonnested      TRUE      min      min           39
+2   nonnested      TRUE      min      min           39
+3   nonnested      TRUE      min      min           39
+4   nonnested      TRUE      min      min           39
+5   nonnested      TRUE      min      min           39

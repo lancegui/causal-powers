@@ -1,0 +1,2 @@
+"term","estimate","std_error","t_value","p_value","conf_low_95","conf_high_95","n_obs","n_states","n_months","cluster_variable","fixed_effects","outcome","outcome_units","fixest_version","ssc_K_adj","ssc_K_fixef","ssc_G_adj","ssc_G_df","ssc_t_df","inference_df"
+"policy_on","-4.3356939590696033","0.43794628155454418","-9.9000588466684185","3.3982916760600592e-12","-5.2215239262338429","-3.4498639919053642",2400,40,60,"state_id","state_id + month_date","opioid_rate","monthly opioid-prescribing rate per 100,000","0.14.2",TRUE,"nonnested",TRUE,"min","min",39

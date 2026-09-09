@@ -1,0 +1,4 @@
+"timestamp_utc","build_id","run_id","spec_id","input_file","input_md5","build_rule","code_md5","output","status"
+"2026-09-09 08:16:27 UTC","build_v1","run_v1","twfe_v1","panel_v1.csv","a81bc8b766a03a9d963fdc83152f3bf4","raw panel unchanged; post=treated*(month>=2021-01-01)","e75be96fcd6ce4833418da2377461494","estimates.csv","current"
+"2026-09-09 08:19:01 UTC","build_v1","run_region_v1","region_twfe_v1","panel_v1.csv","a81bc8b766a03a9d963fdc83152f3bf4","raw panel unchanged; post=treated*(month>=2021-01-01)","074c12d25b66b70bfe70b8aede798f75","estimates.csv","current"
+"2026-09-09 08:19:01 UTC","build_v1","run_trends_v1","state_trends_v1","panel_v1.csv","a81bc8b766a03a9d963fdc83152f3bf4","raw panel unchanged; post=treated*(month>=2021-01-01)","074c12d25b66b70bfe70b8aede798f75","estimates.csv","current"

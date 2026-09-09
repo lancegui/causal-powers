@@ -1,0 +1,2 @@
+build_id,run_id,spec_id,term,estimate,std_error,conf_low_95,conf_high_95,p_value,df,n_obs,n_states,input_md5,code_md5
+build_v1,run_v1,twfe_v1,post,-4.3356939590696033,0.43794628155454418,-5.2215239262338429,-3.4498639919053642,3.3982916760600592e-12,39,2400,40,a81bc8b766a03a9d963fdc83152f3bf4,e75be96fcd6ce4833418da2377461494

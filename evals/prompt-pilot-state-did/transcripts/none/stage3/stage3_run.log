@@ -1,0 +1,66 @@
+                         metric value
+1                       v1_rows  2400
+2               update_raw_rows   721
+3 update_duplicate_rows_removed     1
+4            update_latest_rows   720
+5         overlap_keys_replaced   720
+6         v1_only_keys_retained  1680
+7                       v2_rows  2400
+8                v2_unique_keys  2400
+9            panel_rows_dropped     0
+  result_version                specification                  term
+1     v2_current       primary_state_month_fe             policy_on
+2     v2_current       pooled_region_specific policy_on:regionNorth
+3     v2_current       pooled_region_specific policy_on:regionSouth
+4     v2_current       pooled_region_specific  policy_on:regionEast
+5     v2_current       pooled_region_specific  policy_on:regionWest
+6     v2_current state_specific_linear_trends             policy_on
+             estimate           std_error              t_value
+1 -4.3344616691498485 0.44145365128282943  -9.8186109834050423
+2 -5.3762723067193052 0.22496829710710667 -23.8979108427872369
+3 -1.9453390468190117 0.22096525334571940  -8.8038233041796818
+4 -6.4946088352816522 0.40666670576562292 -15.9703480594861773
+5 -3.5216264877795900 0.28336160764613905 -12.4280297427497111
+6 -4.0122678442781874 0.52958251358060149  -7.5762846041696719
+                 p_value         conf_low_95        conf_high_95 n_obs n_states
+1 4.2862519545867716e-12 -5.2273859612167017 -3.4415373770829953  2400       40
+2 6.7227482727655408e-25 -5.8313136385739819 -4.9212309748646286  2400       40
+3 8.2950556419615031e-11 -2.3922834584050205 -1.4983946352330026  2400       40
+4 1.0578030260892350e-18 -7.3171698885150382 -5.6720477820482662  2400       40
+5 3.8662178370587963e-15 -4.0947794386524548 -2.9484735369067252  2400       40
+6 3.5117380371736997e-09 -5.0834495859079141 -2.9410861026484607  2400       40
+                                                      formula cluster_variable
+1             opioid_rate ~ policy_on | state_id + month_date         state_id
+2      opioid_rate ~ policy_on:region | state_id + month_date         state_id
+3      opioid_rate ~ policy_on:region | state_id + month_date         state_id
+4      opioid_rate ~ policy_on:region | state_id + month_date         state_id
+5      opioid_rate ~ policy_on:region | state_id + month_date         state_id
+6 opioid_rate ~ policy_on | month_date + state_id[time_index]         state_id
+  built_data_file                   built_data_md5
+1    panel_v2.csv 219b9909d2dd96394e3172dbbfc3d936
+2    panel_v2.csv 219b9909d2dd96394e3172dbbfc3d936
+3    panel_v2.csv 219b9909d2dd96394e3172dbbfc3d936
+4    panel_v2.csv 219b9909d2dd96394e3172dbbfc3d936
+5    panel_v2.csv 219b9909d2dd96394e3172dbbfc3d936
+6    panel_v2.csv 219b9909d2dd96394e3172dbbfc3d936
+                      v1_input_md5                 update_input_md5
+1 a81bc8b766a03a9d963fdc83152f3bf4 eabeaa442be931e667b5ae81a5a85200
+2 a81bc8b766a03a9d963fdc83152f3bf4 eabeaa442be931e667b5ae81a5a85200
+3 a81bc8b766a03a9d963fdc83152f3bf4 eabeaa442be931e667b5ae81a5a85200
+4 a81bc8b766a03a9d963fdc83152f3bf4 eabeaa442be931e667b5ae81a5a85200
+5 a81bc8b766a03a9d963fdc83152f3bf4 eabeaa442be931e667b5ae81a5a85200
+6 a81bc8b766a03a9d963fdc83152f3bf4 eabeaa442be931e667b5ae81a5a85200
+                                                                         build_rule
+1 latest revision_ts per state_id x month; update wins overlap; retain v1-only keys
+2 latest revision_ts per state_id x month; update wins overlap; retain v1-only keys
+3 latest revision_ts per state_id x month; update wins overlap; retain v1-only keys
+4 latest revision_ts per state_id x month; update wins overlap; retain v1-only keys
+5 latest revision_ts per state_id x month; update wins overlap; retain v1-only keys
+6 latest revision_ts per state_id x month; update wins overlap; retain v1-only keys
+  fixest_version ssc_K_adj ssc_K_fixef ssc_G_adj ssc_G_df ssc_t_df inference_df
+1         0.14.2      TRUE   nonnested      TRUE      min      min           39
+2         0.14.2      TRUE   nonnested      TRUE      min      min           39
+3         0.14.2      TRUE   nonnested      TRUE      min      min           39
+4         0.14.2      TRUE   nonnested      TRUE      min      min           39
+5         0.14.2      TRUE   nonnested      TRUE      min      min           39
+6         0.14.2      TRUE   nonnested      TRUE      min      min           39

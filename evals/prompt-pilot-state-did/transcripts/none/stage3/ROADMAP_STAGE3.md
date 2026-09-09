@@ -1,0 +1,3 @@
+1. Fingerprint and validate `panel_v1.csv` and `panel_update.csv`; normalize missing treatment metadata only as specified and resolve update duplicates by latest `revision_ts` within `state_id × month`.
+2. Build `panel_v2.csv` with update rows winning on overlapping keys and all v1-only keys retained; assert key uniqueness, full panel row retention, and source reconciliation.
+3. Rerun the primary, pooled four-region, and state-specific-linear-trend models on v2, save full-precision traceable outputs and model objects, and write a manifest identifying v2 results as current while leaving every v1 artifact unchanged.

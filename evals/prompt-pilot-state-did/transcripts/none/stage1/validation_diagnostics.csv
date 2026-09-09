@@ -1,0 +1,10 @@
+"check","value"
+"rows",2400
+"states",40
+"months",60
+"duplicate_state_month_rows",0
+"missing_required_cells",0
+"treated_states",20
+"never_treated_states",20
+"treated_state_months",480
+"model_observations",2400

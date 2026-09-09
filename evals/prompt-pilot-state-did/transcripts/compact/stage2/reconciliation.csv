@@ -1,0 +1,4 @@
+"build_id","run_id","spec_id","raw_rows","built_rows","analysis_rows","unique_states","unique_months","key_duplicates","duplicate_resolution","merge_cardinality","merges","missing_analysis_fields","missing_rule","update_precedence"
+"build_v1","run_v1","twfe_v1",2400,2400,2400,40,60,0,"none","none (single source)",0,0,"complete cases required; assertion prevents dropping","not applicable; one immutable source"
+"build_v1","run_region_v1","region_twfe_v1",2400,2400,2400,40,60,0,"none","none (single source)",0,0,"complete cases required; assertion prevents dropping","not applicable; one immutable source"
+"build_v1","run_trends_v1","state_trends_v1",2400,2400,2400,40,60,0,"none","none (single source)",0,0,"complete cases required; assertion prevents dropping","not applicable; one immutable source"

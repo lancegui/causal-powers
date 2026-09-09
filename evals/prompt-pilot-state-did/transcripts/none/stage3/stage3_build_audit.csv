@@ -1,0 +1,10 @@
+"metric","value"
+"v1_rows",2400
+"update_raw_rows",721
+"update_duplicate_rows_removed",1
+"update_latest_rows",720
+"overlap_keys_replaced",720
+"v1_only_keys_retained",1680
+"v2_rows",2400
+"v2_unique_keys",2400
+"panel_rows_dropped",0
