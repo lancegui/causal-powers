@@ -10,9 +10,12 @@ recovery did not touch the historical run. The current arm's recovery first
 reran the Stage 1 script in place before doing an isolated recomputation, and
 its Stage 1 run ledger used the false date 2026-10-20.
 
-This is one paired prompt-only trajectory. It compares instruction packages,
-not prompt length: the lean prompt adds stronger iteration rules while removing
-other content, and repository hooks were absent.
+This is one paired prompt-only trajectory using gpt-5.6-sol at low reasoning
+effort for the driver, both main subjects, and both recovery subjects. It
+compares supplied instruction packages, not prompt length: the lean prompt adds
+stronger iteration rules while removing other content, and repository hooks
+were absent. The current arm received the always-on card plus eight selected
+on-demand skills, not the complete installed plugin or its hooks.
 
 ## Direct evidence
 
@@ -36,10 +39,12 @@ stored coefficient and SE. The update hash was
 The lean arm used elapsed calendar days for state-specific trends consistently
 in Stages 2 and 3; the oracle/current arm used integer month index. The prompt
 said only “linear trends,” so both are defensible but produce a small difference
-(lean v2 -4.0120607; month-index oracle -4.0122678). Following the frozen
-rubric's valid-convention rule, this was recomputed under the documented
-convention and not scored as an error. This ambiguity should be removed in a
-future pilot.
+(lean v2 -4.0120607; month-index oracle -4.0122678). The frozen rubric
+addressed alternative finite-sample corrections for clustered SEs but did not
+address this time-scale ambiguity. Accepting the consistent elapsed-day
+convention is therefore a post-run adjudication of underspecified task wording,
+not a prespecified rubric rule. This ambiguity should be removed in a future
+pilot.
 
 ## Major failures and caveats
 
@@ -60,7 +65,7 @@ bytes were ultimately lost.
 The revised file replaces an overlapping vintage and adds no new months, so
 this tests update precedence and provenance rather than panel expansion.
 
-## Frozen weighted score
+## Illustrative weighted judgment
 
 | Category | Current | Lean |
 |---|---:|---:|
@@ -74,12 +79,16 @@ this tests update precedence and provenance rather than panel expansion.
 Current lost one preservation point for the in-place recovery rerun and two
 provenance points for the false Stage 1 date. Both lost one friction point for
 the saturated unsolicited diagnostic. Neither asked for redundant approval.
+Because the trend convention required post-run adjudication, these are
+illustrative reviewer judgments rather than fully prespecified, independently
+validated scores.
 
 ## Measured footprint
 
-The lean instruction file is 232 words. The current always-on card plus the
-eight supplied SKILL.md files total 19,661 words. These counts exclude staged
-user prompts. At the end of recovery, the current runtime contained 37
+The lean instruction file supplied 232 available words. The current always-on
+card plus eight supplied SKILL.md files made 19,661 words available. These are
+supplied instruction counts, not measured consumed context, and they exclude
+staged user prompts. At the end of recovery, the current runtime contained 37
 subject-created files after excluding 15 seeded instruction files and two raw
 fixtures; lean contained 24 after excluding its prompt and two fixtures. These
 are file counts, not token, cost, or total-tool-call measures. Subject timing
@@ -96,3 +105,7 @@ elapsed runtime.
 - Generator and hidden evaluator oracle: fixtures/
 - Per-stage runtime snapshots and recovery audits: transcripts/
 
+Exact final-response coverage is retained for Stages 1-3 where collaboration
+messages were available. Tool-call transcripts and intermediate commentary
+were not available as an export, so this archive does not claim complete
+token-level or turn-level coverage.
