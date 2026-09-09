@@ -2,6 +2,27 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## 0.33.0 — outcome-scoped regression history (2026-09-09)
+
+- **Regression state updates with the regression.** The new R/`fixest`
+  fit-and-register helper promotes a successful requested result directly to
+  the matching outcome/result-family current pointer. Failed runs leave current
+  untouched, experimental alternatives do not replace main, and identical
+  reruns do not add history.
+- **Compact current, recoverable archive.** Small projects use two bookkeeping
+  files: a readable `results.yaml` current view and one consolidated archive.
+  Shared data-build provenance is stored once; exact estimation data, model,
+  source code content, predecessor, specification, and software identity remain
+  recoverable. The helper serializes concurrent writers and validates archived
+  evidence before current advances.
+- **Less ambient prompt weight.** The always-on card is 1,179 words while
+  retaining the regression-update red line; detailed registry schema and the
+  runnable API/recovery example live in the state-management reference.
+- **Evidence and scope.** A four-arm synthetic state-DiD pilot motivated the
+  compact current/archive design. It is illustrative evidence about one staged
+  workflow, not a general benchmark or a causal estimate of prompt length.
+- Plugin, Codex-plugin, and marketplace manifests are aligned at `0.33.0`.
+
 ## 0.32.0 — economist-not-engineer discipline + user-invoked verification (field report: Github_AI run)
 
 (0.31.0 was the figure-craft skill release, ac1b9d3, which shipped without

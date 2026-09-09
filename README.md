@@ -16,6 +16,7 @@ failure visible before it reaches a result.
 1. **Economic framing of mature, proven skills.** It adapts the disciplines proven in software engineering — contract-checked transforms, systematic debugging, specification before code, independent review — to the silent failures and judgment calls of empirical microeconomics.
 2. **It grows into your data's domain.** Each iteration records what went wrong in a given project and surfaces it the next time the same step recurs, so the discipline grows more attuned to that dataset over time. The shared skills stay general; what accumulates is the project's own record of past mistakes.
 3. **Built for day-to-day research, not one-shot answers.** Empirical projects run for weeks across many sessions. A small `docs/analysis/` state folder keeps current phase, decisions, artifacts, runs, and handoffs on disk, so it survives `/clear`, automatic compaction, and interruption without forcing every fresh session to reread one giant plan.
+4. **Regression results stay current by construction.** The R/`fixest` helper fits, saves, and advances the matching outcome/result-family pointer in one call, while retaining the prior data, code, and result for recovery.
 
 ## Motivation
 
@@ -40,7 +41,7 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 
 ## The flow
 
-![Causal Powers flow: any data, analysis, or figure request goes to question-framing, which forks to descriptive (descriptive-evidence), reduced-form (causal-identification), structural (structural-estimation), or predictive (predictive-modeling), through a write-the-plan approval gate, then executing-analysis-plans, data-preparation and data-contracts, result-verification, and analysis-review to ship; analysis-craft, analysis-checkpoints, and wrong-number-debugging run alongside.](docs/flow.svg)
+![Causal Powers flow: any data, analysis, or figure request goes to question-framing, which forks to descriptive, reduced-form, structural, or predictive work, through a written-plan approval gate, execution, data preparation and contracts, optional result verification, and review; craft, checkpoints, and debugging run alongside.](docs/flow.svg)
 
 *The whole flow runs on an **always-on layer** (a discipline card injected every session + a trigger router) that re-fires the right skill on every request. `analysis-craft` (minimal, surgical code) and `analysis-checkpoints` (the human-in-the-loop guardrail) run alongside every step; `project-organization` keeps the repo legible and tidies before commit.*
 
@@ -52,7 +53,7 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 | `question-framing` | Pin the estimand/metric, population, unit, and the decision — before code | `brainstorming` |
 | `descriptive-evidence` | Stylized facts, trends, summary-stats tables, distributions, and maps done honestly: fix comparability (real-vs-nominal, per-capita, weighting), run the composition check (a mix shift faking a within-group change; a count choropleth just maps population), show the distribution, keep the verb descriptive — the descriptive layer beneath the fork | (none — domain core) |
 | `pre-analysis-plan` | Lock hypotheses, primary spec, and robustness suite before seeing outcomes | spec-driven dev / `writing-plans` |
-| `analysis-state-management` | Maintain `docs/analysis/index.yaml` plus compact decision/artifact/phase/run/handoff YAML records — each phase record carries the plan *and* its execution topology; a leftover single growing plan file is migrated in by extraction, never kept live | `planning-with-files` |
+| `analysis-state-management` | Maintain compact resumable state and an outcome-scoped regression registry: current result-family pointers stay small while recoverable data, code, models, and history live in one archive | `planning-with-files` |
 | `data-contracts` | Invariants, join-cardinality checks, totals reconciliation, frozen baselines — the **checker** | `test-driven-development` |
 | `data-preparation` | Owns the data ingest & cleaning **phase** (the heaviest one): ingest→clean→join→dedup→recode→reconcile as a phased YAML checklist with a decisions ledger; the **doer** that *calls* `data-contracts` per step and routes consequential cleaning choices to `analysis-checkpoints` | `writing-plans` (for the cleaning phase) |
 | `analysis-craft` | Minimum analysis that answers the question; surgical edits to notebooks/pipelines | Karpathy: simplicity + surgical |
@@ -60,8 +61,8 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 | `analysis-checkpoints` | Stop and ask before changing design/sample/spec/estimand; loop toward the agreed goal, never redefine it | superpowers review gates |
 | `executing-analysis-plans` | Drive an approved plan: sequential spine validated in order, independent specs/designs fanned out to parallel subagents | `executing-plans` / `subagent-driven-development` |
 | `wrong-number-debugging` | Bisect the pipeline to the step where the number went bad | `systematic-debugging` |
-| `result-verification` | Reconcile, reproduce from clean state, attack with robustness, before reporting | `verification-before-completion` |
-| `causal-identification` | State & test identification assumptions; mandatory robustness for DiD/IV/RDD/etc. — the reduced-form workflow | (none — domain core) |
+| `result-verification` | On direct request, reconcile and reproduce results from a clean state and confirm the approved checks | `verification-before-completion` |
+| `causal-identification` | State and test identification assumptions; run mandatory design diagnostics and the user-approved robustness shortlist — the reduced-form workflow | (none — domain core) |
 | `structural-estimation` | Estimate model primitives for counterfactuals the data can't contain: write the model card and get approval, prove recovery by Monte Carlo, derive analytical gradients group-by-group, re-solve equilibrium one scenario per mechanism — the structural workflow | (none — domain core) |
 | `predictive-modeling` | Predict, score, rank, or flag outcomes: gated Prediction Spec, leakage-safe evaluation, deployment-matched splits, and a hard prediction-is-not-causation line — the predictive workflow | (none — domain core) |
 | `analysis-review` | Review an analysis for silent-failure classes; verify review feedback | `requesting`/`receiving-code-review` |
@@ -92,6 +93,28 @@ aggregate into within-vs-between, map rates not raw counts, and let a stylized
 fact *motivate* the causal question rather than answer it (`descriptive-evidence`).
 The target is a senior microeconomist's instincts — descriptive, reduced-form,
 structural, *and* predictive — not a careful RA's checklist.
+
+### Regression iteration without result drift
+
+For helper-mediated R/`fixest` work, a successful regression updates its
+current entry immediately under the relevant **outcome** and **result family**
+(main DiD, regional effects, state-trend alternative, and so on). Main and
+supporting results can remain current together; replacing one does not move the
+others.
+
+Small projects create two bookkeeping files: a concise
+`docs/analysis/results.yaml` current view and one consolidated
+`results-archive.rds`. The archive retains the exact estimation data, model,
+source code content, and predecessor needed to recover an older result. Failed
+runs leave current untouched, experimental alternatives do not replace main,
+and identical reruns add no history. Shared data-build provenance is recorded
+once. See the
+[result-registry reference](skills/analysis-state-management/references/result-registry.md)
+for the API and recovery example.
+
+This coupling currently covers the supplied R helper and requires `fixest`,
+`yaml`, `digest`, and `jsonlite`. Direct estimator or output writes and
+other languages are not intercepted.
 
 ## Beyond skills: always-on layer + agents
 
@@ -134,9 +157,8 @@ discipline present, makes the chain *fire* reliably, and makes long work resumab
   injection surface).
 - **A Stop-gate + run ledger** (`hooks/stop-gate`): at most once per session, in
   analysis projects only (opt-in via `docs/analysis/index.yaml`/`docs/LESSONS.md`), and
-  never when already continuing from a block — if a results artifact was written
-  but `result-verification` never fired, or debugging ran but no lesson was
-  logged, the stop is blocked once with a precise reason (and an explicit out).
+  never when already continuing from a block. It nudges when a durable lesson
+  is missing after debugging; result verification remains strictly opt-in.
   Every stop also appends one line to `.causal-powers/ledger.jsonl` — an
   append-only audit trail that survives compaction. All hooks honor a
   `CAUSAL_POWERS_DISABLED_HOOKS` env kill-switch (comma-separated hook names).
