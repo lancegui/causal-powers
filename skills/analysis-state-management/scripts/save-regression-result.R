@@ -37,7 +37,7 @@ register_regression_result <- function(
   if (!is.data.frame(estimates) || !nrow(estimates) ||
       !all(c("term","estimate") %in% names(estimates)) ||
       any(!is.finite(estimates$estimate))) stop("finite term/estimate rows required")
-  .rr_required(spec, c("outcome","treatment","formula","sample","window",
+  .rr_required(spec, c("outcome","outcome_expression","treatment","formula","sample","window",
     "controls","fixed_effects","weights","clustering","estimator"), "spec")
   .rr_required(data_build, c("id","path","sha256"), "data_build")
   if (!file.exists(data_build$path) ||
@@ -175,11 +175,10 @@ run_fixest_and_register <- function(
     error=function(e) stop("regression failed; current unchanged: ",
       conditionMessage(e)))
   fitted_formula <- stats::formula(model)
-  fitted_outcome <- as.character(fitted_formula[[2]])
-  if (!identical(as.character(outcome), fitted_outcome))
-    stop("outcome key does not match fitted formula outcome; current unchanged")
+  fitted_outcome <- paste(deparse(fitted_formula[[2]]), collapse="")
   spec$formula <- paste(deparse(fitted_formula), collapse="")
-  spec$outcome <- fitted_outcome
+  spec$outcome <- outcome
+  spec$outcome_expression <- fitted_outcome
   spec$clustering <- paste(deparse(cluster), collapse="")
   spec$weights <- if (is.null(weights)) "none" else
     paste(deparse(weights), collapse="")

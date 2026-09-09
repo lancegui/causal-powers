@@ -58,12 +58,16 @@ invisible(run(outcome="z", reason="other outcome", id="5", data=d2,
   formula=z~treat|id+time))
 invisible(run(family="weighted", reason="weighted supporting", id="5w",
   data=d2, cluster=~time, weights=~w))
+invisible(run(family="log-main", reason="transformed outcome", id="5l",
+  data=d2, formula=log(y-min(y)+1)~treat|id+time))
 cur3 <- read_yaml("docs/analysis/results.yaml")
 stopifnot(cur3$outcomes$y$families$main$current$result_id==id2,
   !is.null(cur3$outcomes$y$families$regional$current),
   !is.null(cur3$outcomes$z$families$main$current),
   cur3$outcomes$y$families$weighted$current$spec$clustering=="~time",
-  cur3$outcomes$y$families$weighted$current$spec$weights=="~w")
+  cur3$outcomes$y$families$weighted$current$spec$weights=="~w",
+  grepl("^log\\(", cur3$outcomes$y$families[["log-main"]]$current$
+    spec$outcome_expression))
 
 before <- digest("docs/analysis/results.yaml", "sha256", file=TRUE)
 try(run(reason="failed", id="6", data=d2, formula=y~missing|id+time), silent=TRUE)

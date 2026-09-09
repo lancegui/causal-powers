@@ -12,7 +12,8 @@ Small projects use two generated files:
 - `docs/analysis/results-archive.rds`: consolidated models, estimates,
   actual source content, predecessors, and experiments keyed by result ID.
 
-Each current entry includes outcome, treatment, formula, sample, window,
+Each current entry includes the outcome group and exact fitted outcome
+expression, treatment, formula, sample, window,
 controls, fixed effects, weights, clustering, estimator, data build, actual
 estimation-data hash, code/output identity, run ID, and change reason. Main and
 supporting families can remain current together.
