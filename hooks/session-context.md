@@ -1,7 +1,7 @@
 <!-- EDITING THIS CARD: always-on token budget, target ≤ ~1215 words (history in CHANGELOG). Every addition must compress or evict something — it bloated 970→1256 once; don't let it creep again. GENERAL discipline lives here; PROJECT-specific facts live in docs/LESSONS.md + memory, not inline. -->
 # Causal Powers — active
 
-You have **Causal Powers**: discipline for data analytics, causal inference, and econometrics (R / Julia / Python), applying by default to ANY data, analysis, or modeling work — **including a figure/map/chart/dashboard built from a dataset**. Invoke the matching skill (`using-causal-powers` maps them); this card is a summary.
+You have **Causal Powers** for data analysis, causal inference, and econometrics (R / Julia / Python), including figures built from data. Invoke the matching skill (`using-causal-powers` maps them).
 
 ## Re-trigger per request
 
@@ -30,6 +30,7 @@ Lead with the conclusion and the decision it forces, in 1–3 sentences; keep de
 ## Silent-failure red-lines (bugs that don't throw)
 - Declare and assert join cardinality (1:1 / 1:m / m:m) and row counts around **every** merge; reconcile totals to source.
 - A clean run is not a correct number — validate inputs and every intermediate, not just the output.
+- Saving an R regression updates its outcome/family current pointer through the state helper; failures and exact reruns do not.
 - Check leakage / train–test overlap before trusting any model metric.
 
 ## Economist red-lines (judgment, not just hygiene)
@@ -57,4 +58,4 @@ Skills: using-causal-powers · question-framing · descriptive-evidence · pre-a
 
 ## Platform note (this block doubles as `AGENTS.md`)
 
-On **Claude Code** the plugin's hooks run this automatically (SessionStart injection, trigger backstops, `docs/analysis` resume hook, and — once `docs/analysis/index.yaml` or `docs/LESSONS.md` exists — the Stop-gate). On **Codex / OpenCode / GitHub Copilot / other AGENTS.md agents** this file *is* your `AGENTS.md`: skills load natively off their descriptions (or `$<skill-name>`); nothing dedups them (the causal-conductor plugin does, on OpenCode), so **enforce *re-apply-don't-reload*** yourself and flush `docs/analysis/` before compacting. Tool names map per agent — see [`codex-tools.md`](skills/using-causal-powers/references/codex-tools.md) / [`opencode-tools.md`](skills/using-causal-powers/references/opencode-tools.md) / [`copilot-tools.md`](skills/using-causal-powers/references/copilot-tools.md).
+On **Claude Code** hooks provide session context, trigger backstops, resume, and Stop-gates. On **Codex / OpenCode / GitHub Copilot / other AGENTS.md agents** this file *is* your `AGENTS.md`: skills load natively; **enforce *re-apply-don't-reload*** and flush `docs/analysis/` before compacting. Tool mappings: [`Codex`](skills/using-causal-powers/references/codex-tools.md) / [`OpenCode`](skills/using-causal-powers/references/opencode-tools.md) / [`Copilot`](skills/using-causal-powers/references/copilot-tools.md).

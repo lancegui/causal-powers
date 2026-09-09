@@ -26,7 +26,9 @@ Use this layout unless the repo already has an equivalent convention:
 docs/analysis/
   index.yaml               # the ONLY default read
   decisions.yaml           # decision ledger
-  artifact_registry.yaml   # truth-to-file map
+  artifact_registry.yaml   # non-regression truth-to-file map
+  results.yaml             # concise current regression pointers, when used
+  results-archive.rds      # consolidated regression evidence, on demand
   phases/<id>.yaml         # one file per phase; carries the plan AND the topology
   evidence/ runs/ handoffs/ scratch/   # optional; referenced when used
 ```
@@ -88,6 +90,19 @@ artifacts:
     checks:
       - runs/2026-07-08_smoke.yaml
 ```
+
+## Regression results update when saved
+
+This skill alone owns the outcome-scoped regression registry. For R
+regressions, read [the result-registry reference](references/result-registry.md)
+and use its fit-and-register helper. It couples successful estimation, retained
+evidence, and advancement of the matching outcome/result-family pointer; do not
+save first and promise to update state later.
+
+Main and supporting families may be current together. A requested successful
+replacement moves only its family; failed runs and experiments do not. Exact
+reruns add no history. Resume reads the relevant current outcome; archives are
+opened only for comparison or recovery.
 
 ## phases/&lt;id&gt;.yaml — carries the plan AND the topology
 
@@ -161,8 +176,10 @@ Update the smallest record that changed:
   `handoffs/*.yaml`, `artifact_registry.yaml`, or `decisions.yaml` as
   appropriate; do not edit the approved phase contract just to mark progress;
 - consequential decision or approved deviation -> `decisions.yaml`;
-- new or changed output -> `artifact_registry.yaml`;
-- command/result reproducibility -> `runs/*.yaml`;
+- new or changed non-regression output -> `artifact_registry.yaml`;
+- non-regression command reproducibility -> `runs/*.yaml`;
+- registered regressions -> `results.yaml` and its consolidated archive via
+  the helper; do not duplicate them into artifact/run records;
 - subagent continuation -> `handoffs/*.yaml`;
 - routing changes -> `index.yaml`.
 

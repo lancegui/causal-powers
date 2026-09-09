@@ -121,9 +121,10 @@ When the fan-out completes, assemble — don't just dump:
 1. **Build / clean / join the dataset → delegate to `data-preparation`** (unless it's a trivial load of one already-clean file); it returns the clean, validated dataset.
 2. **Validate every later spine step + fanned-out spec before trusting a number** → *invoke `data-contracts`*.
 3. **Fork by design as you estimate** — reduced-form → *invoke `causal-identification`* for the robustness suite; structural → *invoke `structural-estimation`* for recovery reps, starts, and counterfactuals.
-4. **Keep the code minimal and surgical on every write → invoke `analysis-craft`.**
-5. **Any decision that changes design/sample/spec/estimand — or any number the user has already seen — STOP and invoke `analysis-checkpoints`.** A surprising result is a checkpoint, not a step; a number that looks wrong is `wrong-number-debugging`, not a silent patch.
-6. **Spine + fan-out complete → offer verification (`result-verification`) in one line — the user's call.** `result-verification` is user-invoked; offer it before a result ships, never run it unasked.
+4. **Run/save R regressions through `analysis-state-management`'s registry helper** so successful output and its outcome/family current pointer update together.
+5. **Keep the code minimal and surgical on every write → invoke `analysis-craft`.**
+6. **Any decision that changes design/sample/spec/estimand — or any number the user has already seen — STOP and invoke `analysis-checkpoints`.** A surprising result is a checkpoint, not a step; a number that looks wrong is `wrong-number-debugging`, not a silent patch.
+7. **Spine + fan-out complete → offer verification (`result-verification`) in one line — the user's call.** `result-verification` is user-invoked; offer it before a result ships, never run it unasked.
 ## The bottom line
 
 ```
