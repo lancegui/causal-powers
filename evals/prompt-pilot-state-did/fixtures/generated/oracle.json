@@ -1,0 +1,45 @@
+{
+  "seed": 20260909,
+  "rows": {
+    "v1": 2400,
+    "update_raw": 721,
+    "update_dedup": 720,
+    "v2": 2400
+  },
+  "hashes": {
+    "v1": "02233208ed1646c22685a408d91d4bdc7f5fe73bdffc58f3df0229362b30e6fe",
+    "update": "4535f64c92826efcd210a9f72c4abed3820aa5899ad30ccb532edfab6389521b"
+  },
+  "v1": {
+    "primary": {
+      "coef": -4.3356939590696033,
+      "se": 0.43794628155454418
+    },
+    "region": {
+      "policy:regionEast": -6.4758696306547074,
+      "policy:regionNorth": -5.3942881095077482,
+      "policy:regionSouth": -1.9717746322529044,
+      "policy:regionWest": -3.5008434638632187
+    },
+    "alternative": {
+      "coef": -4.0310912402065044,
+      "se": 0.52838967401309755
+    }
+  },
+  "v2": {
+    "primary": {
+      "coef": -4.3344616691498485,
+      "se": 0.44145365128282943
+    },
+    "region": {
+      "policy:regionEast": -6.4946088352816496,
+      "policy:regionNorth": -5.3762723067193035,
+      "policy:regionSouth": -1.9453390468190113,
+      "policy:regionWest": -3.52162648777959
+    },
+    "alternative": {
+      "coef": -4.0122678442781918,
+      "se": 0.52958251358060437
+    }
+  }
+}

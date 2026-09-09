@@ -1,0 +1,102 @@
+---
+name: analysis-checkpoints
+description: Use throughout the EXECUTION of any analysis — while running, debugging, modeling, or cleaning data — to decide which decisions you may make on your own and which you must STOP and bring to the user first. Forces a human-in-the-loop checkpoint before any consequential analytical choice — changing the research design, estimand, or identification strategy; deviating from the framed question or pre-analysis plan; dropping/filtering/winsorizing data or changing the sample; choosing between materially different specifications; redefining a metric; or changing any number the user has already seen. Use this whenever you catch yourself about to "just fix it", "upgrade the design", "drop the outliers", or otherwise decide something on the user's behalf — especially mid-debugging, where design changes get smuggled in as bug fixes.
+---
+
+# Analysis Checkpoints
+
+## Overview
+
+Autonomy is the point of a good analysis loop — and also its biggest hazard. The same momentum that makes you productive fast lets you redefine the goal mid-flight without noticing: a debugging session quietly becomes a redesign, an outlier "obviously" gets dropped, a near-vs-far DiD silently becomes a triple-difference. Each step felt like progress; collectively, the user got an analysis they never agreed to.
+
+**Core principle:** Loop autonomously *toward the agreed goal*. Never redefine the goal — the design, the sample, the spec, the estimand, the metric — behind the user's back. When execution wants to change any of those, that is a **checkpoint**, not a task: stop, surface it, let the user decide.
+
+This is the execution-time form of "Think Before Coding": don't decide silently, surface the tradeoff. `question-framing` / `pre-analysis-plan` establish the agreed goal up front; this skill protects it while the work runs.
+
+## The line: your call vs. the user's call
+
+The test is simple — **does this change what is being estimated, on what data, or a number the user has already seen?** If yes, it's the user's call. Run this one question on *every* decision you're about to make; the two lists below are just worked examples of "yes" (STOP) and "no" (proceed and report). Two sanctioned stops sit *outside* the test: the execution-mode choice (inline vs subagents) and discretionary-robustness selection — they stop because the plan assigns them to the user, not because they change what's estimated.
+
+### Decisions that REQUIRE a checkpoint — STOP and ask
+- **Design / identification strategy.** Switching estimators or designs (near-vs-far DiD → triple-difference, OLS → IV, adding/removing a fixed effect that changes identification, changing the comparison group). This is the most commonly smuggled-in change.
+- **The structural model itself.** For structural work: the utility/payoff form, the random-coefficient distribution, the conduct/equilibrium assumption, what's treated as a primitive vs. held fixed or calibrated, and the counterfactual design. These decide what is even being estimated and what the counterfactual means; they belong in the approved model card, so changing one mid-estimation — switching Nash–Bertrand to collusion, adding a random coefficient to make estimates behave — is a deviation, not a fix (`structural-estimation`).
+- **Any deviation from the framed question or the pre-analysis plan.** The PAP exists precisely so these stops happen. A deviation is allowed — but disclosed and approved, never hidden.
+- **The estimand.** ATE vs. ATT vs. LATE, the population, the time window.
+- **The sample.** Dropping rows, filtering, winsorizing, trimming, excluding outliers, changing inclusion/exclusion rules, restricting to a subsample — and the additive direction too: **adding to, re-pulling, or substituting the data source/vintage**, and **selecting among optimizer runs / seeds / starting values** for the reported estimate.
+- **Materially different specifications or models** where there's a real tradeoff (functional form, control set, clustering level, missing-data handling, imputation).
+- **Metric definition / units / grain.** Redefining the numerator or denominator, changing the unit of observation.
+- **The scope of the robustness suite.** Don't fan out an exhaustive menu of checks. Propose the ~3 that probe the main threat, with rationales, and get approval before running — robustness is an argument, not an inventory (`executing-analysis-plans`).
+- **Any reported or actionable number the user has seen** — a result, headline total, or anything in a deliverable — that your change would move. (Echoed intermediates — row counts, quick chat diagnostics — don't stop the work: apply the change and report the old → new delta inline.)
+
+### Decisions you may make autonomously — note it, don't ask
+- **Mechanical data-bug fixes that *restore* the intended computation** — dedup a key that was always meant to be unique, correct a wrong join type, fix a units error, repair a broken date parse. These return the analysis to what was already agreed; they don't change the design. Always **report** what you fixed. A "restoring" claim must **cite the written line** (brief / PAP / decisions log) that establishes the intended behavior — no citation, no "restore": it's a design choice, STOP. During `data-preparation`'s Phase 1 its stricter rule wins: any beyond-trivial dedup is a checkpoint. **Tiebreaker:** a restoring fix that moves a number the user has seen is **applied, never silent — PROCEED + disclose is the shape**; the only question is prominence. An echoed intermediate (row count, chat diagnostic): report the old → new delta inline and continue. A **reported/actionable** number: surface the delta as its own note before building further. Stop-and-ask is reserved for changes that are *not* restorations.
+- **Code-craft choices** — variable names, how a transform is written, plot styling. (See `analysis-craft`.)
+
+The dividing question between a fix and a redesign: *"Am I restoring the analysis we agreed on, or changing it?"* Restoring → proceed and report. Changing → checkpoint.
+
+## How to run a checkpoint
+
+When you hit one, stop and present — don't implement past it:
+
+1. **Name the decision** plainly: "This is a change to the identification strategy."
+2. **Show the evidence** that surfaced it: the diagnostic, the number, the failed check.
+3. **Lay out the options** — at least two — each with its tradeoff and what it would change about the result.
+4. **Give your recommendation and why** — you're not abdicating judgment, you're surfacing it for approval.
+5. **WAIT.** Do not write the redesign, drop the rows, or re-estimate until the user chooses. Implementing "so it's ready for them to see" is the exact failure mode.
+
+**Bundle the asks, never the decisions:** gates known at the same moment go in **one approval message** (framing + PAP + Phase-1 roadmap + execution mode), each named separately so the user can approve or redirect each. PAP sign-off covers the Phase-1 roadmap when the PAP already specifies the build steps.
+
+**If you cannot reach the user** (batch, cron, non-interactive run): a deadlock is wrong, but so is deciding for them. **Stop at the last validated state, do NOT implement the checkpoint-class change, and return the options + recommendation as the deliverable** for a human to resolve — surfacing the decision unresolved is correct output, not a failure.
+
+**Worked example (the kind that should always stop):** debugging a high near-clinic effect turns up a geographically uneven 2016 recording jump that a plain near-vs-far DiD would misread as the treatment effect. **Options:** (a) upgrade to a triple-difference absorbing the differential — most robust, but a design deviation; (b) keep the design, document the differential as a caveat; (c) restrict to cities without the jump. **Recommendation:** (a), but it's a PAP deviation, so it's the user's call — stated and WAITED on *before* the triple-difference is written. Writing it first and presenting it as "the fix" is exactly what this skill prevents.
+
+## The locked-document gate — shared mechanics
+
+Five skills each write a planning document before their most expensive machinery starts — the framing brief, the pre-analysis plan, the causal Design Card, the structural model card, the Prediction Spec (owned respectively by `question-framing`, `pre-analysis-plan`, `causal-identification`, `structural-estimation`, `predictive-modeling`). The document differs by skill; the mechanics around it are identical, so they're owned once, here:
+
+1. **Write it to a file, not the chat.** A plan that lives only in conversation is a suggestion you can quietly revise later. Persist it in the project (`docs/analysis/...`) via `analysis-state-management` so it survives `/clear` and compaction.
+2. **Get the user's explicit sign-off before the next load-bearing step** — before touching outcome data, before building estimation machinery, before fitting, before executing. A plan the requester never confirmed is one you guessed.
+3. **The document is living, not frozen — but a load-bearing edit is still the user's call.** Refining as you learn is expected. A load-bearing change — the estimand, the design, the sample, the label, the model form — is a deviation, not a touch-up: it routes through *this* gate like any other consequential change, never a quiet rewrite of the doc to match where the work drifted.
+4. **Entering mid-pipeline waives nothing.** "Just run the regression / fit the model / estimate this" mid-stream almost never means a document already exists — usually none was written. Reconstruct it from context in a few lines, confirm it with the user, *then* do the step asked for. "They already told me to do X" names the task, not the sign-off.
+
+Each of the five skills states only what its document IS — its required fields and when it fires; this is the mechanics underneath all five, so it isn't restated five times.
+
+## "Loop until verified" ≠ "loop until you like the number"
+
+Goal-driven autonomy (`analysis-craft` / the gateway) means iterating freely toward **fixed, agreed success criteria** — not stopping at "the code ran," but also never changing the criteria, design, or sample to reach a result. If hitting the goal seems to require changing the goal, that's the loudest possible checkpoint: stop and say so.
+
+## Red flags — STOP
+
+- You're mid-debugging and about to "upgrade", "switch to", or "fix" the design/spec to make a number behave.
+- You're about to drop, trim, or winsorize data the user didn't ask you to drop.
+- A change you're making would move a number the user has already seen, and you weren't going to mention it until the end.
+- You've started writing the redesigned model *before* the user agreed to redesign.
+- You're treating a deviation from the PAP as an implementation detail.
+- You catch yourself thinking "they'll obviously want this" — that's the rationalization that precedes deciding for them.
+
+## Common rationalizations
+
+| Excuse | Reality |
+|---|---|
+| "It's clearly the right fix, I'll just do it." | If it changes the design or sample, "right" is the user's judgment to make. Surfacing it costs a paragraph; the wrong silent change costs their trust in every number. |
+| "I'm just fixing a bug." | Restoring the agreed computation is a fix. Changing what's estimated is a redesign wearing a bug's clothes. Ask which one it is. |
+| "I'll show them the redesigned version, that's clearer." | Then they're reviewing a fait accompli, not deciding. Present the options before you build one. |
+| "Stopping breaks my flow." | Your flow is not the goal. An analysis the user didn't authorize is rework at best and a wrong decision at worst. |
+| "Looping until verified means I keep going." | Toward the agreed goal — yes. By changing the goal — no. That's the line. |
+
+## The Process
+
+1. **Run the checkpoint** — name the decision, show the evidence, lay out ≥2 options, give your recommendation, and **WAIT.** Do not implement past this point.
+2. **If non-interactive** — stop at the last validated state and return the options + recommendation as the deliverable; do not decide for the user.
+3. **Once the user decides**, absorb the change before resuming — route to exactly one next step and *invoke that skill*:
+   - **Estimand / question changed → invoke `question-framing`** to re-frame, then re-derive the brief.
+   - **Deviation from the locked plan → invoke `pre-analysis-plan`** to record the deviation and re-lock before any further estimation.
+   - **Everyday plan, no PAP → invoke `analysis-state-management`** to record the approved deviation in `docs/analysis/decisions.yaml`, then resume.
+4. **Then return to the skill you interrupted** (`wrong-number-debugging`, `executing-analysis-plans`, `structural-estimation`) and continue from the now-approved state — never resume on the silent change.
+
+## The bottom line
+
+```
+Executing well  →  loop autonomously toward the agreed goal; stop and ask before changing the design, sample, spec, estimand, or any number already seen
+Otherwise        →  an analysis the user never agreed to, assembled one reasonable-looking step at a time
+```

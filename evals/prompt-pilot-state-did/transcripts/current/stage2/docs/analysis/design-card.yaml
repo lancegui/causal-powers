@@ -1,0 +1,12 @@
+causal_question: average effect of policy adoption on monthly opioid-prescribing rate per 100,000 among the 20 adopting states
+estimand: ATT averaged over adopting-state post-treatment state-months observed in panel_v1.csv
+design: simultaneous-adoption two-group difference-in-differences using never-adopting states as controls
+source_of_variation: change after 2021-01-01 in adopting states relative to the contemporaneous change in never-adopting states
+assumption: absent adoption, prescribing rates in adopting and never-adopting states would have followed parallel trends, with no anticipation or coincident group-specific shock
+diagnostics:
+  - pre-treatment event-study leads for parallel trends and anticipation
+  - balanced-panel and state/month composition checks
+primary_spec: rate_per_100k_it = beta * (adopter_i x post_t) + state_i FE + month_t FE + error_it; SE clustered by state using fixest defaults
+effect_units: prescriptions per 100,000 residents per month
+literature_precedent: canonical two-group fixed-effects difference-in-differences design
+robustness_shortlist: []

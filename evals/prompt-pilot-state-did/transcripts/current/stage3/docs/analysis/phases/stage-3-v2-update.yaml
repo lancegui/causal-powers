@@ -1,0 +1,53 @@
+id: stage-3-v2-update
+updated: 2026-09-09
+status: done
+goal: build panel v2 from the authorized update and rerun the fixed primary and Stage 2 analyses
+scope:
+  - freeze identities of all v1 source, code, and result artifacts
+  - deduplicate panel_update.csv by state_id and month using latest revision_ts
+  - overlay deduplicated updates on matching v1 keys and retain every v1-only key
+  - recode missing treated and adoption_date on never-treated update rows as treated zero and no adoption
+  - rerun the primary, pooled four-region, and state-linear-trend models on v2
+  - record input identity, build rules, provenance by row, and current-result pointers
+out_of_scope:
+  - additional specifications, row drops, later stages, or other datasets
+acceptance_checks:
+  - v1 artifacts are byte-identical before and after Stage 3
+  - raw update duplicate check is proven to bite on a bad fixture
+  - deduplicated update is unique on state_id and month
+  - update merge is many-to-one and v2 has every v1 key exactly once
+  - overlap values come from the latest update revision and v1-only values remain unchanged
+  - no panel rows are dropped and v2 is a balanced 40-state monthly panel
+  - treatment assignment and adoption dates reconcile to the authorized rule
+  - results preserve full machine precision and identify v2 as current
+plausibility_threats:
+  - threat: revision overlap or duplicate updates silently fan out the panel
+    check: assert key cardinality, latest revision selection, row counts, and source provenance
+  - threat: missing never-treated treatment fields are mistaken for unknown records
+    check: assert missing fields occur only for known never-treated states and recode to zero/no adoption
+  - threat: Stage 1 parallel-pretrend diagnostic remains rejected
+    check: rerun the same diagnostic on v2 and retain caution without changing specifications
+topology:
+  nodes:
+    - id: build-v2-and-rerun
+      kind: spine
+checklist:
+  - item: freeze v1 identities and validate raw sources
+    status: done
+  - item: deduplicate update and build/reconcile v2
+    status: done
+  - item: rerun primary and Stage 2 models
+    status: done
+  - item: register current v2 results and verify v1 preservation
+    status: done
+outputs:
+  - data/panel_v2.csv
+  - results/stage3_v2_results.csv
+  - results/stage3_v2_build_audit.csv
+  - results/stage3_duplicate_revision_audit.csv
+  - results/stage3_v2_manifest.csv
+  - results/stage3_v2_primary_model.rds
+  - results/stage3_v2_region_model.rds
+  - results/stage3_v2_state_trends_model.rds
+  - results/stage3_v2_event_study_model.rds
+  - results/sessionInfo_stage3.txt

@@ -1,0 +1,7 @@
+decisions:
+  - id: fixed-stage-1-design
+    date: 2026-10-20
+    decision: use simultaneous-adoption TWFE DiD with state and month fixed effects and state-clustered SEs in fixest
+    basis:
+      - user-specified design and authorization
+    supersedes: []

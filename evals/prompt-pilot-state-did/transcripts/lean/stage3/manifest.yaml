@@ -1,0 +1,18 @@
+canonical_run: run_20260909T074302Z
+build_id: build_b02233208
+timestamp_utc: 2026-09-09T07:43:02Z
+inputs:
+  - file: panel_v1.csv
+    sha256: 02233208ed1646c22685a408d91d4bdc7f5fe73bdffc58f3df0229362b30e6fe
+build_code: analysis_build_b02233208.R
+specification: opioid_rate ~ post_treat | state_id + month; cluster = state_id; fixest default SSC
+estimand: average post-adoption policy effect on monthly opioid-prescribing rate per 100,000 among adopting states
+comparison: adopting versus never-adopting states, before versus after 2021-01-01
+identifying_assumption: absent adoption, mean outcome trends would have been parallel across adopting and never-adopting states
+missing_value_rule: fail validation for missing state, month, treated, or outcome; no rows dropped
+panel_key: state_id + month (1:1; asserted unique)
+outputs:
+  - artifacts/run_20260909T074302Z/main_estimate.csv
+  - artifacts/run_20260909T074302Z/diagnostics.csv
+  - artifacts/run_20260909T074302Z/validation.csv
+  - artifacts/run_20260909T074302Z/models_and_results.rds

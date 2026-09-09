@@ -1,0 +1,3 @@
+1. Validate `panel_v1.csv`: hash and preserve it, identify the state/month/outcome/treatment fields, assert a unique state-month panel, and verify the stated 40-state adoption pattern and missingness.
+2. Estimate the authorized state and month fixed-effects DiD in R with `fixest`, clustering standard errors by state and retaining its default finite-sample correction; run the design-required pre-treatment diagnostic.
+3. Save immutable, full-precision machine-readable estimates and diagnostics with the exact analysis code, then record input hashes, specification, timestamp, outputs, and the canonical run in a compact manifest.

@@ -1,0 +1,3 @@
+1. Hash and validate both vintages; assert the v1 and update keys, resolve update duplicates by latest `revision_ts`, and explicitly map missing never-treated treatment fields to `treated = 0` with no adoption date.
+2. Build v2 by a 1:1 update on `state_id × month`: update rows win on overlap, v1-only keys remain, no panel keys are dropped; record duplicate, overlap, unmatched, and before/after row counts.
+3. Rerun the primary state/month-FE model, pooled four-region model, and sole state-linear-trend alternative with state-clustered `fixest` inference; save a new immutable build/run and mark it current while preserving every v1 artifact.

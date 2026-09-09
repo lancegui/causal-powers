@@ -1,0 +1,42 @@
+id: stage-2-region-and-trends
+updated: 2026-09-09
+status: done
+goal: estimate prespecified region-specific policy effects and the sole state-trend alternative using panel_v1.csv
+scope:
+  - validate unchanged input, panel keys, treatment timing, and region membership
+  - estimate one pooled model with four policy-by-region coefficients, state FE, and common month FE
+  - estimate the overall policy model with state FE, common month FE, and state-specific linear trends
+  - save full-precision results with explicit data and specification provenance
+out_of_scope:
+  - any additional specifications, robustness checks, outcomes, or datasets
+  - any work beyond Stage 2
+acceptance_checks:
+  - Stage 1 output remains byte-identical to its recorded hash
+  - input hash matches Stage 1
+  - four and only four region coefficients are estimated in one pooled model
+  - sole alternative includes state and month FE plus state-specific linear trends
+  - both models cluster standard errors by state using fixest defaults
+plausibility_threats:
+  - threat: Stage 1 pre-treatment trends reject the joint null
+    check: retain the Stage 1 diagnostic caveat without changing the authorized specifications
+  - threat: region coefficients could reflect changing panel composition
+    check: assert balanced state-month coverage and fixed region assignment
+topology:
+  nodes:
+    - id: validate-and-estimate-stage2
+      kind: spine
+checklist:
+  - item: validate input and preserve baseline
+    status: done
+  - item: estimate pooled region model
+    status: done
+  - item: estimate sole state-trend alternative
+    status: done
+  - item: save and trace Stage 2 artifacts
+    status: done
+outputs:
+  - results/stage2_results.csv
+  - results/stage2_manifest.csv
+  - results/stage2_region_model.rds
+  - results/stage2_state_trends_model.rds
+  - results/sessionInfo_stage2.txt

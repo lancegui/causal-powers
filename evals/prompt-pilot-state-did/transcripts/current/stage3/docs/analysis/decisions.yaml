@@ -1,0 +1,29 @@
+decisions:
+  - id: fixed-stage-1-design
+    date: 2026-10-20
+    decision: use simultaneous-adoption TWFE DiD with state and month fixed effects and state-clustered SEs in fixest
+    basis:
+      - user-specified design and authorization
+    supersedes: []
+  - id: stage3-v2-overlay
+    date: 2026-09-09
+    decision: select the latest revision_ts within each update state_id-month key, overlay updates on v1 overlap, and retain all v1-only keys
+    basis:
+      - user-authorized Stage 3 build rule
+      - results/stage3_duplicate_revision_audit.csv
+      - results/stage3_v2_build_audit.csv
+    supersedes: []
+  - id: stage3-never-treated-missing-fields
+    date: 2026-09-09
+    decision: recode missing treated to zero and adoption_date to no adoption only for states confirmed never-treated in v1
+    basis:
+      - user-authorized Stage 3 coding rule
+      - results/stage3_v2_build_audit.csv
+    supersedes: []
+  - id: current-result-vintage
+    date: 2026-09-09
+    decision: Stage 3 v2 results are current; all v1 artifacts remain preserved historical results
+    basis:
+      - results/stage3_v2_manifest.csv
+      - results/stage3_v2_results.csv
+    supersedes: []

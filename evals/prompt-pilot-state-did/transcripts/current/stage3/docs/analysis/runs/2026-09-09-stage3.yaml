@@ -1,0 +1,44 @@
+date: 2026-09-09
+stage: 3
+command: Rscript analysis_stage3.R
+status: complete
+inputs:
+  panel_v1:
+    path: panel_v1.csv
+    sha256: 02233208ed1646c22685a408d91d4bdc7f5fe73bdffc58f3df0229362b30e6fe
+  panel_update:
+    path: panel_update.csv
+    sha256: 4535f64c92826efcd210a9f72c4abed3820aa5899ad30ccb532edfab6389521b
+build_rules:
+  key: state_id x month
+  duplicate_rule: retain greatest revision_ts
+  overlap_rule: deduplicated update wins
+  nonoverlap_rule: retain all v1-only keys
+  never_treated_rule: missing treated means zero and missing adoption_date means no adoption after validation against v1 state assignment
+  row_drop_rule: no panel rows dropped
+build_reconciliation:
+  v1_rows: 2400
+  raw_update_rows: 721
+  update_duplicate_rows_removed: 1
+  deduplicated_update_rows: 720
+  overlap_rows_replaced: 720
+  v1_only_rows_retained: 1680
+  v2_rows: 2400
+  missing_treated_recoded: 360
+outputs:
+  panel_v2_sha256: ef72c95910c3ffb137cab6535fe2f67fbe1c053487d1e6edd0c873e19d7579e7
+  results_sha256: a6d5d27f62d15eb52cf94175ee0100118093843d4bd4eba75a51ae717214bab1
+  script_sha256: 6b51ed805438207353918fac19cc52580f933f2a51db9004e3c59f466218b9e4
+v1_preservation:
+  panel_v1_sha256: 02233208ed1646c22685a408d91d4bdc7f5fe73bdffc58f3df0229362b30e6fe
+  stage1_results_sha256: 57b0f3e7025591c497b1128f68c60a56a64d353229c1dfc7102950cc1eadc1ea
+  stage2_results_sha256: ecdc744ed4de8284371a05c59c3e6cd7b3b2173eb63dbcfd06e94f0e9ab6900d
+diagnostic:
+  pretrend_statistic: 7.4515627257310841
+  numerator_df: 35
+  denominator_df: 39
+  p_value: 4.8825926474777789e-09
+  interpretation: rejected; retain caution for causal claims
+current_result:
+  vintage: v2
+  path: results/stage3_v2_results.csv

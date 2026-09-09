@@ -1,0 +1,2 @@
+"term","estimate","std_error","t_statistic","p_value","conf_low_95","conf_high_95","treated_pre_mean","effect_percent_of_treated_pre_mean","n_obs","n_states","cluster_df","treated_states","control_states","pretrend_statistic","pretrend_p_value"
+"policy","-4.3356939590696033","0.43794628155454418","-9.9000588466684185","3.3982916760600592e-12","-5.2215239262338429","-3.4498639919053642","55.574108745030401","-7.8016437095940177","2400","40","39","20","20","7.4515627257324155","4.8825926474646623e-09"

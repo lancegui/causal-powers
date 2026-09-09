@@ -1,0 +1,9 @@
+updated: 2026-09-09
+active_phase: stage-2-region-and-trends
+next_action: Stage 2 complete; await a later request
+blockers: []
+read_for_current_task:
+  - phases/stage-2-region-and-trends.yaml
+  - design-card.yaml
+  - runs/2026-10-20-stage1.yaml
+  - runs/2026-09-09-stage2.yaml

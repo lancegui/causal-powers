@@ -1,0 +1,10 @@
+updated: 2026-09-09
+active_phase: stage-3-v2-update
+next_action: Stage 3 complete; v2 results are current; await a later request
+blockers: []
+read_for_current_task:
+  - phases/stage-3-v2-update.yaml
+  - design-card.yaml
+  - runs/2026-10-20-stage1.yaml
+  - runs/2026-09-09-stage2.yaml
+  - runs/2026-09-09-stage3.yaml

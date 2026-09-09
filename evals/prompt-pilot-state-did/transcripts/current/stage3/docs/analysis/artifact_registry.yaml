@@ -1,0 +1,49 @@
+artifacts:
+  current_analysis_panel:
+    path: data/panel_v2.csv
+    produced_by: analysis_stage3.R
+    last_verified: 2026-09-09
+    checks:
+      - runs/2026-09-09-stage3.yaml
+  current_primary_and_stage2_results:
+    path: results/stage3_v2_results.csv
+    produced_by: analysis_stage3.R
+    last_verified: 2026-09-09
+    checks:
+      - runs/2026-09-09-stage3.yaml
+  stage1_primary_result:
+    path: results/stage1_did_results.csv
+    produced_by: analysis_stage1.R
+    last_verified: 2026-10-20
+    checks:
+      - runs/2026-10-20-stage1.yaml
+  stage1_diagnostics:
+    path: results/stage1_diagnostics.csv
+    produced_by: analysis_stage1.R
+    last_verified: 2026-10-20
+    checks:
+      - runs/2026-10-20-stage1.yaml
+  stage2_results:
+    path: results/stage2_results.csv
+    produced_by: analysis_stage2.R
+    last_verified: 2026-09-09
+    checks:
+      - runs/2026-09-09-stage2.yaml
+  stage2_manifest:
+    path: results/stage2_manifest.csv
+    produced_by: analysis_stage2.R
+    last_verified: 2026-09-09
+    checks:
+      - runs/2026-09-09-stage2.yaml
+  stage3_v2_build_audit:
+    path: results/stage3_v2_build_audit.csv
+    produced_by: analysis_stage3.R
+    last_verified: 2026-09-09
+    checks:
+      - runs/2026-09-09-stage3.yaml
+  stage3_duplicate_revision_audit:
+    path: results/stage3_duplicate_revision_audit.csv
+    produced_by: analysis_stage3.R
+    last_verified: 2026-09-09
+    checks:
+      - runs/2026-09-09-stage3.yaml

@@ -1,0 +1,38 @@
+id: stage-1-primary-did
+updated: 2026-10-20
+status: done
+goal: estimate the fixed-design Stage 1 policy effect from panel_v1.csv
+scope:
+  - validate the state-month panel and treatment timing
+  - run mandatory DiD design diagnostics
+  - estimate the state and month fixed-effects DiD in R fixest
+  - save full-precision machine-readable results and reproducible artifacts
+out_of_scope:
+  - discretionary robustness specifications
+  - later stages or later datasets
+acceptance_checks:
+  - 40 states with 20 adopters and 20 never adopters
+  - one row per state-month and balanced composition through time
+  - adoption begins exactly 2021-01-01 for every adopter
+  - model uses fixest defaults and state-clustered standard errors
+  - machine-readable coefficient output preserves full numeric precision
+plausibility_threats:
+  - threat: differential pre-policy trends undermine parallel trends
+    check: joint test of all estimable pre-treatment event-study leads
+  - threat: state composition changes around treatment
+    check: assert balanced state-month panel and identical state count each month
+topology:
+  nodes:
+    - id: validate-and-estimate
+      kind: spine
+checklist:
+  - item: validate input contracts and diagnostics
+    status: done
+  - item: estimate and save results
+    status: done
+outputs:
+  - results/stage1_did_results.csv
+  - results/stage1_diagnostics.csv
+  - results/stage1_did_model.rds
+  - results/stage1_event_study_model.rds
+  - results/sessionInfo.txt

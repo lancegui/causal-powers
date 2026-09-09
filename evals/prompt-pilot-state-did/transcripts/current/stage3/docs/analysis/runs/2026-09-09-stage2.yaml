@@ -1,0 +1,31 @@
+date: 2026-09-09
+stage: 2
+command: Rscript analysis_stage2.R
+input:
+  path: panel_v1.csv
+  sha256: 02233208ed1646c22685a408d91d4bdc7f5fe73bdffc58f3df0229362b30e6fe
+baseline_preservation:
+  path: results/stage1_did_results.csv
+  sha256_before: 57b0f3e7025591c497b1128f68c60a56a64d353229c1dfc7102950cc1eadc1ea
+  sha256_after: 57b0f3e7025591c497b1128f68c60a56a64d353229c1dfc7102950cc1eadc1ea
+status: complete
+contracts:
+  unique_state_month: pass
+  balanced_panel: pass
+  fixed_region_assignment: pass
+  states_per_region: 10
+  treated_states_per_region: 5
+  control_states_per_region: 5
+specifications:
+  - id: pooled_region_effects
+    formula: opioid_rate ~ policy:region | state_id + month
+    cluster: state_id using fixest defaults
+    rows_in_results: 4
+  - id: state_linear_trends
+    formula: opioid_rate ~ policy | state_id + month + state_id[[time_index]]
+    cluster: state_id using fixest defaults
+    rows_in_results: 1
+caution: Stage 1 joint pretrend test rejected; preserve this caveat for Stage 2 causal interpretation.
+output_sha256:
+  analysis_stage2_R: 9da8d0b3727adf03fc22a4bdb5c5429e4bd14c5436091f387857570f24e85bef
+  stage2_results_csv: ecdc744ed4de8284371a05c59c3e6cd7b3b2173eb63dbcfd06e94f0e9ab6900d

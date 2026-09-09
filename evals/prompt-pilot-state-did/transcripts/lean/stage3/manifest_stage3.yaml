@@ -1,0 +1,26 @@
+stage: 3
+current_build: build_v2_4535f64c
+current_run: run_20260909T075158Z
+preserved_runs:
+  - run_20260909T074302Z
+  - run_20260909T074656Z
+timestamp_utc: 2026-09-09T07:51:58Z
+inputs:
+  - file: panel_v1.csv
+    sha256: 02233208ed1646c22685a408d91d4bdc7f5fe73bdffc58f3df0229362b30e6fe
+  - file: panel_update.csv
+    sha256: 4535f64c92826efcd210a9f72c4abed3820aa5899ad30ccb532edfab6389521b
+build_rules: deduplicate update on state_id x month by latest revision_ts; verified missing treatment fields identify v1-known never-treated states and normalize to treated=0/no adoption; update wins overlap; retain v1-only keys; drop no panel rows
+panel_key: state_id + month (1:1 after deduplication)
+built_panel: builds/build_v2_4535f64c/panel_v2.csv
+built_panel_sha256: fd0514a5b2b5706b856d26aa633730097791313d689bc52b2b32b0a749ee2753
+analysis_code: analysis_stage3_build_v2_4535f64c.R
+specifications:
+  primary: opioid_rate ~ post_treat | state_id + month; cluster = state_id; fixest default SSC
+  pooled_region: opioid_rate ~ 0 + post_treat:region | state_id + month; cluster = state_id; fixest default SSC
+  state_trends: opioid_rate ~ post_treat | state_id + month + state_id[linear_month]; cluster = state_id; fixest default SSC
+outputs:
+  - artifacts/run_20260909T075158Z/all_estimates.csv
+  - artifacts/run_20260909T075158Z/diagnostics.csv
+  - artifacts/run_20260909T075158Z/models_and_results.rds
+  - builds/build_v2_4535f64c/reconciliation.csv

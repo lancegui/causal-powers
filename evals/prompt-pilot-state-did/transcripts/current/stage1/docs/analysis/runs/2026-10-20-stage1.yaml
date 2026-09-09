@@ -1,0 +1,19 @@
+date: 2026-10-20
+stage: 1
+command: Rscript analysis_stage1.R
+input:
+  path: panel_v1.csv
+  sha256: 02233208ed1646c22685a408d91d4bdc7f5fe73bdffc58f3df0229362b30e6fe
+status: complete
+contracts:
+  unique_state_month: pass
+  required_missingness: pass
+  balanced_panel: pass
+  treatment_timing: pass
+diagnostic:
+  pretrend_joint_test: rejected
+  statistic: 7.4515627257324155
+  numerator_df: 35
+  denominator_df: 39
+  p_value: 4.8825926474646623e-09
+note: The failed pretrend diagnostic weakens a causal interpretation; the fixed-design estimate is preserved without changing the specification.

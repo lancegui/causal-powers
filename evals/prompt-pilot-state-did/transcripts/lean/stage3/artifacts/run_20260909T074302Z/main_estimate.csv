@@ -1,0 +1,2 @@
+"build_id","run_id","term","estimate","std_error","conf_low_95","conf_high_95","t_value","p_value","n_obs","n_states","outcome","fixed_effects","cluster","fixest_version"
+"build_b02233208","run_20260909T074302Z","post_treat",-4.3356939590696,0.437946281554544,-5.22152392623384,-3.44986399190536,-9.90005884666842,3.39829167606006e-12,2400,40,"monthly opioid-prescribing rate per 100,000","state_id + month","state_id","0.14.2"

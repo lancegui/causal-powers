@@ -1,0 +1,22 @@
+stage: 2
+canonical_stage2_run: run_20260909T074656Z
+preserved_baseline_run: run_20260909T074302Z
+build_id: build_b02233208_stage2
+timestamp_utc: 2026-09-09T07:46:56Z
+inputs:
+  - file: panel_v1.csv
+    sha256: 02233208ed1646c22685a408d91d4bdc7f5fe73bdffc58f3df0229362b30e6fe
+analysis_code: analysis_stage2_build_b02233208.R
+specifications:
+  pooled_region_effects: opioid_rate ~ 0 + post_treat:region | state_id + month; cluster = state_id; fixest default SSC
+  state_linear_trends_alternative: opioid_rate ~ post_treat | state_id + month + state_id[linear_month]; cluster = state_id; fixest default SSC
+estimand: region-specific average post-adoption effects and the average effect conditional on state-specific linear trends
+comparison: adopting versus never-adopting states, before versus after 2021-01-01
+identifying_assumption: conditional parallel trends for each reported specification
+missing_value_rule: fail validation for missing state, region, month, treated, or outcome; no rows dropped
+panel_key: state_id + month (1:1; asserted unique)
+outputs:
+  - artifacts/run_20260909T074656Z/stage2_estimates.csv
+  - artifacts/run_20260909T074656Z/region_validation.csv
+  - artifacts/run_20260909T074656Z/panel_validation.csv
+  - artifacts/run_20260909T074656Z/models_and_results.rds
