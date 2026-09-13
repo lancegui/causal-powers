@@ -24,12 +24,13 @@ If none of those hold, you're exploring; label it exploratory and move on.
 
 ## What the plan locks (before seeing outcomes)
 
-1. **Hypotheses.** Stated directionally and ranked: primary vs. secondary. Test the primary one; treat everything else as secondary or exploratory. **Pre-commit the multiple-comparisons correction** for secondary tests (Bonferroni / Benjamini–Hochberg / etc.) — uncorrected, they reintroduce the forking-paths problem the PAP exists to stop.
+1. **Hypotheses.** Stated directionally and ranked: primary vs. secondary. Test the primary one; treat everything else as secondary or exploratory. **Pre-commit the multiple-comparisons correction** for secondary tests (Bonferroni / Benjamini–Hochberg / etc.) — uncorrected, they reintroduce the forking-paths problem the PAP exists to stop. **Budget the families:** one to a few primaries; a secondary family in the order of ten slots, not dozens. Individual event-time coefficients are *exhibits* of a pre-registered aggregate, not separate slots. A count that measures coverage, match rates, or data quality is a **diagnostic, never a hypothesis** — it does not enter a test family or a correction.
 2. **Estimand.** The exact quantity (ATE/ATT/LATE/ITT), on the exact population, over the exact window. Reuse the `question-framing` brief.
-3. **Primary specification.** One pre-committed model: functional form, controls, fixed effects, SE structure (and clustering level), inference method — *the* number you will report. Robustness specs support it; they don't replace it when you like them better. Write the primary specification to the presentation standard in `causal-identification` — equation with subscripts defined, level of variation, intuition, literature precedent — not an estimator name-drop.
+3. **Primary specification.** One pre-committed model: functional form, controls, fixed effects, SE structure (and clustering level), inference method — *the* number you will report. Robustness specs support it; they don't replace it when you like them better. Write the primary specification to the presentation standard in `causal-identification` — equation with subscripts defined, level of variation, intuition, literature precedent — not an estimator name-drop. **Inference defaults to analytic standard errors clustered at the level treatment is assigned, following the named precedent** — if the precedent ships analytic clustered SEs, so do you. A bootstrap or other simulation-based inference is a **deliberate departure to state and justify** (the precedent has no analytic variance; the clustering structure has no analytic estimator), never a default: it multiplies runtime by the number of draws and buys nothing the precedent didn't already need.
 4. **Sample and exclusions.** Inclusion criteria, exclusion rules, and how outliers and missing data are handled — decided now, by rule, not later by eye. "Drop obvious outliers" after seeing the data is a degree of freedom; "drop values beyond 3 IQR, pre-committed" is a rule.
 5. **Robustness suite.** The alternative specs, placebo/falsification tests, and sensitivity analyses you commit to run *regardless of whether the primary result survives them* — you can't quietly drop the ones that disagree. Keep it **small and targeted**: two or three checks that probe the load-bearing assumption, not a catalogue; a pre-registered buffet is still a buffet. (`causal-identification`'s design-specific diagnostics are **mandatory and separate** from this discretionary suite; "small" governs the discretionary specs only.)
 6. **Decision rule and power.** What result leads to what action, and what counts as the effect being absent — define the null outcome so a null is a finding, not a prompt to keep digging. Commit too to the **minimum detectable effect / power** the design has: a null from an underpowered test isn't evidence of no effect, and saying so up front stops a noisy null from being read as a clean one.
+7. **Measured feasibility — before the lock, not after.** Every item above is a claim about what the data can support, so *measure it on non-outcome data first*: treated units per cohort, identifying variation for each interaction the primary relies on (repeated pairs, within-group contrast support), cluster counts at the clustering level, and support for each outcome's denominator. Report the counts in the plan. **A primary with no measured identifying variation is not lockable** — rewrite it or drop it now, while doing so is design work rather than a deviation. This is blinding-safe: it touches sample structure, never outcomes.
 
 ## Write it down and get sign-off before touching outcome data
 
@@ -38,6 +39,8 @@ If none of those hold, you're exploring; label it exploratory and move on.
 ## Confirmatory vs. exploratory — keep the line bright
 
 You will discover interesting things you didn't pre-register. That's good — it's where new hypotheses come from. The sin is *laundering* them as confirmatory. Report them, clearly flagged as exploratory and hypothesis-generating, with the understanding that they need fresh data to confirm. A finding that has been both used to form a hypothesis and to test it has been counted twice.
+
+**Pick one label and let it set the machinery.** If prior results have already been seen, the study is exploratory, and exploratory work gets *lighter* machinery: a stated primary, analytic SEs, a few labeled checks, reported as exploratory. Bolting a full confirmatory battery — large corrected families, bootstrapped inference, an exhaustive sensitivity suite — onto a study you have labeled exploratory buys no credibility; it spends days of compute to dress up a claim the label has already qualified, and the weight of the apparatus is what makes the reader miss the label. Confirmatory or exploratory, not both.
 
 ## The garden of forking paths
 
@@ -50,6 +53,8 @@ Even with no conscious cheating, the sheer number of defensible choices — whic
 - "We'll know the right specification once we see the data" — for a confirmatory claim, that's the forking-paths trap.
 - An exploratory finding is about to be presented with the confidence of a pre-registered test.
 - No stated null — no result that would have counted as "no effect."
+- **A test family you could not list from memory.** If you can't name the slots without rereading the plan, no reader will hold them either — and the correction is now doing the thinking for you.
+- **An outcome that is zero almost everywhere sitting in the family** — a near-empty count is a data-quality diagnostic that wandered into the hypotheses; it cannot move and it will drag the whole family's correction.
 
 ## Common rationalizations
 
@@ -59,11 +64,12 @@ Even with no conscious cheating, the sheer number of defensible choices — whic
 | "I'll just try a few specs and report the robust one." | The "robust one" selected after seeing results is selection. Pre-commit the suite; report all of it. |
 | "The data will tell me the right model." | The data will fit a model to its own noise. The question decides the model — commit it first. |
 | "We don't have time to write a plan." | The plan is a few lines. Re-running after someone catches the forking-paths problem costs far more. |
+| "More slots pre-registered = more rigorous." | A pre-registered buffet is still a buffet. Dozens of corrected slots cost power, bury the claim that matters, and read as a design with no focal hypothesis. |
 | "I found something better than I planned." | Report it as exploratory and confirm on fresh data — don't relabel it as the test you ran. |
 
 ## The Process
 
-1. **Lock the six items** — hypotheses (+ comparisons correction), estimand, primary spec, sample/exclusion rules, robustness suite, decision rule/power — using the `question-framing` brief and the sample rules `data-contracts` enforces.
+1. **Measure feasibility on non-outcome data, then lock the seven items** — hypotheses (+ family budget and comparisons correction), estimand, primary spec, sample/exclusion rules, robustness suite, decision rule/power, measured feasibility. The counts come first: they decide which hypotheses are lockable. Use the `question-framing` brief and the sample rules `data-contracts` enforces.
 2. **Persist the PAP to a file and get explicit sign-off before touching outcome data** — mandatory, not rhetorical: once outcomes are seen, the lock is gone.
 3. **Route to exactly one next step.** Structural/counterfactual work → *invoke `structural-estimation`* for the model card. Otherwise → *invoke `executing-analysis-plans`* to carry out the locked plan (`causal-identification` runs the design diagnostics there).
 4. **If the outcomes surprise you and a departure tempts → STOP and invoke `analysis-checkpoints`** — report pre-registered and revised analyses; never deviate silently.
@@ -71,6 +77,6 @@ Even with no conscious cheating, the sheer number of defensible choices — whic
 ## The bottom line
 
 ```
-Confirmatory claim  →  hypotheses, estimand, primary spec, sample rules, robustness suite, decision rule — all fixed before outcomes seen
-Otherwise           →  exploratory; label it so, and confirm on fresh data
+Confirmatory claim  →  hypotheses, estimand, primary spec, sample rules, robustness suite, decision rule — all fixed before outcomes seen, with feasibility measured first
+Otherwise           →  exploratory; label it so, keep the machinery light, and confirm on fresh data
 ```
