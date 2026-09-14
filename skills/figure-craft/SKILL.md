@@ -1,7 +1,7 @@
 ---
 name: figure-craft
 description: >-
-  Use when making a FIGURE / CHART / PLOT for a paper, deck, or presentation — in ANY language (R/ggplot2, Python/matplotlib, Julia/Makie). Governs the visual style: 16.5pt text throughout (axes, legend, title), no y-label (the title carries the y-axis meaning; paper figures get no headline title), concise axis labels, clean theme with colorblind-safe Paul-Tol palette, B&W-legible (shape/linetype redundancy), and a mandatory visual self-check (no clipped text, no overlapping labels). Covers DiD/event-study plots (dots + error bars, dashed treatment line), trend lines, stacked bars, distributions, scatter — and the layout each forces. At most 1-2 inside-canvas annotations that ENHANCE understanding (absolute counts on pct bars, pretreatment-level label on DiD); metadata (N, source, p-values) goes in LaTeX notes. Output: 5×3 in, saved to results/figures/. Fires on "make a figure", "plot this", "chart", "draw", "visualize" — AFTER the data is framed and verified.
+  Create or revise figures for papers, decks, and presentations in R, Python, or Julia after the underlying data is validated. Covers chart choice, event-study markers, Paul-Tol colors, black-and-white legibility, concise labels, and visual checks. Match project export dimensions and final display size before choosing font proportions; use 16.5pt on an 8.33×5 in canvas as a fallback. Keep analysis metadata in manuscript notes. Use for requests to plot, chart, visualize, or fix figure formatting.
 ---
 
 # Figure Craft
@@ -64,7 +64,7 @@ A figure that reads in color but falls apart in grayscale is not done. Papers ge
 
 ### Fonts — sized for the back row
 
-Presentation figures need **large** text. The defaults below are calibrated for a figure ~5 inches wide (the standard output size, below); scale up proportionally for larger canvases. The title sits at the same 16.5 as the axis text: under the y-axis label rule below, the title *is* the y-axis label, so it carries axis-level information and gets axis-level size.
+**Choose font size together with the export canvas and final display size.** Before plotting, inspect a comparable figure’s producer (`ggsave()` or equivalent): width, height, units, DPI, and manuscript insertion width. Match that project convention first. The 16.5pt default below pairs with an approximately 8.33 × 5 in canvas; it can look disproportionately large on a 5 × 3 in canvas. When correcting oversized text, match the existing canvas before changing fonts; do not automatically enlarge the font along with the canvas. The title carries the y-axis meaning and uses the same size as the axis text.
 
 | Element | Size (pt) | R | Python | Julia |
 |---|---|---|---|---|
@@ -86,24 +86,26 @@ X and Y labels must be **the shortest string that is still unambiguous** — inc
 
 ## Output — size and file location
 
-**Standard size: 5 × 3 inches**, unless the user asks otherwise. This is the default for all figures — it's compact enough for a paper figure and large enough for the 16.5pt fonts to breathe. Scale up for a full-slide deck figure only if asked.
+**Existing project dimensions take precedence.** Match comparable manuscript figures rather than imposing a 5 × 3 in canvas. If no convention exists, start with **2500 × 1500 px at 300 dpi**, equivalent to **8.33 × 5 in**, for the 16.5pt font defaults. An explicit user size overrides this fallback.
 
-**Save to the project's figure directory** per `project-organization` conventions — `results/figures/` for canonical deliverables, `results/diagnostics/` for scratch plots. Name by what the figure shows, traceable to its producer: `fig_eventstudy_mortality.pdf`.
+In `ggsave()`, physical inches = pixels / DPI when `units = "px"`; specify DPI explicitly for both PDF and PNG. With dimensions in inches, increasing DPI changes raster resolution, not the relative size of text. At a fixed manuscript insertion width, enlarging the export canvas while keeping the font fixed makes the displayed text smaller: 16.5pt on an 8.33 in canvas becomes about 9.9pt when inserted at 5 in. Check that final size for readability; a presentation may need different sizing from a paper.
+
+**Save to the project's existing figure directory** per `project-organization` conventions; use `results/figures/` for canonical deliverables and `results/diagnostics/` for scratch plots when no convention exists. Name by what the figure shows, traceable to its producer: `fig_eventstudy_mortality.pdf`.
 
 | Language | Save call |
 |---|---|
-| R | `ggsave("results/figures/fig_<name>.pdf", width = 5, height = 3)` |
-| Python | `plt.savefig("results/figures/fig_<name>.pdf", bbox_inches="tight")` with `fig = plt.figure(figsize=(5, 3))` |
-| Julia (Makie) | `save("results/figures/fig_<name>.pdf", fig)` with `Figure(size=(5*96, 3*96))` or `resolution` |
-| Julia (Plots.jl) | `savefig("results/figures/fig_<name>.pdf")` with `plot(..., size=(500, 300))` (px at 100 DPI) |
+| R | `ggsave("results/figures/fig_<name>.pdf", p, width = 2500, height = 1500, units = "px", dpi = 300)` |
+| Python | `fig.savefig("results/figures/fig_<name>.pdf", dpi=300)` with `fig = plt.figure(figsize=(25/3, 5))`; arrange margins within the canvas |
+| Julia (Makie) | Match the project’s `Figure(size=...)` and export scaling; inspect the saved physical PDF dimensions |
+| Julia (Plots.jl) | Match the project’s `plot(..., size=...)`, DPI, and backend; inspect the saved physical PDF dimensions |
 
-If `results/figures/` doesn't exist, create it. Never save a deliverable figure to the project root or `sandbox/` — it's a deliverable, not scratch.
+Create the selected figure directory if needed. Never save a deliverable figure to the project root or `sandbox/` — it's a deliverable, not scratch.
 
 ## The visual self-check — MANDATORY
 
 **You must render the figure to an image file and visually examine it before declaring it done.** "The code ran" is not "the figure is readable." This is the figure equivalent of `result-verification` — you are checking the output, not the code. This applies in every language.
 
-After every save, open the file and verify:
+After every save, open the file at its intended manuscript or slide size, compare it with neighboring figures, and verify:
 
 1. **No text is clipped or extends outside the plot panel.** Check all four edges — axis labels, the title/subtitle, the legend, tick labels. Large fonts make this the #1 failure: a label that fit at default size overflows at 16.5pt. In R, watch `plot.margin`; in Python, `plt.tight_layout()` / `bbox_inches="tight"`; in Julia, check `fig` size vs content.
 2. **No text overlaps.** The most common overlap is on a **busy x-axis** — many tick labels colliding. Fix it (below). Also check legend entries colliding with the plot, and the subtitle crashing into the axis.
@@ -153,7 +155,7 @@ The canonical exhibit for causal-identification results: estimated coefficients 
 
 **Rules:**
 - **Dots + error bars, not lines.** A connected line implies continuity between estimates; event-study coefficients are discrete period-by-period estimates. Dots convey "point estimate with uncertainty"; a line conveys "a continuous trajectory." Don't blur them. This applies in every language — `plt.errorbar` with `fmt="o"` and no line in Python, `scatter!` + `errorbars!` in Julia.
-- **The dashed vertical line marks the treatment threshold.** Place it at the boundary between the last pre-period and the first post-period. In event-time notation that is conventionally **-0.5** (between period -1 and period 0). In calendar-time notation it goes at the treatment year. Always include it — without the line the reader can't see where pre ends and post begins.
+- **The dashed vertical line follows the agreed timing convention.** For an existing figure series, match its reference-year or treatment-boundary placement, or the user’s explicit request; do not silently substitute a half-year boundary. For a new event-time plot, the boundary between period -1 and 0 is conventionally **-0.5**. Describe what the marker denotes in the manuscript notes; moving it does not change the model’s omitted year or treatment timing.
 - **A horizontal line at zero** — anchors the reader to the null.
 - **Dodged points** when multiple groups share an x-value, so points and bars don't stack on each other.
 - **B&W-safe shapes** — if two groups share an x-value, give them different point shapes (`aes(shape = group)`), not just different colors.
@@ -218,7 +220,10 @@ ggplot(data, aes(x = ..., y = ..., color = ..., shape = ...)) +    # shape = B&W
   xlab("...") +                                                     # concise — one word if possible
   ggtitle("...")                                                     # the y-axis meaning (subtitle role)
 
-ggsave("results/figures/fig_<name>.pdf", width = 5, height = 3)     # then OPEN and visually check
+# Match the project’s existing save settings first; fallback shown here.
+ggsave("results/figures/fig_<name>.pdf",
+       width = 2500, height = 1500, units = "px", dpi = 300)
+# Open at the intended insertion size and visually check.
 ```
 
 ## Red flags — STOP
@@ -258,7 +263,7 @@ ggsave("results/figures/fig_<name>.pdf", width = 5, height = 3)     # then OPEN 
 3. **Apply the house style in your language.** Clean theme + Paul-Tol palette + large fonts (16.5pt floor) + no y-axis label (meaning in the title/subtitle) + concise x-axis label + dashed treatment line for DiD + zero line + dodged points. Use the language tables above to translate the R reference to Python or Julia.
 4. **Ensure black-and-white legibility.** Every group distinction needs a redundant non-color channel — shape for points, linetype for lines, hatch for bars, or direct labels. Render in grayscale and verify you can still tell groups apart.
 5. **Add at most 1–2 annotations that enhance understanding.** Absolute values on percentage bars, a "pretreatment treatment group" label for relative scale. Each must pass: "does removing this make the figure harder to understand?"
-6. **Save to the standard path at the standard size.** `results/figures/fig_<name>.pdf`, 5×3 inches — unless the user asked otherwise.
+6. **Match the project’s export settings.** Use its figure directory, canvas, units, and explicit DPI; the fallback is 2500×1500 px at 300 dpi (8.33×5 in). Judge font proportions at the final insertion size.
 7. **Render and visually examine.** Open the saved file and run the visual self-check: no clipping, no overlap, legend fits, markers visible, palette distinguishable, B&W-safe, annotations placed cleanly. Fix and re-render until clean.
 8. **Move all metadata to LaTeX figure notes — in the manuscript, not the image.** N, source, sample restrictions, p-value conventions — they go in `\caption` or a `note`, never on the canvas and never rendered into the figure file (no `labs(caption =)`, no `figtext`).
 9. **Hand off to `project-organization`** — confirm the figure is named and placed per convention; commit the checkpoint.
@@ -270,7 +275,7 @@ Presentation figure  →  clean theme + Paul-Tol palette + 16.5pt fonts + no y-l
                          concise axis labels + right geom (dots for estimates, lines for series, stacks for composition) +
                          dashed treatment line for DiD + zero line + B&W-safe (shape/linetype redundancy) +
                          at most 1-2 enhancing annotations + metadata in LaTeX notes (in the paper, not the image) +
-                         saved to results/figures/ at 5×3 in + visually checked (no clip, no overlap) — in ANY language
+                         saved with project-matched dimensions + visually checked at final size (no clip, no overlap) — in ANY language
 Otherwise             →  a plot that runs clean but is unreadable from the back row, or from a photocopier —
                          labels clipped, text overlapping, wrong geom inventing a trend, color-only distinctions
                          collapsing in grayscale, too many annotations crowding the data
