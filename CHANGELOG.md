@@ -2,6 +2,21 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## Unreleased
+
+- **One golden per phase boundary.** `data-contracts` FREEZE and
+  `result-verification` now keep a single golden per phase boundary (clean
+  dataset built · primary result validated) holding the headline numbers —
+  never an `expectations` file or sha256 pin per script. Structural recovery
+  and the prediction eval probe stay mandatory as one harness per model, with
+  their result recorded in that golden. Motivated by a 2026-09-23 field count:
+  67 files in one check directory, beyond the 55-against-9 anti-pattern the
+  skill already cited. Inline assertion density is unchanged.
+- **Card red-line on check artifacts.** A check is an assertion inside the
+  script that produces the number; the only committed check artifacts are the
+  phase golden and the model's single harness. The card goes 1,179 → 1,189
+  words, paid for by trimming three redundant phrases.
+
 ## 0.33.0 — outcome-scoped regression history (2026-09-09)
 
 - **Regression state updates with the regression.** The new R/`fixest`
