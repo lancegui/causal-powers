@@ -81,7 +81,7 @@ You estimate by *optimizing an objective* — GMM/MSM, NLS, or ML/MSL — and tw
 
 Do it **across the parameter space** (several true-θ draws, not one lucky region), **vary N** to confirm the estimator concentrates on truth as it grows (a consistency check), and **map the objective surface**: profile each parameter around the optimum — a **flat axis means that parameter is not identified**. Profiles only see axis flatness, so also check the **Hessian's (or GMM-Jacobian's) smallest eigenvalue** — near-zero flags non-identification along a *combination* of parameters (a ridge) that single-parameter profiles miss, and its eigenvector names the unidentified combination.
 
-Run this *before* touching real data, and keep it as a regression test — this is `data-contracts` discipline applied to the estimator: assert recovery, then freeze it. Full recipe, pass criteria (MC-SE units, not %-of-θ★ — vacuous at θ★=0), and a language-agnostic recovery-harness skeleton: `references/estimation-and-gradients.md` §3.
+Run it *before* real data; keep **one recovery harness per model** (one script, its result in the phase golden — no per-script probe or pin file). Full recipe, pass criteria (MC-SE units, not %-of-θ★ — vacuous at θ★=0), and a language-agnostic recovery-harness skeleton: `references/estimation-and-gradients.md` §3.
 
 ## Gradients — derive them, don't default to numerical
 

@@ -71,7 +71,7 @@ The failure mode is claiming completion you haven't verified — "the analysis i
 
 ## Freeze the verified result
 
-Once it passes, snapshot it as a golden output (see `data-contracts`). The verified number becomes the baseline that the next run is diffed against — so if a refactor or a data refresh silently changes it, you find out loudly instead of three weeks later in a meeting.
+Once it passes, record its headline numbers in the phase golden (`data-contracts` FREEZE), not a new artifact per verification. The next run diffs against it, so a refactor or data refresh that silently changes it fails loudly, not three weeks later in a meeting.
 
 ## Consult — and capture — what bit you
 
@@ -114,7 +114,7 @@ Once it passes, snapshot it as a golden output (see `data-contracts`). The verif
 
 ## The Process
 
-1. **Run the checklist** — reconcile to source, reproduce clean, confirm determinism, confirm the approved robustness, read it like an economist, tie artifacts to prose, freeze the golden output.
+1. **Run the checklist** — reconcile to source, reproduce clean, confirm determinism, confirm the approved robustness, read it like an economist, tie artifacts to prose, update the phase golden.
 2. **If any check fails and you can't resolve it → STOP and invoke `wrong-number-debugging`** to bisect (or `analysis-checkpoints` if the fix is a design/sample/spec change). Do not footnote a failed check.
 3. **All checks pass → invoke `analysis-review`** — dispatch the independent `analysis-reviewer` to catch the silent failures you rationalized, *before* you ship.
 4. **Then invoke `project-organization`** — tidy scratch from deliverables before you commit or push. Don't end at "the result is X" — route to the review and the tidy-up.

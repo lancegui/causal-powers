@@ -38,7 +38,7 @@ CONTRACT  →  CHECK IT BITES  →  COMPUTE  →  RECONCILE  →  FREEZE
 2. **CHECK IT BITES** — Confirm the check actually *fails* on bad data before you trust it: perturb one row to violate the contract, or point it at a known-bad earlier version of the data, and watch the assertion trip. **A check that cannot fail proves nothing** — the analytics form of TDD's "watch the test fail." A row-count assertion that would pass on a broken join isn't protecting you, it's lying to you comfortably; if you've never seen a check go red, you don't know it's testing anything.
 3. **COMPUTE** — Do the transform / aggregation / model.
 4. **RECONCILE** — Run the contract against the result. Reconcile totals back to the source ("do my segment revenues sum to the grand total I started with?"). Mismatch = **stop; route to `wrong-number-debugging`** to bisect to the bad step — don't patch and proceed. And if the "fix" would drop/winsorize/filter rows or move a number the user has already seen, that's a *sample/spec change*, not an autonomous fix → **`analysis-checkpoints`**.
-5. **FREEZE** — Once a result is validated, snapshot it as a **golden / reference output** (a small committed CSV/parquet, or stored summary stats). Future re-runs and refactors diff against it — the regression test of data work, converting *"the number changed three weeks ago and nobody noticed"* into an immediate, obvious failure instead.
+5. **FREEZE** — At each **phase boundary** (clean dataset built · primary result validated), commit **one golden**: the few headline numbers (row counts, totals, primary coefficient). Re-runs diff against it, so a silently moved number fails loudly. Never one per script, never an `expectations` file or sha256 pin per fixture (see *Check placement* below).
 
 ## The merge protocol — three lines around every join
 
@@ -167,7 +167,7 @@ Checks concentrate where silence lives: **ingest** (the NA map, types/units), **
 2. **Compute, then reconcile against the source.** A clean run is not a correct result.
 3. **If a reconciliation / total / cardinality assertion FAILS → STOP and invoke `wrong-number-debugging`** — bisect the pipeline to the exact bad step; do not patch and proceed.
 4. **If the "fix" would drop/filter/winsorize rows, change a join's grain, or move a number the user has already seen → STOP and invoke `analysis-checkpoints`** — that's a sample/spec redesign, not an autonomous bug fix; don't smuggle it in.
-5. **Otherwise freeze the validated result as a golden baseline** and continue to the next step — every future re-run diffs against it.
+5. **Otherwise continue; at a phase boundary, add the headline numbers to that phase's one golden** — re-runs diff against it.
 
 ## The bottom line
 
