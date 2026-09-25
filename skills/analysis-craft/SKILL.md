@@ -68,6 +68,27 @@ Test: **"Could the owner of this notebook review my diff in two minutes and agre
 - **Present competing approaches instead of silently picking one.** If there are two reasonable ways to compute or model this with a real tradeoff (a fast approximate aggregation vs. an exact slow one; FE vs. random effects), name the tradeoff and let the user choose rather than quietly deciding.
 - **Name confusion instead of coding through it.** If the request is ambiguous or the data doesn't look like you expected, stop and say so. Guessing and building on the guess is the expensive path.
 
+## Use the machine — parallelize independent units inside the job
+
+Many independent units — bootstrap or permutation draws, simulation reps, placebo reassignments, per-outcome or per-spec fits — run serially by default, and a serial loop on a multi-core box wastes most of it (999 draws at 17 s each is 4h45m on one core; on 16 it is under 20 minutes). Spread the units across cores inside the one job. Within-fit threading (fixest, data.table) buys little when each fit is small; parallelize across units instead.
+
+- **Size the pool from a measurement.** Run one unit first and record its time and peak memory — the smallest falsifying check, applied to cost. Use detected cores minus two (headroom for the OS and the agent), and keep per-worker peak memory × workers under the machine's memory minus a margin.
+- **Make the RNG reproducible in parallel** — `RNGkind("L'Ecuyer-CMRG")` with `set.seed`, or `future.seed = TRUE` — and key every result by its unit id.
+- **Checkpoint per key.** Write completed units keyed by id with an atomic write (temp file, then rename). On resume, load the checkpoint and compute only the keys that are missing or failed; record failed keys with their reason. Don't discard completed keys because another key failed — that turns one late failure into a full rerun of work that was already correct.
+
+```r
+RNGkind("L'Ecuyer-CMRG"); set.seed(20260925)
+n_workers <- parallel::detectCores() - 2L
+done <- if (file.exists(ckpt)) readRDS(ckpt) else list()   # named by draw id
+todo <- setdiff(as.character(1:999), names(Filter(\(r) r$ok, done)))
+res  <- parallel::mclapply(todo, \(id) tryCatch(list(ok = TRUE, est = run_draw(id)),
+          error = \(e) list(ok = FALSE, why = conditionMessage(e))), mc.cores = n_workers)
+done[todo] <- res
+saveRDS(done, tmp <- paste0(ckpt, ".tmp")); file.rename(tmp, ckpt)   # why: atomic — a crash never leaves a half-written checkpoint
+```
+
+`future::plan(multicore, workers = n_workers)` with `future.apply::future_lapply(..., future.seed = TRUE)` is the equivalent. Python: `concurrent.futures.ProcessPoolExecutor` or `joblib`; Julia: `Threads.@threads` or `Distributed.pmap`.
+
 ## Red flags — STOP
 
 - Adding a class, framework, or config system to a script that runs once.

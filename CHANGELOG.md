@@ -4,6 +4,14 @@ All notable changes to Causal Powers. Versions follow the plugin manifest.
 
 ## Unreleased
 
+- **Parallel units and per-key checkpoints in `analysis-craft`.** A new
+  section tells workers to spread independent units (bootstrap/permutation
+  draws, simulation reps, per-spec fits) across cores inside the one job,
+  size the pool from one measured unit (cores minus two, memory headroom),
+  use reproducible parallel RNG, and checkpoint per key so a failed key never
+  discards completed ones. Motivated by a 2026-09-13 field run: 999 serial
+  draws took 4h45m on an 18-core box at 1.9 GB peak, then a late failure
+  discarded the whole checkpoint.
 - **One golden per phase boundary.** `data-contracts` FREEZE and
   `result-verification` now keep a single golden per phase boundary (clean
   dataset built · primary result validated) holding the headline numbers —
