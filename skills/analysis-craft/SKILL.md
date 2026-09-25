@@ -73,21 +73,27 @@ Test: **"Could the owner of this notebook review my diff in two minutes and agre
 Many independent units — bootstrap or permutation draws, simulation reps, placebo reassignments, per-outcome or per-spec fits — run serially by default, and a serial loop on a multi-core box wastes most of it (999 draws at 17 s each is 4h45m on one core; on 16 it is under 20 minutes). Spread the units across cores inside the one job. Within-fit threading (fixest, data.table) buys little when each fit is small; parallelize across units instead.
 
 - **Size the pool from a measurement.** Run one unit first and record its time and peak memory — the smallest falsifying check, applied to cost. Use detected cores minus two (headroom for the OS and the agent), and keep per-worker peak memory × workers under the machine's memory minus a margin.
-- **Make the RNG reproducible in parallel** — `RNGkind("L'Ecuyer-CMRG")` with `set.seed`, or `future.seed = TRUE` — and key every result by its unit id.
+- **Derive each unit's RNG from its own id**, and key every result by that id — because `mclapply` hands out streams by job position, so a seeded pool alone makes draw *k* depend on `mc.cores` and on which keys a resume left in `todo`. Precompute one L'Ecuyer stream per id and set it inside the unit (below); draw *k* is then identical across pool sizes, orders, and crash histories.
 - **Checkpoint per key.** Write completed units keyed by id with an atomic write (temp file, then rename). On resume, load the checkpoint and compute only the keys that are missing or failed; record failed keys with their reason. Don't discard completed keys because another key failed — that turns one late failure into a full rerun of work that was already correct.
 
 ```r
 RNGkind("L'Ecuyer-CMRG"); set.seed(20260925)
+ids <- as.character(1:999)
+streams <- setNames(Reduce(\(s, i) parallel::nextRNGStream(s), ids[-1],
+                           .Random.seed, accumulate = TRUE), ids)   # why: stream fixed by id, not job slot
 n_workers <- parallel::detectCores() - 2L
 done <- if (file.exists(ckpt)) readRDS(ckpt) else list()   # named by draw id
-todo <- setdiff(as.character(1:999), names(Filter(\(r) r$ok, done)))
-res  <- parallel::mclapply(todo, \(id) tryCatch(list(ok = TRUE, est = run_draw(id)),
-          error = \(e) list(ok = FALSE, why = conditionMessage(e))), mc.cores = n_workers)
+todo <- setdiff(ids, names(Filter(\(r) r$ok, done)))
+res  <- parallel::mclapply(todo, \(id) {
+          assign(".Random.seed", streams[[id]], envir = globalenv())
+          tryCatch(list(ok = TRUE, est = run_draw(id)),
+                   error = \(e) list(ok = FALSE, why = conditionMessage(e)))
+        }, mc.cores = n_workers)
 done[todo] <- res
 saveRDS(done, tmp <- paste0(ckpt, ".tmp")); file.rename(tmp, ckpt)   # why: atomic — a crash never leaves a half-written checkpoint
 ```
 
-`future::plan(multicore, workers = n_workers)` with `future.apply::future_lapply(..., future.seed = TRUE)` is the equivalent. Python: `concurrent.futures.ProcessPoolExecutor` or `joblib`; Julia: `Threads.@threads` or `Distributed.pmap`.
+`future::plan(multicore, workers = n_workers)` with `future.apply::future_lapply` is the equivalent, but `future.seed = TRUE` is reproducible only for a fixed element order: on resume, pass `future.seed = unname(streams[todo])` (or set the stream per id as above) so the subset doesn't shift the streams. Python: `concurrent.futures.ProcessPoolExecutor` or `joblib`; Julia: `Threads.@threads` or `Distributed.pmap`.
 
 ## Red flags — STOP
 
