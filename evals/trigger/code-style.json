@@ -1,0 +1,74 @@
+[
+ {
+  "query": "write an R script that builds the monthly shipment panel from the ARCOS parquet and the pharmacy link csv",
+  "should_trigger": true
+ },
+ {
+  "query": "can you write a julia script to estimate the search-cost logit with Optim and save theta to jld2",
+  "should_trigger": true
+ },
+ {
+  "query": "write a python script to scrape the ndc product pages and append results to a csv with resume",
+  "should_trigger": true
+ },
+ {
+  "query": "code this up in my style \u2014 per-pharmacy probit loop like my other scripts",
+  "should_trigger": true
+ },
+ {
+  "query": "write the code for the stock-out rate figure the way I would write it",
+  "should_trigger": true
+ },
+ {
+  "query": "new R script for the default-option shares, same conventions as my stylized facts folder",
+  "should_trigger": true
+ },
+ {
+  "query": "write some code in dplyr to collapse claims to member-month and fill missing months with zero",
+  "should_trigger": true
+ },
+ {
+  "query": "I need a quick script to recode the race variables, flat script, no functions",
+  "should_trigger": true
+ },
+ {
+  "query": "as a flat script please: load the inventory RDS, add the rolling 30-day shipment, save it back",
+  "should_trigger": true
+ },
+ {
+  "query": "write me a counterfactual script like my existing ones but with the scenario as a keyword argument",
+  "should_trigger": true
+ },
+ {
+  "query": "what's the trend in buprenorphine shipments by chain since 2017",
+  "should_trigger": false
+ },
+ {
+  "query": "tighten the data section of my paper, it repeats the sample restriction twice",
+  "should_trigger": false
+ },
+ {
+  "query": "the script crashed with 'object pharmacy_id not found' on line 42, what's wrong",
+  "should_trigger": false
+ },
+ {
+  "query": "review this analysis script for silent join problems before I send it",
+  "should_trigger": false
+ },
+ {
+  "query": "explain what this fixest call with | zip + year does",
+  "should_trigger": false
+ },
+ {
+  "query": "merge the two claims files on member id and check the row counts",
+  "should_trigger": false
+ },
+ {
+  "query": "did the 2018 e-prescription mandate raise bupe fills? run the DiD",
+  "should_trigger": false
+ },
+ {
+  "query": "make a figure of the event-study coefficients with the dashed treatment line",
+  "should_trigger": false
+ }
+]

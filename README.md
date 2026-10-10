@@ -43,7 +43,7 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 
 ![Causal Powers flow: any data, analysis, or figure request goes to question-framing, which forks to descriptive, reduced-form, structural, or predictive work, through a written-plan approval gate, execution, data preparation and contracts, optional result verification, and review; craft, checkpoints, and debugging run alongside.](docs/flow.svg)
 
-*The whole flow runs on an **always-on layer** (a discipline card injected every session + a trigger router) that re-fires the right skill on every request. `analysis-craft` (minimal, surgical code) and `analysis-checkpoints` (the human-in-the-loop guardrail) run alongside every step; `project-organization` keeps the repo legible and tidies before commit.*
+*The whole flow runs on an **always-on layer** (a discipline card injected every session + a trigger router) that re-fires the right skill on every request. `analysis-craft` (minimal, surgical code), `code-style` (the author's script voice), and `analysis-checkpoints` (the human-in-the-loop guardrail) run alongside every step; `project-organization` keeps the repo legible and tidies before commit.*
 
 ## The skills
 
@@ -57,6 +57,7 @@ Causal Powers therefore introduces no new methodology. It reorganizes these well
 | `data-contracts` | Invariants, join-cardinality checks, totals reconciliation, frozen baselines — the **checker** | `test-driven-development` |
 | `data-preparation` | Owns the data ingest & cleaning **phase** (the heaviest one): ingest→clean→join→dedup→recode→reconcile as a phased YAML checklist with a decisions ledger; the **doer** that *calls* `data-contracts` per step and routes consequential cleaning choices to `analysis-checkpoints` | `writing-plans` (for the cleaning phase) |
 | `analysis-craft` | Minimum analysis that answers the question; surgical edits to notebooks/pipelines | Karpathy: simplicity + surgical |
+| `code-style` | The author's script voice for new R/Julia/Python files: flat lab-notebook scripts, short reassigned dplyr pipes, Julia as the paper's equations, Python without `main()`; eight default-on one-line improvements (explicit join keys, forward-slash paths, seed before draws, …) | (none — author-specific) |
 | `figure-craft` | Presentation-ready figures in any language (R/ggplot2, Python/matplotlib, Julia/Makie): clean theme + colorblind-safe Paul-Tol palette, 16.5pt fonts, no y-label (title carries it), B&W-legible (shape/linetype redundancy), right geom (dots for estimates, lines for series, stacks for composition), dashed treatment line for DiD, mandatory visual self-check, at most 1-2 enhancing annotations, metadata in LaTeX notes, saved to `results/figures/` at 5×3 in | (none — domain core) |
 | `analysis-checkpoints` | Stop and ask before changing design/sample/spec/estimand; loop toward the agreed goal, never redefine it | superpowers review gates |
 | `executing-analysis-plans` | Drive an approved plan: sequential spine validated in order, independent specs/designs fanned out to parallel subagents | `executing-plans` / `subagent-driven-development` |

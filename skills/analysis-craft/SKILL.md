@@ -53,7 +53,7 @@ A notebook or analysis script usually belongs to someone, encodes decisions you 
 
 - **Every changed line should trace to the request.** If you can't explain why a line is in the diff, it shouldn't be.
 - **Don't refactor working code you were only asked to tweak.** Adding a column is not license to restructure the whole pipeline, rename variables, or "modernize" the syntax.
-- **Match the existing style.** Follow the file's conventions (tidyverse vs. base R, the existing naming, the existing structure) even if you'd personally write it differently. Consistency beats your preference.
+- **Match the existing style.** Follow the file's conventions (tidyverse vs. base R, the existing naming, the existing structure) even if you'd personally write it differently. Consistency beats your preference. A new file with no neighbor to match takes the house voice in `code-style`.
 - **Clean up only your own mess.** Remove the imports/variables/intermediate frames that *your* change orphaned. Leave pre-existing dead code alone — **mention** it, don't delete it, unless asked.
 - **Keep diffs reproducible.** Don't reorder cells, re-run-and-commit unrelated output, or reshuffle a pipeline so the diff is unreadable. A reviewer should be able to see exactly what you changed and why.
 

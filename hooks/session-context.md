@@ -49,13 +49,13 @@ Before any model, a **description** is often the whole deliverable (`descriptive
 
 ## Language profile (default; override per project in `docs/LESSONS.md` / memory)
 
-**R** — data cleaning (tidyverse/dplyr), descriptive evidence, reduced-form/causal, viz (ggplot2 + ggthemes/Paul-Tol, see figure-craft for the house style), prediction/ML. **Python** — web scraping, tooling/software-engineering, deep learning (transformers / PyTorch). **Julia** — structural models. A default, not a rule: state the language in the plan, defer to the user or a project's CLAUDE.md, never silently switch.
+**R** — data cleaning (tidyverse/dplyr), descriptive evidence, reduced-form/causal, viz (ggplot2 + ggthemes/Paul-Tol, see figure-craft for the house style), prediction/ML. **Python** — web scraping, tooling/software-engineering, deep learning (transformers / PyTorch). **Julia** — structural models. A default, not a rule: state the language in the plan, defer to the user or a project's CLAUDE.md, never silently switch. New scripts take the house script voice (`code-style`): a flat lab-notebook script, no `main()`, explicit join keys.
 
 ## Keep the repo legible
 
 Place and name files by convention *as you create them*; tidy scratch before commit. **Checkpoint as you go — commit locally at phase boundaries** (plan agreed · clean dataset · validated result); *push* stays the user's call (commit ≠ push). Research repos are paper-centric and polyglot (pipeline × subject; `data/{raw,intermediate,output}`). **Track the data a replicator needs**; gitignore only secrets, sensitive data, and oversized files. Offer cleanups, never delete on your own or touch raw data (`project-organization`).
 
-Skills: using-causal-powers · question-framing · descriptive-evidence · pre-analysis-plan · analysis-state-management · data-contracts · data-preparation · analysis-craft · figure-craft · analysis-checkpoints · executing-analysis-plans · wrong-number-debugging · result-verification · causal-identification · structural-estimation · predictive-modeling · analysis-review · project-organization.
+Skills: using-causal-powers · question-framing · descriptive-evidence · pre-analysis-plan · analysis-state-management · data-contracts · data-preparation · analysis-craft · code-style · figure-craft · analysis-checkpoints · executing-analysis-plans · wrong-number-debugging · result-verification · causal-identification · structural-estimation · predictive-modeling · analysis-review · project-organization.
 
 ## Platform note (this block doubles as `AGENTS.md`)
 

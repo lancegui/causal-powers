@@ -4,6 +4,20 @@ All notable changes to Causal Powers. Versions follow the plugin manifest.
 
 ## Unreleased
 
+- **New skill `code-style` — the author's script voice.** Distilled from the
+  buprenorphine-pharmacy repository (54 R, 38 Julia scripts, the scrapers):
+  flat lab-notebook scripts run chunk by chunk (imports → loads → hash-wall
+  banners → short dplyr pipes reassigned in place → bare-expression checks →
+  save/reload), Julia written as the paper's equations (Greek parameters,
+  one-liner formulas, SharedVector + `@threads`, JLD2 checkpoints), Python as a
+  flat script with helpers above a module-level driver and no `main()`. Eight
+  default-on one-line improvements (explicit join keys, forward-slash relative
+  paths, seed before draws, column list named once, one parameterized scenario
+  function, named magic numbers, `.groups = "drop"`, no duplicate imports).
+  Wired into the router, the card (1,189 → 1,207 words), the family table,
+  `analysis-craft`'s match-the-style rule, and `skill-chain`. A six-arm A/B
+  (R / Julia / Python × with / without the skill) on one synthetic dataset is
+  recorded in `evals/behavioral/notes/`.
 - **Parallel units and per-key checkpoints in `analysis-craft`.** A new
   section tells workers to spread independent units (bootstrap/permutation
   draws, simulation reps, per-spec fits) across cores inside the one job,

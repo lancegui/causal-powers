@@ -38,6 +38,21 @@
     ],
     "violations": []
   },
+  "code-style": {
+    "hits": [
+      "I need a quick script to recode the race variables, flat script, no functions",
+      "as a flat script please: load the inventory RDS, add the rolling 30-day shipment, save it back",
+      "can you write a julia script to estimate the search-cost logit with Optim and save theta to jld2",
+      "code this up in my style \u2014 per-pharmacy probit loop like my other scripts",
+      "new R script for the default-option shares, same conventions as my stylized facts folder",
+      "write a python script to scrape the ndc product pages and append results to a csv with resume",
+      "write an R script that builds the monthly shipment panel from the ARCOS parquet and the pharmacy link csv",
+      "write me a counterfactual script like my existing ones but with the scenario as a keyword argument",
+      "write some code in dplyr to collapse claims to member-month and fill missing months with zero",
+      "write the code for the stock-out rate figure the way I would write it"
+    ],
+    "violations": []
+  },
   "data-contracts": {
     "hits": [
       "before i join these two extracts, check that the keys are actually unique on the side i think they are",
