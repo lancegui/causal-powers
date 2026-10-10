@@ -2,7 +2,7 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
-## Unreleased
+## 0.34.0 — code-style, the author's script voice (2026-10-10)
 
 - **New skill `code-style` — the author's script voice.** Distilled from the
   buprenorphine-pharmacy repository (54 R, 38 Julia scripts, the scrapers):
