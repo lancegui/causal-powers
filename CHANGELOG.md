@@ -10,10 +10,20 @@ All notable changes to Causal Powers. Versions follow the plugin manifest.
   banners → short dplyr pipes reassigned in place → bare-expression checks →
   save/reload), Julia written as the paper's equations (Greek parameters,
   one-liner formulas, SharedVector + `@threads`, JLD2 checkpoints), Python as a
-  flat script with helpers above a module-level driver and no `main()`. Eight
-  default-on one-line improvements (explicit join keys, forward-slash relative
-  paths, seed before draws, column list named once, one parameterized scenario
-  function, named magic numbers, `.groups = "drop"`, no duplicate imports).
+  flat script with helpers above a module-level driver and no `main()`; the
+  house parallel shapes (R `foreach %dopar%` + doParallel; Julia
+  `Threads.@threads` + `SharedVector` for units over one loaded frame,
+  `addprocs` + `@everywhere` + `pmap` with `Random.seed!(k)` per rep for Monte
+  Carlo). Nine default-on one-line improvements (explicit join keys,
+  forward-slash relative paths, seed before draws, column list named once, one
+  parameterized scenario function, named magic numbers, `.groups = "drop"`, no
+  duplicate imports, pool sized from the machine). Folder layout and file
+  naming defer to `project-organization`. Confirmed across a second repository
+  (Opioid_Rehab, 28 hand-written scripts 2023–2026: `%>%` 2051 / `|>` 0,
+  `theme_hc` 49, `ggsave(units = "px")` 48/48, `by =` on 20% of joins); the
+  same repository's 77 agent-written 2026 scripts carry 1,106 assertions and
+  1,678 `cat()` calls in 39k lines against 0 and 0 in the hand-written ones —
+  the drift this skill corrects.
   Wired into the router, the card (1,189 → 1,207 words), the family table,
   `analysis-craft`'s match-the-style rule, and `skill-chain`. A six-arm A/B
   (R / Julia / Python × with / without the skill) on one synthetic dataset is
