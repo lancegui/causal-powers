@@ -33,7 +33,7 @@ What this skill does **not** own: how much machinery is too much (`analysis-craf
 6. **A function only when the body runs per unit** (inside `map_dfr`, `lapply`, `Threads.@threads`) **or would otherwise be pasted twice.** Define it right above its first use. Julia numerical helpers shared by several scripts live in `code/lib/utility.jl` and are `include`d; R almost never sources a utils file.
 7. **Names.** Objects are snake_case, descriptive, in the economics (`other_opioid_shipment`, `stock_out_rate`, `coef_by_pharmacy`, `distance_from_default`); the main table is `df`, keys are `ids`. Script and folder names are `project-organization`'s call (`NN_verb_subject.R`, lowercase; git carries versions, not `_v2` / `_final`) — a repo with its own convention wins.
 8. **Comments are sparse, lowercase, one line, and say what the chunk is for or why a choice was made** — `# exclude current day`, `# need to remove default pharmacy or purchased pharmacy is 50 miles away`, `# then I hand cleaned to create WA_APCD_pharmacy_v3.csv`. Commented-out code is a toggle and stays.
-9. **Paths are project-root-relative with forward slashes** (`"data/output/x.parquet"`, `"results/figures/x.png"`), no `setwd()`; the working directory is the repo root. Folder layout follows `project-organization` (`data/{raw,intermediate,output}`, `code/`, `results/`); match the repo you're in.
+9. **Paths are project-root-relative with forward slashes** (`"data/output/x.parquet"`, `"results/figures/x.pdf"`), no `setwd()`; the working directory is the repo root. Folder layout follows `project-organization` (`data/{raw,intermediate,output}`, `code/`, `results/`); match the repo you're in.
 10. **Not in this voice:** `main()`, `if __name__ == "__main__"`, argparse, classes, Julia modules or abstract types, config files / YAML, `here::here`, roxygen or docstrings on a one-off, unit tests, a logging framework, a `utils` file of one-call helpers, a fifteen-verb pipe.
 
 ## R — dplyr as the sentence
@@ -63,7 +63,7 @@ coef_by_pharmacy <- map_dfr(pharmacy_ids, function(pid) {
 ```
 
 - **Regressions are `fixest`:** `feols(y ~ x1 + x2 | zip + year, data = df, cluster = "pharmacy_id")`; tables via `etable(..., tex = TRUE)`; summary statistics via `stargazer(type = "text", summary.stat = c("mean", "sd", "min", "p25", "median", "p75", "max"))`.
-- **Plots are piped into ggplot** — `df %>% mutate(...) %>% ggplot(aes(...)) + geom_*() + theme_hc() + scale_fill_ptol() + theme(legend.title = element_blank())` then `ggsave("results/figures/x.png", width = 2000, height = 1500, units = "px")`. The styling rules are `figure-craft`'s.
+- **Plots are piped into ggplot** — `df %>% mutate(...) %>% ggplot(aes(...)) + geom_*() + theme_hc() + scale_fill_ptol() + theme(legend.title = element_blank())` then `ggsave("results/figures/x.pdf", width = 8.33, height = 5, units = "in", dpi = 300)`. The styling rules are `figure-craft`'s.
 
 ## Julia — write the paper's equations
 

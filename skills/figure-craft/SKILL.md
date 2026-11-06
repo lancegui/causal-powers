@@ -88,7 +88,7 @@ X and Y labels must be **the shortest string that is still unambiguous** — inc
 
 **Existing project dimensions take precedence.** Match comparable manuscript figures rather than imposing a 5 × 3 in canvas. If no convention exists, start with **2500 × 1500 px at 300 dpi**, equivalent to **8.33 × 5 in**, for the 16.5pt font defaults. An explicit user size overrides this fallback.
 
-In `ggsave()`, physical inches = pixels / DPI when `units = "px"`; specify DPI explicitly for both PDF and PNG. With dimensions in inches, increasing DPI changes raster resolution, not the relative size of text. At a fixed manuscript insertion width, enlarging the export canvas while keeping the font fixed makes the displayed text smaller: 16.5pt on an 8.33 in canvas becomes about 9.9pt when inserted at 5 in. Check that final size for readability; a presentation may need different sizing from a paper.
+In `ggsave()`, physical inches = pixels / DPI when `units = "px"`; save figures as PDF only (no PNG copy) and still pass DPI explicitly. With dimensions in inches, increasing DPI changes raster resolution, not the relative size of text. At a fixed manuscript insertion width, enlarging the export canvas while keeping the font fixed makes the displayed text smaller: 16.5pt on an 8.33 in canvas becomes about 9.9pt when inserted at 5 in. Check that final size for readability; a presentation may need different sizing from a paper.
 
 **Save to the project's existing figure directory** per `project-organization` conventions; use `results/figures/` for canonical deliverables and `results/diagnostics/` for scratch plots when no convention exists. Name by what the figure shows, traceable to its producer: `fig_eventstudy_mortality.pdf`.
 
@@ -149,6 +149,24 @@ What is NOT an annotation — these belong in **LaTeX figure notes** (`\caption`
 
 ## Chart-type decisions
 
+### Panel and specification layout — compare like with like
+
+Do not default to packing several graphs into one canvas. Keep a single output
+figure focused on one outcome and one unit of measurement.
+
+- **Same outcome, alternative specifications:** show the estimates together so
+  the comparison is direct. For DiD or event-study estimates at the same
+  x-value, dodge the points and confidence intervals by specification (with
+  distinct shape/linetype as well as color); do not layer them on top of one
+  another.
+- **Different outcomes:** make separate output figures, even when they use the
+  same estimator or share a unit. A second outcome is a separate visual claim,
+  not another specification of the first outcome.
+
+Use facets or stacked panels only when the user explicitly needs a tightly
+linked comparison and each panel remains independently readable. They do not
+override the one-outcome default.
+
 ### DiD / event-study coefficient plots — dots and error bars only
 
 The canonical exhibit for causal-identification results: estimated coefficients with confidence intervals over time or event-time.
@@ -158,6 +176,8 @@ The canonical exhibit for causal-identification results: estimated coefficients 
 - **The dashed vertical line follows the agreed timing convention.** For an existing figure series, match its reference-year or treatment-boundary placement, or the user’s explicit request; do not silently substitute a half-year boundary. For a new event-time plot, the boundary between period -1 and 0 is conventionally **-0.5**. Describe what the marker denotes in the manuscript notes; moving it does not change the model’s omitted year or treatment timing.
 - **A horizontal line at zero** — anchors the reader to the null.
 - **Dodged points** when multiple groups share an x-value, so points and bars don't stack on each other.
+- **Alternative specifications of the same outcome** belong in this same plot,
+  dodged by specification; different outcomes belong in separate figure files.
 - **B&W-safe shapes** — if two groups share an x-value, give them different point shapes (`aes(shape = group)`), not just different colors.
 - **Consider a "pretreatment treatment group" annotation** to show the relative scale of the effect (see *Annotations* above).
 
@@ -232,6 +252,9 @@ ggsave("results/figures/fig_<name>.pdf",
 - **A figure that collapses in black and white.** If two series are indistinguishable in grayscale, color was the only channel — add shape, linetype, or direct labels.
 - **A y-axis label on a presentation figure.** It belongs in the title/subtitle; the y-axis title is never set.
 - **Connecting independent estimates with a line.** Event-study coefficients, cross-sectional regressions, group-wise estimates — dots + error bars, never a line. The line invents a trajectory.
+- **Combining different outcomes in one canvas by default.** Each outcome gets
+  its own output figure; reserve a shared plot for competing specifications of
+  the same outcome, with estimates visibly dodged.
 - **Overlapping x-axis labels.** A busy axis with every tick shown is unreadable. Reduce breaks or rotate — but prefer fewer breaks.
 - **More than 2 inside-canvas annotations.** Annotations enhance understanding — they are not decoration. If you're reaching for a third, one of them is metadata that belongs in the LaTeX notes.
 - **Metadata (N, source, p-values, equations) inside the plot.** They go in the LaTeX figure notes, not on the canvas.
@@ -259,20 +282,25 @@ ggsave("results/figures/fig_<name>.pdf",
 ## The Process
 
 1. **Confirm the data is validated first.** The figure is the last step, not the first. If the numbers haven't been verified, say so and offer `result-verification` — a polished figure of an unverified number is still an unverified number.
-2. **Pick the geom by the message, not by habit.** Dots for discrete estimates (DiD, event study); lines for continuous observed series; stacked bars for composition; dodged bars for cross-sectional comparison. The dot-vs-line choice is a claim about what the data is — get it right.
-3. **Apply the house style in your language.** Clean theme + Paul-Tol palette + large fonts (16.5pt floor) + no y-axis label (meaning in the title/subtitle) + concise x-axis label + dashed treatment line for DiD + zero line + dodged points. Use the language tables above to translate the R reference to Python or Julia.
-4. **Ensure black-and-white legibility.** Every group distinction needs a redundant non-color channel — shape for points, linetype for lines, hatch for bars, or direct labels. Render in grayscale and verify you can still tell groups apart.
-5. **Add at most 1–2 annotations that enhance understanding.** Absolute values on percentage bars, a "pretreatment treatment group" label for relative scale. Each must pass: "does removing this make the figure harder to understand?"
-6. **Match the project’s export settings.** Use its figure directory, canvas, units, and explicit DPI; the fallback is 2500×1500 px at 300 dpi (8.33×5 in). Judge font proportions at the final insertion size.
-7. **Render and visually examine.** Open the saved file and run the visual self-check: no clipping, no overlap, legend fits, markers visible, palette distinguishable, B&W-safe, annotations placed cleanly. Fix and re-render until clean.
-8. **Move all metadata to LaTeX figure notes — in the manuscript, not the image.** N, source, sample restrictions, p-value conventions — they go in `\caption` or a `note`, never on the canvas and never rendered into the figure file (no `labs(caption =)`, no `figtext`).
-9. **Hand off to `project-organization`** — confirm the figure is named and placed per convention; commit the checkpoint.
+2. **Choose the figure boundary before the geom.** One outcome per output
+   figure. Compare alternative specifications of that outcome directly in the
+   same plot (dodge coincident estimates); render different outcomes as
+   separate figures.
+3. **Pick the geom by the message, not by habit.** Dots for discrete estimates (DiD, event study); lines for continuous observed series; stacked bars for composition; dodged bars for cross-sectional comparison. The dot-vs-line choice is a claim about what the data is — get it right.
+4. **Apply the house style in your language.** Clean theme + Paul-Tol palette + large fonts (16.5pt floor) + no y-axis label (meaning in the title/subtitle) + concise x-axis label + dashed treatment line for DiD + zero line + dodged points. Use the language tables above to translate the R reference to Python or Julia.
+5. **Ensure black-and-white legibility.** Every group distinction needs a redundant non-color channel — shape for points, linetype for lines, hatch for bars, or direct labels. Render in grayscale and verify you can still tell groups apart.
+6. **Add at most 1–2 annotations that enhance understanding.** Absolute values on percentage bars, a "pretreatment treatment group" label for relative scale. Each must pass: "does removing this make the figure harder to understand?"
+7. **Match the project’s export settings.** Use its figure directory, canvas, units, and explicit DPI; the fallback is 2500×1500 px at 300 dpi (8.33×5 in). Judge font proportions at the final insertion size.
+8. **Render and visually examine.** Open the saved file and run the visual self-check: no clipping, no overlap, legend fits, markers visible, palette distinguishable, B&W-safe, annotations placed cleanly. Fix and re-render until clean.
+9. **Move all metadata to LaTeX figure notes — in the manuscript, not the image.** N, source, sample restrictions, p-value conventions — they go in `\caption` or a `note`, never on the canvas and never rendered into the figure file (no `labs(caption =)`, no `figtext`).
+10. **Hand off to `project-organization`** — confirm the figure is named and placed per convention; commit the checkpoint.
 
 ## The bottom line
 
 ```
 Presentation figure  →  clean theme + Paul-Tol palette + 16.5pt fonts + no y-label (title carries it) +
                          concise axis labels + right geom (dots for estimates, lines for series, stacks for composition) +
+                         one outcome per output figure (dodge alternative specifications together) +
                          dashed treatment line for DiD + zero line + B&W-safe (shape/linetype redundancy) +
                          at most 1-2 enhancing annotations + metadata in LaTeX notes (in the paper, not the image) +
                          saved with project-matched dimensions + visually checked at final size (no clip, no overlap) — in ANY language

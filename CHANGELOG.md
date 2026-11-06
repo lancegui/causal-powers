@@ -2,6 +2,12 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
+## Unreleased
+
+- **Figures are PDF-only by default.** `figure-craft` says to save PDF with no
+  PNG copy (DPI still explicit); `code-style` examples save `x.pdf` on the
+  8.33 × 5 in canvas.
+
 ## 0.34.0 — code-style, the author's script voice (2026-10-10)
 
 - **New skill `code-style` — the author's script voice.** Distilled from the
