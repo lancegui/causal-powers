@@ -2,8 +2,30 @@
 
 All notable changes to Causal Powers. Versions follow the plugin manifest.
 
-## Unreleased
+## 0.35.0 — large-data builds in a lazy engine (2026-11-27)
 
+- **Large or multi-file sources build in the lazy engine.** `data-preparation`
+  gains a short section of four rules, with detail and R / Python / Julia idiom
+  in the new `references/large-data-lazy-engines.md`: (1) Arrow multi-file
+  parquet is opened with an explicit schema listing only the columns used,
+  because the inferred schema comes from one file and column types drift
+  across files (an ID string/integer, an all-null text column written as
+  `bool`) — inference fails mid-scan or silently mis-types, and a mis-typed ID
+  breaks dedup; (2) Arrow thread pools are set explicitly
+  (`set_cpu_count()`, `set_io_thread_count()`; pyarrow equivalents);
+  (3) filters, lookup joins (key uniqueness asserted first), derived columns,
+  and aggregation run in the engine, `collect()` comes after aggregating,
+  materialization is planned by table size, large intermediates stay in the
+  engine, exact order statistics wait until after collect (Arrow's median is
+  approximate), and the project's standardized engine is kept for the whole
+  pipeline; (4) every build stage ends in a stop-on-violation reconciliation
+  (rows in == Σ counts out, totals to a raw-source constant, key uniqueness,
+  unchanged row count on left joins to unique lookups). Two rationalization
+  rows and a red flag added. Learned on a field build over a multi-hundred-file,
+  several-hundred-million-row transaction dataset.
+- `data-contracts` check placement points out-of-core builds at the
+  per-stage contract; `code-style`'s lazy-input line carries the schema and
+  thread-pool settings.
 - **Figures are PDF-only by default.** `figure-craft` says to save PDF with no
   PNG copy (DPI still explicit); `code-style` examples save `x.pdf` on the
   8.33 × 5 in canvas.

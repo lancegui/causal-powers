@@ -64,6 +64,15 @@ decisions:
 1. **It survives `/clear` and compaction.** A long, fix-heavy cleaning session will hit auto-compaction at a random, lossy moment, and the first things lost are exactly the cleaning gotchas and the *whys* you can least afford to lose. Durable state in the file is what lets the session compact safely.
 2. **It is the audit trail.** When a number later comes out wrong, the decisions ledger is what lets `wrong-number-debugging` bisect in minutes instead of re-deriving every choice from scratch. "Why is revenue down 8% from last quarter's pull?" is answerable in seconds when the dedup and the dropped-rows decisions are written with their reasons, and a multi-hour archaeology dig when they aren't.
 
+## Large or multi-file sources — build in the lazy engine
+
+When a source is too big to read whole comfortably (hundreds of parquet files, hundreds of millions of rows), the build runs in an out-of-core engine — and four rules apply. Detail and R / Python / Julia idiom: [`references/large-data-lazy-engines.md`](references/large-data-lazy-engines.md).
+
+1. **Arrow, multi-file parquet: pass an explicit schema listing only the columns you use** — `open_dataset(files, schema = SCH)` (pyarrow: `ds.dataset(files, schema=SCH)`). The inferred schema comes from one file; column types drift across files (an ID that is a string here and an integer there, a text column written as an all-null `bool`), so inference fails mid-scan or silently mis-types — and a mis-typed ID breaks dedup and joins on it with no error.
+2. **Arrow: set the thread pools explicitly** — `set_cpu_count()` and `set_io_thread_count()` (pyarrow: `pa.set_cpu_count()`, `pa.set_io_thread_count()`), e.g. 16 on a shared node. The defaults take every core, and memory peaks with them.
+3. **Push all row-level work into the lazy engine; materialize only after aggregating.** Filters, joins to small lookup tables (assert the lookup's key is unique *before* joining), derived columns, and group-by / aggregate all run in the engine (R `arrow`/`dplyr`, pyarrow, polars lazy frames; chunked partial sums in Julia); `collect()` / `.collect()` comes after the data is aggregated down. Plan where each stage materializes by its table size; keep large intermediates in the engine (`compute()`, or write and re-open) instead of pulling them into memory; never read a whole large file when a lazy filter would do. Exact order statistics may need to wait until after materialization (Arrow's median is approximate). Use the engine the project has standardized on — don't switch engines mid-pipeline.
+4. **Every build stage ends in a reconciliation contract that stops on violation** — rows in == Σ counts out after aggregation; summed totals reconcile to a known raw-source constant; every aggregated table unique on its key; left joins to unique lookups leave the row count unchanged. These are `data-contracts`' invariants placed at stage boundaries, with counts taken in the engine.
+
 ## Consequential cleaning decisions go to the user — `analysis-checkpoints`
 
 Cleaning is where design changes get smuggled in as "just tidying the data." A cleaning choice is **consequential** — `analysis-checkpoints` territory, not a silent fix — whenever it:
@@ -106,6 +115,7 @@ This skill triggers when **cleaning is more than a couple of steps or will span 
 - "The dataset's built, the totals are close enough" — patching a failed reconciliation by adjusting the total to match, instead of bisecting to the bad step (`wrong-number-debugging`).
 - Hand-rolling validation here instead of **calling `data-contracts`** — the doer reinventing the checker.
 - Ceremony-planning a trivial load of one clean file — over-applying the skill instead of stating the waiver.
+- A multi-file parquet source opened with an inferred schema, or a large source read whole and filtered in memory, or a `collect()` placed before the group-by.
 
 ## Common rationalizations
 
@@ -117,6 +127,8 @@ This skill triggers when **cleaning is more than a couple of steps or will span 
 | "The join ran fine, no error." | A join is the one operation that changes your row count in either direction without erroring. Assert the cardinality. |
 | "I'll write the decisions ledger at the end." | At the end you've forgotten the whys and compaction may have eaten the session. Disk-as-RAM, every couple of actions. |
 | "Totals are off by a rounding-ish amount, I'll just align them." | Aligning the total hides the leak. A failed reconciliation is a bug to bisect, not a number to nudge. |
+| "It ran without error, so the types were fine." | The inferred schema came from one file. A cast that dropped an ID's leading zeros doesn't error — it just stops that ID from matching. Write the schema. |
+| "I'll just `read_parquet` it, it fits in RAM." | It fits today, on this node, alone. Filter, join, and aggregate lazily and collect the small result — the same code then survives the next year of data and a busy machine. |
 
 ## The Process
 
